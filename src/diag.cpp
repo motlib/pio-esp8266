@@ -2,6 +2,9 @@
 
 #include <Arduino.h>
 
+#include "system.h"
+
+
 static String data("");
 
 static diag_err_t diag_handle_input()
@@ -26,7 +29,7 @@ static diag_err_t diag_handle_input()
             }
             else
             {
-                cycle_time = t;
+                sys_config.sens_cycle_time = t;
             }
         }
         else
