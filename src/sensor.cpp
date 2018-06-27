@@ -1,13 +1,13 @@
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_Sensor.h>
-
+#include <Adafruit_BME280.h>
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
+#undef BME280_ADDRESS
+#define BME280_MY_ADDRESS (0x76)
 
-#define BME280_ADDRESS (0x76)
-#include <Adafruit_BME280.h>
 
 Adafruit_BME280 bme; // I2C
 
@@ -17,20 +17,22 @@ void sensor_init(void)
     Wire.begin();
 
 
-    Wire.beginTransmission(BME280_ADDRESS);
+    Wire.beginTransmission(BME280_MY_ADDRESS);
     uint8_t error = Wire.endTransmission();
     if (error == 0)
     {
-        Serial.println(F("OK: Sensor acknowledges address."));
+        Serial.print(F("OK: Sensor acknowledges address "));
     }
     else
     {
-        Serial.print(F("ERROR: Sensor does not acknowledge I2C address."));
+        Serial.print(F("ERROR: Sensor does not acknowledge I2C address "));
     }
+    Serial.print(BME280_MY_ADDRESS, HEX);
+
     
-    bme.begin(BME280_ADDRESS);
-    error = bme.init();
-    if(error)
+    bme.begin(BME280_MY_ADDRESS);
+    
+    if(bme.init() == false)
     {
         Serial.print(F("ERROR: Sensor init failed. Code: "));
         Serial.println(error);
