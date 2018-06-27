@@ -7,6 +7,22 @@
 
 static String data("");
 
+static diag_err_t diag_set_timer(char const * key, char const * val)
+{
+    int time = atoi(val);
+            
+    if((time >= 50) && (time <= (5 * 60 * 100)))
+    {
+        sys_config.sens_cycle_time = time;
+        
+        return diag_err_ok;
+    }
+    else
+    {
+        return diag_err_value;
+    }
+}
+
 static diag_err_t diag_handle_input()
 {
     int i = data.indexOf('=');
@@ -15,28 +31,20 @@ static diag_err_t diag_handle_input()
     {
         return diag_err_input;
     }
+  
+    String key = data.substring(0, i);
+    String val = data.substring(i + 1);
+
+    if(key == "time")
+    {
+        diag_set_timer(key.c_str(), val.c_str());
+    }
     else
     {
-        String key = data.substring(0, i);
-        String val = data.substring(i + 1);
+        return diag_err_key;
+    }
 
-        if(key == "time")
-        {
-            long t = val.toInt();
-            if((t < 50) || (t > (5 * 60 * 100)))
-            {
-                Serial.println(F("ERROR: Invalid value."));
-            }
-            else
-            {
-                sys_config.sens_cycle_time = t;
-            }
-        }
-        else
-        {
-            return diag_err_key;
-        }
-    }    
+    return diag_err_ok;
 }
 
 void diag_main()
@@ -49,6 +57,10 @@ void diag_main()
          * handle both as end-of-command. */
         if((c == '\r') || (c == '\n'))
         {
+            diag_err_t result = diag_handle_input();
+
+            Serial.print(F("RESPONSE="));
+            Serial.println(result);
             
             data = "";
         }
