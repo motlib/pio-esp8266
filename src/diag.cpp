@@ -2,49 +2,50 @@
 
 #include <Arduino.h>
 
-void diag_main()
-{
-    static String data("");
-    
-    while(Serial.available() > 0)
-    {
-        int c = Serial.read();
-        //Serial.println("Received: ");
-        //Serial.println(c);
-        
-        if((c == '\r') || (c == '\n'))
-        {
-            // process
-            Serial.print(F("Received diag command: "));
-            Serial.println(data);
+static String data("");
 
-            int i = data.indexOf('=');
-            if(i < 0)
+static diag_err_t diag_handle_input()
+{
+    int i = data.indexOf('=');
+    
+    if(i < 0)
+    {
+        return diag_err_input;
+    }
+    else
+    {
+        String key = data.substring(0, i);
+        String val = data.substring(i + 1);
+
+        if(key == "time")
+        {
+            long t = val.toInt();
+            if((t < 50) || (t > (5 * 60 * 100)))
             {
-                Serial.println("ERROR: Invalid format.");
+                Serial.println(F("ERROR: Invalid value."));
             }
             else
             {
-                String key = data.substring(0, i);
-                String val = data.substring(i + 1);
-
-                if(key == "time")
-                {
-                    long t = val.toInt();
-                    if((t < 50) || (t > (5 * 60 * 100)))
-                    {
-                        Serial.println(F("ERROR: Invalid value."));
-                    }
-                    else
-                    {
-                        cycle_time = t;
-                    }
-                }
-                else
-                {
-                    Serial.println(F("ERROR: Unknown key."));
-                }
+                cycle_time = t;
             }
+        }
+        else
+        {
+            return diag_err_key;
+        }
+    }    
+}
+
+void diag_main()
+{
+    while(Serial.available() > 0)
+    {
+        int c = Serial.read();
+
+        /* Depending on the connected terminal, we receive CR or LF, so we
+         * handle both as end-of-command. */
+        if((c == '\r') || (c == '\n'))
+        {
             
             data = "";
         }
