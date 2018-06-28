@@ -85,9 +85,9 @@ static diag_err_t diag_handle_input()
                 Serial.print(key);
                 Serial.print('=');
                 Serial.println(val);
-
-                return err;
             }
+            
+            return err;
         }
     }
     
