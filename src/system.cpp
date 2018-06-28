@@ -1,14 +1,16 @@
 #include "system.h"
 
+#include <Arduino.h>
 #include "sensor.h"
 #include <stdint.h>
 
 
 typedef enum
 {
-    STATE_INIT = 0,
-    STATE_IDLE = 1,
-    STATE_READ = 2,
+    STATE_INIT,
+    STATE_IDLE,
+    STATE_READ,
+    STATE_RESET 
 } sys_state_t;
 
 
@@ -16,6 +18,7 @@ typedef struct
 {
     sys_state_t state;
     uint16_t sens_timer;
+    bool reset_request;
 } sys_data_t;
 
 
@@ -35,8 +38,8 @@ static sys_data_t sys_data =
 {
     .state = STATE_INIT,
     .sens_timer = 0,
+    .reset_request = false,
 };
-
 
 
 /**
@@ -59,6 +62,12 @@ static sys_state_t system_do_init()
  */
 static sys_state_t system_do_idle()
 {
+    /* Reset request has highest priority */
+    if(sys_data.reset_request == true)
+    {
+        return STATE_RESET;
+    }
+    
     if(sys_data.sens_timer != 0)
     {
         sys_data.sens_timer -= 1;
@@ -87,12 +96,22 @@ static sys_state_t system_do_read()
 }
 
 
+static sys_state_t system_do_reset()
+{
+    ESP.reset();
+
+    /* This should never be reached. If still reset is not possible, we will go
+     * through reset. */
+    return STATE_INIT;
+}
+
+
 /**
  * System component main function.
  *
  * This implements the overall system statemachine. 
  */
-void system_main()
+void system_main(void)
 {
     switch(sys_data.state)
     {
@@ -107,6 +126,10 @@ void system_main()
     case STATE_READ:
         sys_data.state = system_do_read();
         break;
+
+    case STATE_RESET:
+        sys_data.state = system_do_reset();
+        break;
         
     default:
         sys_data.state = STATE_INIT;
@@ -114,5 +137,7 @@ void system_main()
     }
 }
 
-// TODO;
-void system_set_sensor_cycle_time();
+void system_request_reset(void)
+{
+    sys_data.reset_request = true;
+}

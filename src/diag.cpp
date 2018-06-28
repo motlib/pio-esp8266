@@ -35,8 +35,6 @@ static diag_data_t diag_data = {
     .err = diag_err_ok,
 };
 
-static String data("");
-
 static diag_err_t diag_set_timer(char const * key, char const * val)
 {
     int time = atoi(val);
@@ -51,6 +49,13 @@ static diag_err_t diag_set_timer(char const * key, char const * val)
     {
         return diag_err_value;
     }
+}
+
+static diag_err_t diag_do_reset(char const * key, char const * val)
+{
+    system_request_reset();
+
+    return diag_err_ok;
 }
 
 
@@ -81,6 +86,10 @@ static diag_err_t diag_handle_input()
     if(strcmp(key,"time") == 0)
     {
         return diag_set_timer(key, val);
+    }
+    else if(strcmp(key, "reset") == 0)
+    {
+        return diag_do_reset(key, val);
     }
     else
     {
