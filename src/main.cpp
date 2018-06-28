@@ -9,7 +9,7 @@
 
 #include "system.h"
 #include "sensor.h"
-#include "diag.h"
+#include "diag/diag.h"
 #include "uptime.h"
 
 

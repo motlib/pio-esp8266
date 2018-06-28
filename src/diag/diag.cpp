@@ -14,9 +14,9 @@
 #include "system.h"
 #include "diag_services.h"
 
-#define DIAG_REQ_BUF_LEN 64
 
-#define DIAG_SEPARATOR '='
+#define DIAG_WRITE_CHAR '='
+#define DIAG_READ_CHAR '?'
 
 typedef struct
 {
@@ -36,7 +36,6 @@ static diag_data_t diag_data = {
 };
 
 
-
 /**
  * Handler to process a received diagnosis command. 
  */
@@ -49,28 +48,46 @@ static diag_err_t diag_handle_input()
     }
 
     /* find separator character in request */
-    char * const sep = index(diag_data.req_buf, DIAG_SEPARATOR);
-    if(sep == NULL)
+    char * sep = NULL;
+    diag_mode_t mode;
+    
+    if((sep = index(diag_data.req_buf, DIAG_WRITE_CHAR)) != NULL)
+    {
+        mode = diag_mode_write;
+    }
+    else if((sep = index(diag_data.req_buf, DIAG_READ_CHAR)) != NULL)
+    {
+        mode = diag_mode_read;
+    }
+    else
     {
         return diag_err_input;
     }
-
+ 
     /* replace separator by 0 charater to terminate key string. */
     *sep = '\0';
 
     char const * const key = diag_data.req_buf;
-    char const * const val = (sep + 1);
+    char * const val = (sep + 1);
 
     diag_tbl_t *entry;
-
     int i = 0;
+    diag_err_t err;
     for(entry = &(diag_service_tbl[i]);
         entry->svc_fct != NULL;
         i++, entry = &(diag_service_tbl[i]))
     {
         if(strcmp(entry->key, key) == 0)
         {
-            return entry->svc_fct(key, val);
+            err = entry->svc_fct(key, val, mode);
+            if((err == diag_err_ok) && (mode == diag_mode_read))
+            {
+                Serial.print(key);
+                Serial.print('=');
+                Serial.println(val);
+
+                return err;
+            }
         }
     }
     
