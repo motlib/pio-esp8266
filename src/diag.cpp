@@ -12,7 +12,7 @@
 #include <string.h>
 
 #include "system.h"
-
+#include "diag_services.h"
 
 #define DIAG_REQ_BUF_LEN 64
 
@@ -35,28 +35,6 @@ static diag_data_t diag_data = {
     .err = diag_err_ok,
 };
 
-static diag_err_t diag_set_timer(char const * key, char const * val)
-{
-    int time = atoi(val);
-            
-    if((time >= 50) && (time <= (5 * 60 * 100)))
-    {
-        sys_config.sens_cycle_time = time;
-        
-        return diag_err_ok;
-    }
-    else
-    {
-        return diag_err_value;
-    }
-}
-
-static diag_err_t diag_do_reset(char const * key, char const * val)
-{
-    system_request_reset();
-
-    return diag_err_ok;
-}
 
 
 /**
@@ -83,20 +61,20 @@ static diag_err_t diag_handle_input()
     char const * const key = diag_data.req_buf;
     char const * const val = (sep + 1);
 
-    if(strcmp(key,"time") == 0)
-    {
-        return diag_set_timer(key, val);
-    }
-    else if(strcmp(key, "reset") == 0)
-    {
-        return diag_do_reset(key, val);
-    }
-    else
-    {
-        return diag_err_key;
-    }
+    diag_tbl_t *entry;
 
-    return diag_err_ok;
+    int i = 0;
+    for(entry = &(diag_service_tbl[i]);
+        entry->svc_fct != NULL;
+        i++, entry = &(diag_service_tbl[i]))
+    {
+        if(strcmp(entry->key, key) == 0)
+        {
+            return entry->svc_fct(key, val);
+        }
+    }
+    
+    return diag_err_key;
 }
 
 
