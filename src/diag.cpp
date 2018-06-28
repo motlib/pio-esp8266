@@ -1,9 +1,28 @@
 #include "diag.h"
 
 #include <Arduino.h>
+#include <string.h>
 
 #include "system.h"
 
+
+#define DIAG_REQ_BUF_LEN 64
+
+#define DIAG_SEPARATOR '='
+
+typedef struct
+{
+    char req_buf[DIAG_REQ_BUF_LEN];
+    uint8_t req_idx;
+    diag_err_t err;
+} diag_data_t;
+
+
+static diag_data_t diag_data = {
+    .req_buf = { 0 },
+    .req_idx = 0,
+    .err = diag_err_ok,
+};
 
 static String data("");
 
@@ -25,19 +44,21 @@ static diag_err_t diag_set_timer(char const * key, char const * val)
 
 static diag_err_t diag_handle_input()
 {
-    int i = data.indexOf('=');
-    
-    if(i < 0)
+    char * const sep = index(diag_data.req_buf, DIAG_SEPARATOR);
+    if(sep == NULL)
     {
         return diag_err_input;
     }
-  
-    String key = data.substring(0, i);
-    String val = data.substring(i + 1);
 
-    if(key == "time")
+    /* replace separator by 0 charater to terminate key string. */
+    *sep = '\0';
+
+    char const * const key = diag_data.req_buf;
+    char const * const val = (sep + 1);
+
+    if(strcmp(key,"time") == 0)
     {
-        diag_set_timer(key.c_str(), val.c_str());
+        return diag_set_timer(key, val);
     }
     else
     {
@@ -59,14 +80,26 @@ void diag_main()
         {
             diag_err_t result = diag_handle_input();
 
-            Serial.print(F("RESPONSE="));
-            Serial.println(result);
+            Serial.print(F("RESPONSE=0x"));
+            Serial.println(result, HEX);
             
-            data = "";
+            diag_data.req_idx = 0;
+            diag_data.req_buf[0] = '\0';
         }
         else
         {
-            data += (char)c;
+            if(diag_data.req_idx >= DIAG_REQ_BUF_LEN - 2)
+            {
+                diag_data.err = diag_err_input;
+            }
+            else
+            {
+                
+                /* Add received character to buffer and always terminate with \0. */
+                diag_data.req_buf[diag_data.req_idx] = (char)c;
+                diag_data.req_idx++;
+                diag_data.req_buf[diag_data.req_idx] = '\0';
+            }
         }
     }   
 }
