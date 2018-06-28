@@ -3,9 +3,10 @@
 typedef enum
 {
     diag_err_ok = 0,
-    diag_err_input = 1,
-    diag_err_key = 2,
-    diag_err_value = 3,
+    diag_err_input,
+    diag_err_input_length,
+    diag_err_key,
+    diag_err_value,
     
 } diag_err_t;
 

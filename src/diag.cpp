@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * This module implements the diagnosis component. It receives text commands
+ * from the serial interface and processes them. 
+ *
+ * Commands and responses are always in the format "key=value".
+ */
 #include "diag.h"
 
 #include <Arduino.h>
@@ -12,8 +20,11 @@
 
 typedef struct
 {
+    /** Diagnostic request buffer */
     char req_buf[DIAG_REQ_BUF_LEN];
+    /** Pointer to the next free position in req_buf. */
     uint8_t req_idx;
+    /** Error flag */
     diag_err_t err;
 } diag_data_t;
 
@@ -42,8 +53,19 @@ static diag_err_t diag_set_timer(char const * key, char const * val)
     }
 }
 
+
+/**
+ * Handler to process a received diagnosis command. 
+ */
 static diag_err_t diag_handle_input()
 {
+    /* Check if we already had an error (e.g. input overflow error). */
+    if(diag_data.err != diag_err_ok)
+    {
+        return diag_data.err;
+    }
+
+    /* find separator character in request */
     char * const sep = index(diag_data.req_buf, DIAG_SEPARATOR);
     if(sep == NULL)
     {
@@ -68,6 +90,10 @@ static diag_err_t diag_handle_input()
     return diag_err_ok;
 }
 
+
+/**
+ * Main method of diagnosis component. 
+ */
 void diag_main()
 {
     while(Serial.available() > 0)
@@ -82,7 +108,8 @@ void diag_main()
 
             Serial.print(F("RESPONSE=0x"));
             Serial.println(result, HEX);
-            
+
+            /* reset request buffer */
             diag_data.req_idx = 0;
             diag_data.req_buf[0] = '\0';
         }
@@ -90,7 +117,7 @@ void diag_main()
         {
             if(diag_data.req_idx >= DIAG_REQ_BUF_LEN - 2)
             {
-                diag_data.err = diag_err_input;
+                diag_data.err = diag_err_input_length;
             }
             else
             {
@@ -101,5 +128,5 @@ void diag_main()
                 diag_data.req_buf[diag_data.req_idx] = '\0';
             }
         }
-    }   
+    }
 }
