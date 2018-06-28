@@ -10,6 +10,8 @@
 #include "system.h"
 #include "sensor.h"
 #include "diag.h"
+#include "uptime.h"
+
 
 /**
  * Arduino style setup function. This is called once and initializes the system.
@@ -35,6 +37,7 @@ void loop()
 {
     system_main();
     diag_main();
+    uptime_main();
 
     delay(10);
 }

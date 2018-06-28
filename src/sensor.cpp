@@ -3,6 +3,8 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 
+#include "uptime.h"
+
 #define SEALEVELPRESSURE_HPA (1013.25)
 
 #undef BME280_ADDRESS
@@ -52,14 +54,17 @@ void sensor_init(void)
 
 void sensor_print_values()
 {
-    Serial.print("Temperature = ");
+    Serial.print(F("Uptime = "));
+    Serial.print(uptime_get_seconds());
+    Serial.println(F("s"));
+    
+    Serial.print(F("Temperature = "));
     Serial.print(bme.readTemperature());
-    Serial.println(" *C");
+    Serial.println(F(" *C"));
 
-    Serial.print("Pressure = ");
-
-    Serial.print(bme.readPressure() / 100.0F);
-    Serial.println(" hPa");
+    Serial.print(F("Pressure = "));
+    Serial.print(bme.readPressure() / 100.0f);
+    Serial.println(F("hPa"));
 
     //Serial.print("Approx. Altitude = ");
     //Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA));
@@ -67,7 +72,7 @@ void sensor_print_values()
 
     Serial.print("Humidity = ");
     Serial.print(bme.readHumidity());
-    Serial.println(" %");
+    Serial.println("%");
 
     Serial.println();
 }
