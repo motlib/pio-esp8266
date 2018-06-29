@@ -5,13 +5,10 @@
 
 #include "uptime.h"
 
-#define SEALEVELPRESSURE_HPA (1013.25)
-
-#undef BME280_ADDRESS
 #define BME280_MY_ADDRESS (0x76)
 
 
-Adafruit_BME280 bme; // I2C
+static Adafruit_BME280 bme; // I2C
 
 
 void sensor_init(void)
@@ -54,9 +51,11 @@ void sensor_init(void)
 
 void sensor_print_values()
 {
+#ifdef SENSOR_PRINT_UPTIME
     Serial.print(F("Uptime = "));
     Serial.print(uptime_get_seconds());
     Serial.println(F("s"));
+#endif /* SENSOR_PRINT_UPTIME */
     
     Serial.print(F("Temperature = "));
     Serial.print(bme.readTemperature());
@@ -65,10 +64,6 @@ void sensor_print_values()
     Serial.print(F("Pressure = "));
     Serial.print(bme.readPressure() / 100.0f);
     Serial.println(F("hPa"));
-
-    //Serial.print("Approx. Altitude = ");
-    //Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA));
-    //Serial.println(" m");
 
     Serial.print("Humidity = ");
     Serial.print(bme.readHumidity());
