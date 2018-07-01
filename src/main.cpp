@@ -21,8 +21,8 @@ void setup()
 {
     Serial.begin(115200);
 
-    //cfg_init();
-    //cfg_load();
+    cfg_init();
+    cfg_load();
 
     sensor_init();
 }
