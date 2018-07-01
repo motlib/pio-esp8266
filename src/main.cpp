@@ -11,6 +11,7 @@
 #include "sensor.h"
 #include "diag/diag.h"
 #include "uptime.h"
+#include "cfg.h"
 
 
 /**
@@ -19,7 +20,9 @@
 void setup()
 {
     Serial.begin(115200);
-    Serial.println(F("BME280 test"));
+
+    //cfg_init();
+    //cfg_load();
 
     sensor_init();
 }

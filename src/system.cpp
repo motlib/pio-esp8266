@@ -4,6 +4,8 @@
 #include "sensor.h"
 #include <stdint.h>
 
+#include "cfg.h"
+
 
 typedef enum
 {
@@ -21,14 +23,6 @@ typedef struct
     bool reset_request;
 } sys_data_t;
 
-
-/**
- * Configuration of the system component.
- */
-sys_config_t sys_config =
-{
-    .sens_cycle_time = 100,
-};
 
 
 /**
@@ -50,6 +44,8 @@ static sys_data_t sys_data =
 static sys_state_t system_do_init()
 {
     /* currently nothing to do. Proceed to IDLE. */
+
+    Serial.println(F("BME280"));
     
     return STATE_IDLE;
 }
@@ -76,7 +72,7 @@ static sys_state_t system_do_idle()
     }
     else
     {
-        sys_data.sens_timer = sys_config.sens_cycle_time;
+        sys_data.sens_timer = cfg.sens_cycle_time;
         
         return STATE_READ;
     }
