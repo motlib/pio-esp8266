@@ -81,13 +81,14 @@ static diag_err_t diag_do_reset(char const * const key, char * const val, diag_m
 
 
 /**
- * Diagnostic service implementation to handle the sensor cycle timer.
+ * Diagnostic service implementation to load the system configuration from
+ * eeprom.
  */
 static diag_err_t diag_load_cfg(char const * key, char * const val, diag_mode_t mode)
 {
     if(mode == diag_mode_write)
     {
-        /* TODO: report error. */
+        /* TODO: check / report error. */
         cfg_load();
 
         return diag_err_ok;
@@ -99,8 +100,9 @@ static diag_err_t diag_load_cfg(char const * key, char * const val, diag_mode_t 
 
 }
 
+
 /**
- * Diagnostic service implementation to handle the sensor cycle timer.
+ * Diagnostic service implementation to save the system configuration to eeprom.
  */
 static diag_err_t diag_save_cfg(char const * key, char * const val, diag_mode_t mode)
 {
@@ -117,6 +119,38 @@ static diag_err_t diag_save_cfg(char const * key, char * const val, diag_mode_t 
     
 }
 
+static diag_err_t diag_handle_string(char const * key, char * const val, diag_mode_t mode, char* strvar, size_t len)
+{
+    if(mode == diag_mode_read)
+    {
+        snprintf(val, DIAG_VAL_BUF_LEN, "%s", strvar);
+
+        return diag_err_ok;
+    }
+    else if(mode == diag_mode_write)
+    {
+        strncpy(strvar, val, len);
+        /* ensure that string is 0 terminated */
+        strvar[len - 1] = '\0';
+
+        return diag_err_ok;
+    }
+    else
+    {
+        return diag_err_mode_unsupported;
+    }    
+}
+
+static diag_err_t diag_wifi_name(char const * key, char * const val, diag_mode_t mode)
+{
+    return diag_handle_string(key, val, mode, cfg.wifi, CFG_WIFI_NAME_LEN);
+} 
+
+static diag_err_t diag_wifi_pwd(char const * key, char * const val, diag_mode_t mode)
+{
+    return diag_handle_string(key, val, mode, cfg.password, CFG_WIFI_PWD_LEN);
+} 
+
 
 /* Table mapping service keys to service implementations. */
 diag_tbl_t diag_service_tbl[] =
@@ -126,5 +160,7 @@ diag_tbl_t diag_service_tbl[] =
     { "uptime", diag_uptime },
     { "cfgload", diag_load_cfg },
     { "cfgsave", diag_save_cfg },
+    { "wifinam", diag_wifi_name },
+    { "wifipwd", diag_wifi_pwd },
     { {'\0'}, NULL },
 };

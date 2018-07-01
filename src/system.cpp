@@ -10,6 +10,7 @@
 typedef enum
 {
     STATE_INIT,
+    STATE_WIFI_CONNECT,
     STATE_IDLE,
     STATE_READ,
     STATE_RESET 
@@ -41,12 +42,19 @@ static sys_data_t sys_data =
  *
  * Initialize the system and then proceed to IDLE state.
  */
-static sys_state_t system_do_init()
+static sys_state_t system_do_init(void)
 {
     /* currently nothing to do. Proceed to IDLE. */
 
     Serial.println(F("BME280"));
     
+    return STATE_IDLE;
+}
+
+
+static sys_state_t system_do_wifi_connect(void)
+{
+
     return STATE_IDLE;
 }
 

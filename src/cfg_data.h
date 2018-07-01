@@ -5,11 +5,15 @@
 #include <Arduino.h>
 #include <stdint.h>
 
+
+#define CFG_WIFI_NAME_LEN 32
+#define CFG_WIFI_PWD_LEN 32
+
 typedef struct
 {
     /* Network config */
-    char wifi[32];
-    char password[32];
+    char wifi[CFG_WIFI_NAME_LEN];
+    char password[CFG_WIFI_PWD_LEN];
 
     /* sensor cycle time */
     uint16_t sens_cycle_time;

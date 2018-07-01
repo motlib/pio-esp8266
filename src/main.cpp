@@ -21,6 +21,7 @@ void setup()
 {
     Serial.begin(115200);
 
+    /* Initialize and load the configuration. */
     cfg_init();
     cfg_load();
 
