@@ -3,7 +3,7 @@
 #include "system.h"
 #include "diag.h"
 #include "uptime.h"
-#include "cfg.h"
+#include "cfg/cfg.h"
 
 /* for atoi */
 #include <stdlib.h>

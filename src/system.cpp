@@ -5,7 +5,7 @@
 
 #include "sensor.h"
 #include "utils/sm.h"
-#include "cfg.h"
+#include "cfg/cfg.h"
 
 
 #define STATE_INIT 0
@@ -20,7 +20,6 @@ typedef struct
     uint16_t sens_timer;
     bool reset_request;
 } sys_data_t;
-
 
 
 /**

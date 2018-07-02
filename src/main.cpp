@@ -11,7 +11,7 @@
 #include "sensor.h"
 #include "diag/diag.h"
 #include "uptime.h"
-#include "cfg.h"
+#include "cfg/cfg.h"
 
 
 /**
