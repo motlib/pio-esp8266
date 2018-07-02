@@ -1,27 +1,49 @@
-#include "cfg.h"
-
+/**
+ * @file
+ *
+ * Handler for storing and loading the system configuration. The configuration
+ * is stored in EEPROM (emulation).
+ */
 
 #include <EEPROM.h>
 #include <stdint.h>
 
+#include "cfg.h"
 #include "utils/crc.h"
 
 
+/**
+ * Size of the eeprom area. There is no real eeprom available on ESP8266, but
+ * data is stored in one flash page.
+ */
 #define CFG_EEP_SIZE 512
 
+
+/**
+ * Address where to store the configuration in EEPROM. As we only have one
+ * configuration struct, it's located at address 0.
+ */
 #define CFG_ADDR 0
 
 
-
-
-
-
+/**
+ * Initialize the configuration handler.
+ */
 void cfg_init(void)
 {
     EEPROM.begin(CFG_EEP_SIZE);
 }
 
 
+/**
+ * Load the configuration from EEPROM to the RAM shadow.
+ *
+ * After load, the crc16 checksum of the configuration is checked. If it is not
+ * valid, default values from ROM are used instead.
+ *
+ * @retval CFG_LOAD_OK if the configuration has been loaded from EEPROM.
+ * @retval CFG_LOAD_CRC_ERROR if the default values from ROM have been used.
+ */
 uint8_t cfg_load(void)
 {
     EEPROM.get(CFG_ADDR, cfg);
@@ -40,6 +62,12 @@ uint8_t cfg_load(void)
 }
 
 
+/**
+ * Store the configuration to EEPROM. 
+ *
+ * This calculates the crc16 over the configuration data and then writes to
+ * EEPROM.
+ */
 void cfg_save(void)
 {
     /* Update crc before writing to eeprom */
