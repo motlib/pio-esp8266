@@ -1,15 +1,16 @@
 
 #include "wifi.h"
-#include "statemachine.h"
+#include "utils/sm.h"
 
 #include <stdint.h>
+
 
 #define WIFI_CONNECT_TIMEOUT 1000
 
 /* States */
-#define WIFI_OFFLINE 0
-#define WIFI_GO_ONLINE 1
-#define WIFI_ONLINE 2
+#define WIFI_OFFLINE 0u
+#define WIFI_GO_ONLINE 1u
+#define WIFI_ONLINE 2u
 
 
 typedef struct
@@ -66,24 +67,16 @@ static sm_state_t wifi_do_online(void)
     return WIFI_ONLINE;
 }
 
-sm_tbl_entry_t wifi_sm_tbl[] = 
+static sm_tbl_entry_t wifi_sm_tbl[] = 
 {
-    { .do_fct = wifi_do_offline, .entry_fct = NULL, .exit_fct = NULL },
-    { .do_fct = wifi_do_go_online, .entry_fct = NULL, .exit_fct = NULL },
-    { .do_fct = wifi_do_online, .entry_fct = NULL, .exit_fct = NULL },
-    /* table end marker */
-    { .do_fct = NULL }, 
+    SM_TBL_ENTRY( wifi_do_offline, NULL, NULL),
+    SM_TBL_ENTRY(wifi_do_go_online, NULL, NULL),
+    SM_TBL_ENTRY(wifi_do_online, NULL, NULL),
 };
 
-sm_cfg_t wifi_sm_cfg =
-{
-    .init_state = WIFI_OFFLINE,
-    .tbl = wifi_sm_tbl,
-};
+static sm_cfg_t wifi_sm_cfg = SM_DEF_CFG(WIFI_OFFLINE, wifi_sm_tbl);
 
-sm_data_t wifi_sm_data = {
-    .state = WIFI_OFFLINE,
-};
+static sm_data_t wifi_sm_data = SM_DEF_DATA();
 
 void wifi_main(void)
 {

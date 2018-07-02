@@ -1,25 +1,22 @@
 #include "system.h"
 
 #include <Arduino.h>
-#include "sensor.h"
 #include <stdint.h>
 
+#include "sensor.h"
+#include "utils/sm.h"
 #include "cfg.h"
 
 
-typedef enum
-{
-    STATE_INIT,
-    STATE_WIFI_CONNECT,
-    STATE_IDLE,
-    STATE_READ,
-    STATE_RESET 
-} sys_state_t;
+#define STATE_INIT 0
+#define STATE_WIFI_CONNECT 1
+#define STATE_IDLE 2
+#define STATE_READ 3
+#define STATE_RESET 4
 
 
 typedef struct
 {
-    sys_state_t state;
     uint16_t sens_timer;
     bool reset_request;
 } sys_data_t;
@@ -31,7 +28,6 @@ typedef struct
  */
 static sys_data_t sys_data =
 {
-    .state = STATE_INIT,
     .sens_timer = 0,
     .reset_request = false,
 };
@@ -42,7 +38,7 @@ static sys_data_t sys_data =
  *
  * Initialize the system and then proceed to IDLE state.
  */
-static sys_state_t system_do_init(void)
+static sm_state_t sys_do_init(void)
 {
     /* currently nothing to do. Proceed to IDLE. */
 
@@ -52,7 +48,7 @@ static sys_state_t system_do_init(void)
 }
 
 
-static sys_state_t system_do_wifi_connect(void)
+static sm_state_t sys_do_wifi_connect(void)
 {
 
     return STATE_IDLE;
@@ -64,7 +60,7 @@ static sys_state_t system_do_wifi_connect(void)
  * 
  * Do the timekeeping for changing to READ state regularly. 
  */
-static sys_state_t system_do_idle()
+static sm_state_t sys_do_idle()
 {
     /* Reset request has highest priority */
     if(sys_data.reset_request == true)
@@ -92,7 +88,7 @@ static sys_state_t system_do_idle()
  *
  * Sample the sensor, print the values and return to IDLE state.
  */
-static sys_state_t system_do_read()
+static sm_state_t sys_do_read()
 {
     sensor_print_values();
     
@@ -100,7 +96,7 @@ static sys_state_t system_do_read()
 }
 
 
-static sys_state_t system_do_reset()
+static sm_state_t sys_do_reset()
 {
     ESP.reset();
 
@@ -110,6 +106,20 @@ static sys_state_t system_do_reset()
 }
 
 
+static sm_tbl_entry_t sys_sm_tbl[] = {
+    SM_TBL_ENTRY(sys_do_init, NULL, NULL),
+    SM_TBL_ENTRY(sys_do_idle, NULL, NULL),
+    SM_TBL_ENTRY(sys_do_read, NULL, NULL),
+    SM_TBL_ENTRY(sys_do_reset, NULL, NULL),
+};
+
+
+static sm_cfg_t sys_sm_cfg = SM_DEF_CFG(STATE_INIT, sys_sm_tbl);
+
+static sm_data_t sys_sm_data = SM_DEF_DATA();
+
+
+
 /**
  * System component main function.
  *
@@ -117,30 +127,10 @@ static sys_state_t system_do_reset()
  */
 void system_main(void)
 {
-    switch(sys_data.state)
-    {
-    case STATE_INIT:
-        sys_data.state = system_do_init();
-        break;
-        
-    case STATE_IDLE:
-        sys_data.state = system_do_idle();
-        break;
-        
-    case STATE_READ:
-        sys_data.state = system_do_read();
-        break;
-
-    case STATE_RESET:
-        sys_data.state = system_do_reset();
-        break;
-        
-    default:
-        sys_data.state = STATE_INIT;
-        break;
-    }
+    sm_step(&sys_sm_cfg, &sys_sm_data);    
 }
-
+    
+    
 void system_request_reset(void)
 {
     sys_data.reset_request = true;
