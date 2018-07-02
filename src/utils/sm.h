@@ -7,14 +7,21 @@
 #include <stddef.h>
 
 
-/* Macro to calculate the number of states in the state table. */
+/**
+ * Helper macro to calculate the number of states in the state table.
+ */
 #define SM_NUM_STATES(tbl) (sizeof(tbl) / sizeof(tbl[0]))
 
 
+/**
+ * Helper macro to define a state table entry.
+ */
 #define SM_TBL_ENTRY(DO, ENTRY, EXIT) \
     { .do_fct = (DO), .entry_fct = (ENTRY), .exit_fct = (EXIT) }
 
-/* Helper to initialize a statemachine config structure. */
+/**
+ * Helper macro to initialize a statemachine config structure.
+ */
 #define SM_DEF_CFG(INIT_STATE, TBL)             \
     {                                           \
         .init_state = INIT_STATE,               \
@@ -22,7 +29,9 @@
         .tbl = TBL,                             \
     }
 
-/** Helper to initialize the statemachine data structure. */
+/**
+ * Helper macro to initialize the statemachine data structure.
+ */
 #define SM_DEF_DATA()                           \
     {                                           \
         .state = 0,                             \
