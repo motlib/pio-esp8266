@@ -10,7 +10,7 @@
 
 #include "cfg.h"
 #include "utils/crc.h"
-
+#include "utils/det.h"
 
 /**
  * Size of the eeprom area. There is no real eeprom available on ESP8266, but
@@ -46,6 +46,8 @@ void cfg_init(void)
  */
 uint8_t cfg_load(void)
 {
+    DET_ASSERT(sizeof(cfg_data_t) < CFG_EEP_SIZE);
+
     EEPROM.get(CFG_ADDR, cfg);
 
     uint16_t crc = crc16((uint8_t*)&cfg, sizeof(cfg_data_t) - 2);

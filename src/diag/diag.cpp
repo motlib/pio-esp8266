@@ -7,6 +7,7 @@
  * Commands and responses are always in the format "key=value".
  */
 #include "diag.h"
+#include "diag_cfg.h"
 
 #include <Arduino.h>
 #include <string.h>
@@ -14,9 +15,6 @@
 #include "system.h"
 #include "diag_services.h"
 
-
-#define DIAG_WRITE_CHAR '='
-#define DIAG_READ_CHAR '?'
 
 typedef struct
 {

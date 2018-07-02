@@ -141,15 +141,41 @@ static diag_err_t diag_handle_string(char const * key, char * const val, diag_mo
     }    
 }
 
+
+/**
+ * Diagnostic service implementation to read and write wifi name. 
+ */
 static diag_err_t diag_wifi_name(char const * key, char * const val, diag_mode_t mode)
 {
     return diag_handle_string(key, val, mode, cfg.wifi, CFG_WIFI_NAME_LEN);
 } 
 
+
+/**
+ * Diagnostic service implementation to write the wifi password.
+ */
 static diag_err_t diag_wifi_pwd(char const * key, char * const val, diag_mode_t mode)
 {
-    return diag_handle_string(key, val, mode, cfg.password, CFG_WIFI_PWD_LEN);
+    if(mode == diag_mode_write)
+    {
+        return diag_handle_string(key, val, mode, cfg.password, CFG_WIFI_PWD_LEN);
+    }
+    else
+    {
+        return diag_err_mode_unsupported;
+    }
 } 
+
+
+/**
+ * Diagnostic service implementation to read and write the node name.
+ */
+static diag_err_t diag_node_name(char const * key, char * const val, diag_mode_t mode)
+{
+    return diag_handle_string(key, val, mode, cfg.node_name, CFG_NODE_NAME_LEN);
+} 
+
+
 
 
 /* Table mapping service keys to service implementations. */
@@ -162,5 +188,6 @@ diag_tbl_t diag_service_tbl[] =
     { "cfgsave", diag_save_cfg },
     { "wifinam", diag_wifi_name },
     { "wifipwd", diag_wifi_pwd },
+    { "nodename", diag_node_name },
     { {'\0'}, NULL },
 };

@@ -2,7 +2,7 @@
 #define DIAG_SERVICES_H
 
 #include "diag.h"
-
+#include "diag_cfg.h"
 
 /**
  * Diagnostic service return values (error codes).
