@@ -1,9 +1,10 @@
 
 #include "wifi.h"
 #include "utils/sm.h"
+#include "cfg/cfg.h"
 
 #include <stdint.h>
-
+#include <ESP8266WiFi.h>
 
 #define WIFI_CONNECT_TIMEOUT 1000
 
@@ -11,6 +12,10 @@
 #define WIFI_OFFLINE 0u
 #define WIFI_GO_ONLINE 1u
 #define WIFI_ONLINE 2u
+
+
+#define WIFI_STATE_OFFLINE 0
+#define WIFI_STATE_ONLINE 1
 
 
 typedef struct
@@ -24,7 +29,7 @@ typedef struct
 
 
 static wifi_data_t wifi_data = {
-    .request = 0,
+    .request = WIFI_STATE_OFFLINE,
     
     .timeout = 0,
 };
@@ -39,7 +44,6 @@ static sm_state_t wifi_do_offline(void)
 {
     if(wifi_data.request == 1)
     {
-        wifi_data.timeout = WIFI_CONNECT_TIMEOUT;
         return WIFI_GO_ONLINE;
     }
     else
@@ -48,29 +52,63 @@ static sm_state_t wifi_do_offline(void)
     }
 }
 
+static void wifi_entry_go_online(void)
+{
+    wifi_data.timeout = WIFI_CONNECT_TIMEOUT;
+
+    /* Reconnection will be handled by this statemachine. */
+    WiFi.setAutoReconnect(false);
+    
+    WiFi.begin(cfg.wifi, cfg.password);
+}
+
 static sm_state_t wifi_do_go_online(void)
 {
-    //WiFi.begin(ssid, password);
-    //
-    //while (WiFi.status() != WL_CONNECTED) {
-    //
-    //    delay(1000);
-    //    Serial.println("Connecting..");
-    //    
-    //}
+    if(wifi_data.timeout == 0)
+    {
+        return WIFI_OFFLINE;
+    }
+    else
+    {
+        --wifi_data.timeout;
 
-    return WIFI_ONLINE;
+        if(WiFi.status() == WL_CONNECTED)
+        {
+            return WIFI_ONLINE;
+        }
+        else
+        {
+            return WIFI_GO_ONLINE;
+        }
+    }
 }
 
 static sm_state_t wifi_do_online(void)
 {
-    return WIFI_ONLINE;
+    if(!wifi_data.request)
+    {
+        WiFi.disconnect();
+        
+        return WIFI_OFFLINE;
+    }
+    else
+    {
+
+        if(WiFi.status() != WL_CONNECTED)
+        {
+            return WIFI_GO_ONLINE;
+        }
+        else
+        {
+            return WIFI_ONLINE;
+        }
+    }
 }
 
 static sm_tbl_entry_t wifi_sm_tbl[] = 
 {
-    SM_TBL_ENTRY( wifi_do_offline, NULL, NULL),
-    SM_TBL_ENTRY(wifi_do_go_online, NULL, NULL),
+    SM_TBL_ENTRY(wifi_do_offline, NULL, NULL),
+    SM_TBL_ENTRY(wifi_do_go_online, wifi_entry_go_online, NULL),
     SM_TBL_ENTRY(wifi_do_online, NULL, NULL),
 };
 
@@ -82,3 +120,4 @@ void wifi_main(void)
 {
     sm_step(&wifi_sm_cfg, &wifi_sm_data);
 }
+

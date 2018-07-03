@@ -29,9 +29,14 @@ typedef enum
 } diag_err_t;
 
 
+/**
+ * Diagnostic service mode, i.e. read or write service.
+ */
 typedef enum
 {
+    /** Diagnostic service to read a value from the device. */
     diag_mode_read,
+    /** Diagnostic service to write a value to the device. */
     diag_mode_write,
 } diag_mode_t;
 
