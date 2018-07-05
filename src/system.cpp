@@ -6,13 +6,12 @@
 #include "sensor.h"
 #include "utils/sm.h"
 #include "cfg/cfg.h"
-
+#include "utils/det.h"
 
 #define STATE_INIT 0
-#define STATE_WIFI_CONNECT 1
-#define STATE_IDLE 2
-#define STATE_READ 3
-#define STATE_RESET 4
+#define STATE_IDLE 1
+#define STATE_READ 2
+#define STATE_RESET 3
 
 
 typedef struct
@@ -43,13 +42,6 @@ static sm_state_t sys_do_init(void)
 
     Serial.println(F("BME280"));
     
-    return STATE_IDLE;
-}
-
-
-static sm_state_t sys_do_wifi_connect(void)
-{
-
     return STATE_IDLE;
 }
 
@@ -101,6 +93,8 @@ static sm_state_t sys_do_reset()
 
     /* This should never be reached. If still reset is not possible, we will go
      * through reset. */
+    DET_ASSERT(0);
+    
     return STATE_INIT;
 }
 

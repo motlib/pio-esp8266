@@ -4,6 +4,7 @@
 #include "diag.h"
 #include "uptime.h"
 #include "cfg/cfg.h"
+#include "wifi.h"
 
 /* for atoi */
 #include <stdlib.h>
@@ -175,6 +176,38 @@ static diag_err_t diag_node_name(char const * key, char * const val, diag_mode_t
     return diag_handle_string(key, val, mode, cfg.node_name, CFG_NODE_NAME_LEN);
 } 
 
+/**
+ * Diagnostic service implementation to handle the sensor cycle timer.
+ */
+static diag_err_t diag_wifi_state(char const * key, char * const val, diag_mode_t mode)
+{
+    if(mode == diag_mode_write)
+    {
+        int state = atoi(val);
+
+        if((state == WIFI_OFFLINE) || (state == WIFI_ONLINE))
+        {
+            wifi_request_state(state);
+
+            return diag_err_ok;
+        }
+        else
+        {
+            return diag_err_value;
+        }
+    }
+    else if(mode == diag_mode_read)
+    {
+        snprintf(val, DIAG_VAL_BUF_LEN, "%i", wifi_get_state());
+
+        return diag_err_ok;
+    }
+    else
+    {
+        return diag_err_mode_unsupported;
+    }
+}
+
 
 
 
@@ -189,5 +222,6 @@ diag_tbl_t diag_service_tbl[] =
     { "wifinam", diag_wifi_name },
     { "wifipwd", diag_wifi_pwd },
     { "nodename", diag_node_name },
+    { "wifi", diag_wifi_state },
     { {'\0'}, NULL },
 };

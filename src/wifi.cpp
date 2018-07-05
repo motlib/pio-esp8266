@@ -8,14 +8,7 @@
 
 #define WIFI_CONNECT_TIMEOUT 1000
 
-/* States */
-#define WIFI_OFFLINE 0u
-#define WIFI_GO_ONLINE 1u
-#define WIFI_ONLINE 2u
 
-
-#define WIFI_STATE_OFFLINE 0
-#define WIFI_STATE_ONLINE 1
 
 
 typedef struct
@@ -23,22 +16,21 @@ typedef struct
     /** Request to go online. */
     uint8_t request;
 
+    /* The current wifi connection state. */
+    uint8_t wifi_state;
+
     /** Wifi connect timeout. */
     uint16_t timeout;
 } wifi_data_t;
 
 
 static wifi_data_t wifi_data = {
-    .request = WIFI_STATE_OFFLINE,
-    
+    .request = WIFI_OFFLINE,
+    .wifi_state = WIFI_OFFLINE,
     .timeout = 0,
 };
 
 
-void wifi_init(void)
-{
-    
-}
     
 static sm_state_t wifi_do_offline(void)
 {
@@ -54,6 +46,7 @@ static sm_state_t wifi_do_offline(void)
 
 static void wifi_entry_go_online(void)
 {
+    /* Rewind the timeout counter. */
     wifi_data.timeout = WIFI_CONNECT_TIMEOUT;
 
     /* Reconnection will be handled by this statemachine. */
@@ -121,3 +114,13 @@ void wifi_main(void)
     sm_step(&wifi_sm_cfg, &wifi_sm_data);
 }
 
+
+uint8_t wifi_get_state(void)
+{
+    return wifi_data.wifi_state;
+}
+
+void wifi_request_state(uint8_t state)
+{
+    wifi_data.request = state;
+}
