@@ -21,6 +21,7 @@ void sm_step(sm_cfg_t const * const sm_cfg, sm_data_t * const sm_data)
     if(sm_data->needs_init)
     {
         sm_data->state = sm_cfg->init_state;
+        sm_data->needs_init = 0;
     }
     
     /* Assert here, to be sure, state was not modified externally to the
