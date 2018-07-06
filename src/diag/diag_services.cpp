@@ -208,13 +208,45 @@ static diag_err_t diag_wifi_state(char const * key, char * const val, diag_mode_
     }
 }
 
+/**
+ * Diagnostic service implementation to handle the sensor cycle timer.
+ */
+static diag_err_t diag_sensor_print(char const * key, char * const val, diag_mode_t mode)
+{
+    if(mode == diag_mode_write)
+    {
+        int state = atoi(val);
+
+        if((state == 0) || (state == 1))
+        {
+            cfg.sens_print = state;
+
+            return diag_err_ok;
+        }
+        else
+        {
+            return diag_err_value;
+        }
+    }
+    else if(mode == diag_mode_read)
+    {
+        snprintf(val, DIAG_VAL_BUF_LEN, "%i", cfg.sens_print);
+
+        return diag_err_ok;
+    }
+    else
+    {
+        return diag_err_mode_unsupported;
+    }
+}
 
 
 
 /* Table mapping service keys to service implementations. */
 diag_tbl_t diag_service_tbl[] =
 {
-    { "time", diag_sensor_timer },
+    { "stime", diag_sensor_timer },
+    { "sprint", diag_sensor_print },
     { "reset", diag_do_reset },
     { "uptime", diag_uptime },
     { "cfgload", diag_load_cfg },

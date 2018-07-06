@@ -12,7 +12,7 @@
 #include "diag/diag.h"
 #include "uptime.h"
 #include "cfg/cfg.h"
-
+#include "wifi.h"
 
 /**
  * Arduino style setup function. This is called once and initializes the system.
@@ -21,10 +21,15 @@ void setup()
 {
     Serial.begin(115200);
 
+    Serial.print(F("i:booting..."));
+    
     /* Initialize and load the configuration. */
     cfg_init();
-    cfg_load();
-
+    
+    uint8_t err = cfg_load();
+    Serial.print(F("i:cfg_load="));
+    Serial.println(err);
+    
     sensor_init();
 }
 
@@ -42,6 +47,7 @@ void loop()
     system_main();
     diag_main();
     uptime_main();
+    wifi_main();
 
     delay(10);
 }

@@ -35,8 +35,9 @@ typedef struct
 
     /* sensor cycle time */
     uint16_t sens_cycle_time;
-
-
+    /* print sensor values to serial interface. */
+    uint8_t sens_print;
+    //uint8_t dummy1;
     /* Checksum protection of the eeprom data. */
     uint16_t crc16;
 } cfg_data_t;

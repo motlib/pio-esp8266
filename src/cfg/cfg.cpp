@@ -55,11 +55,13 @@ uint8_t cfg_load(void)
     /* If the crc does not match, we copy the defaults. */
     if(crc != cfg.crc16)
     {
-        cfg = cfg_defaults;
-
+        /* Attention: normal memcpy will fail of the data is not aligned for 32
+         * bit access. */
+        memcpy_P(&cfg, &cfg_defaults, sizeof(cfg_data_t));
+        
         return CFG_LOAD_CRC_ERROR;
     }
-
+    
     return CFG_LOAD_OK;
 }
 

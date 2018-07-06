@@ -68,7 +68,7 @@ static sm_state_t sys_do_idle()
     else
     {
         sys_data.sens_timer = cfg.sens_cycle_time;
-        
+
         return STATE_READ;
     }
 }
@@ -81,7 +81,10 @@ static sm_state_t sys_do_idle()
  */
 static sm_state_t sys_do_read()
 {
-    sensor_print_values();
+    if(cfg.sens_print != 0)
+    {
+        sensor_print_values();
+    }
     
     return STATE_IDLE;
 }
@@ -99,7 +102,8 @@ static sm_state_t sys_do_reset()
 }
 
 
-static sm_tbl_entry_t sys_sm_tbl[] = {
+static sm_tbl_entry_t sys_sm_tbl[] =
+{
     SM_TBL_ENTRY(sys_do_init, NULL, NULL),
     SM_TBL_ENTRY(sys_do_idle, NULL, NULL),
     SM_TBL_ENTRY(sys_do_read, NULL, NULL),

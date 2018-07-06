@@ -34,7 +34,7 @@ static wifi_data_t wifi_data = {
     
 static sm_state_t wifi_do_offline(void)
 {
-    if(wifi_data.request == 1)
+    if(wifi_data.request == WIFI_ONLINE)
     {
         return WIFI_GO_ONLINE;
     }
@@ -53,6 +53,7 @@ static void wifi_entry_go_online(void)
     WiFi.setAutoReconnect(false);
     
     WiFi.begin(cfg.wifi, cfg.password);
+    Serial.println(F("i:wifi=connecting"));
 }
 
 static sm_state_t wifi_do_go_online(void)
@@ -76,9 +77,16 @@ static sm_state_t wifi_do_go_online(void)
     }
 }
 
+
+static void wifi_entry_online(void)
+{
+    Serial.println(F("i:wifi=connected"));
+}
+
+
 static sm_state_t wifi_do_online(void)
 {
-    if(!wifi_data.request)
+    if(wifi_data.request == WIFI_OFFLINE)
     {
         WiFi.disconnect();
         
@@ -102,12 +110,13 @@ static sm_tbl_entry_t wifi_sm_tbl[] =
 {
     SM_TBL_ENTRY(wifi_do_offline, NULL, NULL),
     SM_TBL_ENTRY(wifi_do_go_online, wifi_entry_go_online, NULL),
-    SM_TBL_ENTRY(wifi_do_online, NULL, NULL),
+    SM_TBL_ENTRY(wifi_do_online, wifi_entry_online, NULL),
 };
 
 static sm_cfg_t wifi_sm_cfg = SM_DEF_CFG(WIFI_OFFLINE, wifi_sm_tbl);
 
 static sm_data_t wifi_sm_data = SM_DEF_DATA();
+
 
 void wifi_main(void)
 {
