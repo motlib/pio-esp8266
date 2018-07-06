@@ -7,12 +7,15 @@
 
 #include <Arduino.h>
 
+
 #include "system.h"
 #include "sensor.h"
 #include "diag/diag.h"
 #include "uptime.h"
 #include "cfg/cfg.h"
 #include "wifi.h"
+#include "httpsrv.h"
+
 
 /**
  * Arduino style setup function. This is called once and initializes the system.
@@ -31,6 +34,8 @@ void setup()
     Serial.println(err);
     
     sensor_init();
+
+    httpsrv_init();
 }
 
 
@@ -48,6 +53,7 @@ void loop()
     diag_main();
     uptime_main();
     wifi_main();
+    httpsrv_main();
 
     delay(10);
 }

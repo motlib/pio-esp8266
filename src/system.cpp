@@ -81,6 +81,7 @@ static sm_state_t sys_do_idle()
  */
 static sm_state_t sys_do_read()
 {
+    sensor_sample();
     if(cfg.sens_print != 0)
     {
         sensor_print_values();

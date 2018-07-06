@@ -8,7 +8,18 @@
 #define BME280_MY_ADDRESS (0x76)
 
 
+typedef struct {
+    float temp;
+    float pres;
+    float hum;
+} sensor_data_t;
+
+static sensor_data_t sensor_data;
+
+
 static Adafruit_BME280 bme; // I2C
+
+
 
 
 void sensor_init(void)
@@ -48,6 +59,14 @@ void sensor_init(void)
 
 }
 
+void sensor_sample()
+{
+    sensor_data.temp = bme.readTemperature();
+    sensor_data.pres = bme.readPressure() / 100.0f;
+    sensor_data.hum = bme.readHumidity();
+}
+
+
 
 void sensor_print_values()
 {
@@ -57,18 +76,32 @@ void sensor_print_values()
     Serial.println(F("s"));
 #endif /* SENSOR_PRINT_UPTIME */
     
-    Serial.print(F("Temperature = "));
-    Serial.print(bme.readTemperature());
+    Serial.print(F("temperature="));
+    Serial.print(sensor_data.temp);
     Serial.println(F(" *C"));
 
-    Serial.print(F("Pressure = "));
-    Serial.print(bme.readPressure() / 100.0f);
+    Serial.print(F("pressure="));
+    Serial.print(sensor_data.pres);
     Serial.println(F("hPa"));
 
-    Serial.print("Humidity = ");
-    Serial.print(bme.readHumidity());
+    Serial.print("humidity = ");
+    Serial.print(sensor_data.hum);
     Serial.println("%");
 
     Serial.println();
 }
 
+float sensor_get_temp(void)
+{
+    return sensor_data.temp;
+}
+
+float sensor_get_pres(void)
+{
+    return sensor_data.pres;
+}
+
+float sensor_get_hum(void)
+{
+    return sensor_data.hum;
+}

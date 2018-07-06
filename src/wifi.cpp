@@ -164,6 +164,11 @@ static sm_cfg_t wifi_sm_cfg = SM_DEF_CFG(WIFI_OFFLINE, wifi_sm_tbl);
 static sm_data_t wifi_sm_data = SM_DEF_DATA();
 
 
+void wifi_init(void)
+{
+    WiFi.setAutoConnect(false);
+}
+
 /**
  * Main function for the wifi handler.
  */
