@@ -12,6 +12,8 @@
 #include "cfg/cfg.h"
 #include "utils/det.h"
 
+#include "diag/diag_services.h"
+
 #include <stdint.h>
 #include <ESP8266WiFi.h>
 
@@ -185,4 +187,33 @@ uint8_t wifi_get_state(void)
 void wifi_request_state(uint8_t state)
 {
     wifi_data.request = state;
+}
+
+
+/**
+ * Diagnostic service to print current connection data for wifi.
+ */
+diag_err_t diag_wifi_status(char const * key, char * const val, diag_mode_t mode)
+{
+    if(mode == diag_mode_read)
+    {
+        Serial.print(F("dda:hostname="));
+        Serial.println(WiFi.hostname());
+        Serial.print(F("dda:local-ip="));
+        Serial.println(WiFi.localIP());
+        Serial.print(F("dda:netmask="));
+        Serial.println(WiFi.subnetMask());
+        Serial.print(F("dda:gateway="));
+        Serial.println(WiFi.gatewayIP());
+        Serial.print(F("dda:dns="));
+        Serial.println(WiFi.dnsIP());
+        Serial.print(F("dda:rssi="));
+        Serial.println(WiFi.RSSI());
+
+        return diag_err_ok;
+    }
+    else
+    {
+        return diag_err_mode_unsupported;
+    }
 }

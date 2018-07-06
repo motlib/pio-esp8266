@@ -176,6 +176,7 @@ static diag_err_t diag_node_name(char const * key, char * const val, diag_mode_t
     return diag_handle_string(key, val, mode, cfg.node_name, CFG_NODE_NAME_LEN);
 } 
 
+
 /**
  * Diagnostic service implementation to handle the sensor cycle timer.
  */
@@ -241,6 +242,9 @@ static diag_err_t diag_sensor_print(char const * key, char * const val, diag_mod
 }
 
 
+static diag_err_t diag_keys(char const * key, char * const val, diag_mode_t mode);
+
+
 
 /* Table mapping service keys to service implementations. */
 diag_tbl_t diag_service_tbl[] =
@@ -253,7 +257,27 @@ diag_tbl_t diag_service_tbl[] =
     { "cfgsave", diag_save_cfg },
     { "wifinam", diag_wifi_name },
     { "wifipwd", diag_wifi_pwd },
+    { "wifistat", diag_wifi_status },
     { "nodename", diag_node_name },
     { "wifi", diag_wifi_state },
+    { "diagkeys", diag_keys },
     { {'\0'}, NULL },
 };
+
+static diag_err_t diag_keys(char const * key, char * const val, diag_mode_t mode)
+{
+    if(mode == diag_mode_read)
+    {
+        for(diag_tbl_t *e = &(diag_service_tbl[0]); e->svc_fct != NULL; ++e)
+        {
+            Serial.print(F("dda:"));
+            Serial.println(e->key);
+        }
+
+        return diag_err_ok;
+    }
+    else
+    {
+        return diag_err_mode_unsupported;
+    }
+}

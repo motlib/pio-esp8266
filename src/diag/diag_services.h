@@ -1,7 +1,6 @@
 #ifndef DIAG_SERVICES_H
 #define DIAG_SERVICES_H
 
-#include "diag.h"
 #include "diag_cfg.h"
 
 /**

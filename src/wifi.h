@@ -2,6 +2,8 @@
 #define WIFI_H
 
 #include <stdint.h>
+#include "diag/diag_services.h"
+
 
 /* States */
 #define WIFI_OFFLINE 0u
@@ -12,6 +14,8 @@
 void wifi_main(void);
 void wifi_request_state(uint8_t state);
 uint8_t wifi_get_state(void);
+
+diag_err_t diag_wifi_status(char const * key, char * const val, diag_mode_t mode);
 
 
 #endif /* WIFI_H */
