@@ -1,13 +1,19 @@
+/**
+ * @file
+ * 
+ * This module contains a statemachine to handle the wifi connection
+ * process. The wifi state (ONLINE, OFFLINE) can be requested. If the wifi
+ * disconnects, the module will try to reconnect. 
+ */
 
 #include "wifi.h"
+#include "wifi_cfg.h"
 #include "utils/sm.h"
 #include "cfg/cfg.h"
+#include "utils/det.h"
 
 #include <stdint.h>
 #include <ESP8266WiFi.h>
-
-#define WIFI_CONNECT_TIMEOUT 1000
-
 
 
 
@@ -24,14 +30,21 @@ typedef struct
 } wifi_data_t;
 
 
-static wifi_data_t wifi_data = {
+/**
+ * Internal data for wifi handling.
+ */
+static wifi_data_t wifi_data =
+{
     .request = WIFI_OFFLINE,
     .wifi_state = WIFI_OFFLINE,
     .timeout = 0,
+    
 };
 
 
-    
+/**
+ * Statemachine handler for WIFI_OFFLINE state.
+ */    
 static sm_state_t wifi_do_offline(void)
 {
     if(wifi_data.request == WIFI_ONLINE)
@@ -44,6 +57,10 @@ static sm_state_t wifi_do_offline(void)
     }
 }
 
+
+/**
+ * Statemachine entry handler for WIFI_GO_ONLINE state.
+ */
 static void wifi_entry_go_online(void)
 {
     /* Rewind the timeout counter. */
@@ -56,6 +73,10 @@ static void wifi_entry_go_online(void)
     Serial.println(F("i:wifi=connecting"));
 }
 
+
+/**
+ * Statemachine handler for WIFI_GO_ONLINE state.
+ */
 static sm_state_t wifi_do_go_online(void)
 {
     if(wifi_data.timeout == 0)
@@ -78,34 +99,55 @@ static sm_state_t wifi_do_go_online(void)
 }
 
 
+/** 
+ * Statemachine entry handler for online state. 
+ */
 static void wifi_entry_online(void)
 {
     Serial.println(F("i:wifi=connected"));
 }
 
 
+/**
+ * Statemachine handler for online state.
+ */
 static sm_state_t wifi_do_online(void)
 {
+    /* If we are asked to go offline, we disconnect and transition to the
+     * WIFI_OFFLINE state. */
     if(wifi_data.request == WIFI_OFFLINE)
     {
         WiFi.disconnect();
         
         return WIFI_OFFLINE;
     }
-    else
+    else if(wifi_data.request == WIFI_ONLINE)
     {
-
+        /* We are asked to be online, but we are not connect, so return to the
+         * WIFI_GO_ONLINE state and try again. */
         if(WiFi.status() != WL_CONNECTED)
         {
             return WIFI_GO_ONLINE;
         }
         else
         {
+            /* We are online, eveything is fine. */
             return WIFI_ONLINE;
         }
     }
+    else
+    {
+        /* Hm, we should not be here. We are asked to be in an invalid wifi
+         * state. In development version, we use the DET. In production, we just
+         * stay online.*/
+        
+        DET_ASSERT(0);
+
+        return WIFI_ONLINE;
+    }
 }
 
+/* Statemachine table for wifi handling */
 static sm_tbl_entry_t wifi_sm_tbl[] = 
 {
     SM_TBL_ENTRY(wifi_do_offline, NULL, NULL),
@@ -113,22 +155,33 @@ static sm_tbl_entry_t wifi_sm_tbl[] =
     SM_TBL_ENTRY(wifi_do_online, wifi_entry_online, NULL),
 };
 
+/* Statemachine configuration */
 static sm_cfg_t wifi_sm_cfg = SM_DEF_CFG(WIFI_OFFLINE, wifi_sm_tbl);
 
+/* Statemachine run-time data */
 static sm_data_t wifi_sm_data = SM_DEF_DATA();
 
 
+/**
+ * Main function for the wifi handler.
+ */
 void wifi_main(void)
 {
     sm_step(&wifi_sm_cfg, &wifi_sm_data);
 }
 
 
+/**
+ * Return the current state of the wifi statemachine.
+ */
 uint8_t wifi_get_state(void)
 {
-    return wifi_data.wifi_state;
+    return wifi_sm_data.state;
 }
 
+/**
+ * Request the state of the wifi (either WIFI_OFFLINE or WIFI_ONLINE).
+ */
 void wifi_request_state(uint8_t state)
 {
     wifi_data.request = state;

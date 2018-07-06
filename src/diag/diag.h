@@ -2,8 +2,10 @@
 #define DIAG_H
 
 
+/**
+ * Length of the value buffer of diagnostic service requests / responses.
+ */
 #define DIAG_VAL_BUF_LEN (DIAG_REQ_BUF_LEN - DIAG_KEY_BUF_LEN)
-
 
 
 /**
