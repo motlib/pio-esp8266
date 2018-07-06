@@ -49,13 +49,34 @@ void setup()
  */
 void loop()
 {
+    static uint32_t last_cnt = millis();
+    uint32_t next_cnt;
+    uint32_t curr;
+
+
+    uint32_t start = millis();
+    
     system_main();
     diag_main();
     uptime_main();
     wifi_main();
     httpsrv_main();
 
-    delay(10);
+    uint32_t end = millis();
+
+    /* This even works with overflows of the millis counter. :-) */
+    uint32_t t = end - start;
+
+    if(t < 10)
+    {
+        delay(10-t);
+    }
+    else
+    {
+        /* ok, we took too long. */
+        Serial.print("loop_time=");
+        Serial.println(t);
+    }    
 }
 
 
