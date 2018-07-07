@@ -148,8 +148,8 @@ static diag_err_t diag_handle_string(char const * key, char * const val, diag_mo
  */
 static diag_err_t diag_wifi_name(char const * key, char * const val, diag_mode_t mode)
 {
-    return diag_handle_string(key, val, mode, cfg.wifi, CFG_WIFI_NAME_LEN);
-} 
+    return diag_handle_string(key, val, mode, cfg.wifi_name, CFG_WIFI_NAME_LEN);
+}
 
 
 /**
@@ -159,7 +159,7 @@ static diag_err_t diag_wifi_pwd(char const * key, char * const val, diag_mode_t 
 {
     if(mode == diag_mode_write)
     {
-        return diag_handle_string(key, val, mode, cfg.password, CFG_WIFI_PWD_LEN);
+        return diag_handle_string(key, val, mode, cfg.wifi_password, CFG_WIFI_PWD_LEN);
     }
     else
     {

@@ -17,15 +17,15 @@ cfg_data_t const cfg_defaults PROGMEM =
     .node_name = {0},
 
     /* Network data */
-    .wifi = {0},
-    .password = {0},
-
+    .wifi_name = {0},
+    .wifi_password = {0},
+    .wifi_power_on_state = 1,
+    
     /* Read sensor cycle time in [10ms]. */
     .sens_cycle_time = 500u,
 
     /* Print sensor values to serial interface */
     .sens_print = 1u,
-    //.dummy1 = 0,
 
     /* config checksum. Value is not relevant, as it is calculated before
      * writing to EEPROM. */

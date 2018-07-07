@@ -48,7 +48,10 @@ static wifi_data_t wifi_data =
  */    
 static sm_state_t wifi_do_offline(void)
 {
-    if(wifi_data.request == WIFI_ONLINE)
+    /* Check if we shall go online and if the wifi name and password are set. */
+    if((wifi_data.request == WIFI_ONLINE)
+       && (cfg.wifi_name[0] != '\0')
+       && (cfg.wifi_password[0] != '\0'))
     {
         return WIFI_GO_ONLINE;
     }
@@ -67,8 +70,7 @@ static void wifi_entry_go_online(void)
     /* Rewind the timeout counter. */
     wifi_data.timeout = WIFI_CONNECT_TIMEOUT;
 
-    
-    WiFi.begin(cfg.wifi, cfg.password);
+    WiFi.begin(cfg.wifi_name, cfg.wifi_password);
     Serial.println(F("i:wifi=connecting"));
 }
 
@@ -161,12 +163,26 @@ static sm_cfg_t wifi_sm_cfg = SM_DEF_CFG(WIFI_OFFLINE, wifi_sm_tbl);
 static sm_data_t wifi_sm_data = SM_DEF_DATA();
 
 
+/**
+ * Initialize the wifi sub-system.
+ */
 void wifi_init(void)
 {
     WiFi.setAutoConnect(false);
 
     /* Reconnection will be handled by this statemachine. */
     WiFi.setAutoReconnect(false);
+
+    /* If we shall enable the wifi and name and password are set, we go
+     * online. */
+    if(cfg.wifi_power_on_state != 0)
+    {
+        wifi_request_state(WIFI_ONLINE);
+    }
+    else
+    {
+        wifi_request_state(WIFI_OFFLINE);
+    }
 }
 
 

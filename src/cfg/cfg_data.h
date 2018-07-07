@@ -30,14 +30,19 @@ typedef struct
     char node_name[CFG_NODE_NAME_LEN];
 
     /* Network config */
-    char wifi[CFG_WIFI_NAME_LEN];
-    char password[CFG_WIFI_PWD_LEN];
+    char wifi_name[CFG_WIFI_NAME_LEN];
+    char wifi_password[CFG_WIFI_PWD_LEN];
+    
+    /** Wifi state after power-on. */
+    uint8_t wifi_power_on_state;
 
+    
     /* sensor cycle time */
     uint16_t sens_cycle_time;
+    
     /* print sensor values to serial interface. */
     uint8_t sens_print;
-    //uint8_t dummy1;
+
     /* Checksum protection of the eeprom data. */
     uint16_t crc16;
 } cfg_data_t;
