@@ -16,4 +16,7 @@
 void diag_main();
 
 
+void diag_handle_input(char * line_buf);
+
+
 #endif /* DIAG_H */

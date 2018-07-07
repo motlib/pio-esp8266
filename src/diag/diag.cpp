@@ -16,56 +16,56 @@
 #include "diag_services.h"
 
 
-typedef struct
-{
-    /** Diagnostic request buffer */
-    char req_buf[DIAG_REQ_BUF_LEN];
-    /** Pointer to the next free position in req_buf. */
-    uint8_t req_idx;
-    /** Error flag */
-    diag_err_t err;
-} diag_data_t;
+//typedef struct
+//{
+//    /** Diagnostic request buffer */
+//    char req_buf[DIAG_REQ_BUF_LEN];
+//    /** Pointer to the next free position in req_buf. */
+//    uint8_t req_idx;
+//    /** Error flag */
+//    diag_err_t err;
+//} diag_data_t;
 
 
-static diag_data_t diag_data = {
-    .req_buf = { 0 },
-    .req_idx = 0,
-    .err = diag_err_ok,
-};
+//static diag_data_t diag_data = {
+//    .req_buf = { 0 },
+//    .req_idx = 0,
+//    .err = diag_err_ok,
+//};
 
 
 /**
  * Handler to process a received diagnosis command. 
  */
-static diag_err_t diag_handle_input()
+void diag_handle_input(char * line_buf)
 {
     /* Check if we already had an error (e.g. input overflow error). */
-    if(diag_data.err != diag_err_ok)
-    {
-        return diag_data.err;
-    }
+    //if(diag_data.err != diag_err_ok)
+    //{
+    //    return diag_data.err;
+    //}
 
     /* find separator character in request */
     char * sep = NULL;
     diag_mode_t mode;
     
-    if((sep = index(diag_data.req_buf, DIAG_WRITE_CHAR)) != NULL)
+    if((sep = index(line_buf, DIAG_WRITE_CHAR)) != NULL)
     {
         mode = diag_mode_write;
     }
-    else if((sep = index(diag_data.req_buf, DIAG_READ_CHAR)) != NULL)
+    else if((sep = index(line_buf, DIAG_READ_CHAR)) != NULL)
     {
         mode = diag_mode_read;
     }
     else
     {
-        return diag_err_input;
+        return;// diag_err_input;
     }
  
     /* replace separator by 0 charater to terminate key string. */
     *sep = '\0';
 
-    char const * const key = diag_data.req_buf;
+    char const * const key = line_buf;
     char * const val = (sep + 1);
 
     diag_tbl_t *entry;
@@ -85,50 +85,55 @@ static diag_err_t diag_handle_input()
                 Serial.println(val);
             }
             
-            return err;
+            //err;
+            break;
         }
     }
-    
-    return diag_err_key;
+
+    err = diag_err_key;
+
+    Serial.print(F("RESPONSE=0x"));
+    Serial.println(err, HEX);
 }
 
 
-/**
- * Main method of diagnosis component. 
- */
-void diag_main()
-{
-    while(Serial.available() > 0)
-    {
-        int c = Serial.read();
-
-        /* Depending on the connected terminal, we receive CR or LF, so we
-         * handle both as end-of-command. */
-        if((c == '\r') || (c == '\n'))
-        {
-            diag_err_t result = diag_handle_input();
-
-            Serial.print(F("RESPONSE=0x"));
-            Serial.println(result, HEX);
-
-            /* reset request buffer */
-            diag_data.req_idx = 0;
-            diag_data.req_buf[0] = '\0';
-        }
-        else
-        {
-            if(diag_data.req_idx >= DIAG_REQ_BUF_LEN - 2)
-            {
-                diag_data.err = diag_err_input_length;
-            }
-            else
-            {
-                
-                /* Add received character to buffer and always terminate with \0. */
-                diag_data.req_buf[diag_data.req_idx] = (char)c;
-                diag_data.req_idx++;
-                diag_data.req_buf[diag_data.req_idx] = '\0';
-            }
-        }
-    }
-}
+///**
+// * Main method of diagnosis component. 
+// */
+//void diag_main()
+//{
+//    while(Serial.available() > 0)
+//    {
+//        int c = Serial.read();
+//
+//        /* Depending on the connected terminal, we receive CR or LF, so we
+//         * handle both as end-of-command. */
+//        if((c == '\r') || (c == '\n'))
+//        {
+//            diag_err_t result = diag_handle_input();
+//
+//            Serial.print(F("RESPONSE=0x"));
+//            Serial.println(result, HEX);
+//
+//            /* reset request buffer */
+//            diag_data.req_idx = 0;
+//            diag_data.req_buf[0] = '\0';
+//        }
+//        else
+//        {
+//            if(diag_data.req_idx >= DIAG_REQ_BUF_LEN - 2)
+//            {
+//                diag_data.err = diag_err_input_length;
+//            }
+//            else
+//            {
+//                
+//                /* Add received character to buffer and always terminate with \0. */
+//                diag_data.req_buf[diag_data.req_idx] = (char)c;
+//                diag_data.req_idx++;
+//                diag_data.req_buf[diag_data.req_idx] = '\0';
+//            }
+//        }
+//    }
+//}
+//

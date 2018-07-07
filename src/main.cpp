@@ -10,7 +10,8 @@
 
 #include "system.h"
 #include "sensor.h"
-#include "diag/diag.h"
+#include "term/term.h"
+#include "term/serterm.h"
 #include "uptime.h"
 #include "cfg/cfg.h"
 #include "wifi.h"
@@ -60,7 +61,7 @@ void loop()
     uint32_t start = millis();
 
     system_main();
-    diag_main();
+    term_main(&serterm_desc);
     uptime_main();
     wifi_main();
     httpsrv_main();
