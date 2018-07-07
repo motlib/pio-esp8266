@@ -40,7 +40,6 @@ static wifi_data_t wifi_data =
     .request = WIFI_OFFLINE,
     .wifi_state = WIFI_OFFLINE,
     .timeout = 0,
-    
 };
 
 
@@ -68,8 +67,6 @@ static void wifi_entry_go_online(void)
     /* Rewind the timeout counter. */
     wifi_data.timeout = WIFI_CONNECT_TIMEOUT;
 
-    /* Reconnection will be handled by this statemachine. */
-    WiFi.setAutoReconnect(false);
     
     WiFi.begin(cfg.wifi, cfg.password);
     Serial.println(F("i:wifi=connecting"));
@@ -167,7 +164,11 @@ static sm_data_t wifi_sm_data = SM_DEF_DATA();
 void wifi_init(void)
 {
     WiFi.setAutoConnect(false);
+
+    /* Reconnection will be handled by this statemachine. */
+    WiFi.setAutoReconnect(false);
 }
+
 
 /**
  * Main function for the wifi handler.
@@ -185,6 +186,7 @@ uint8_t wifi_get_state(void)
 {
     return wifi_sm_data.state;
 }
+
 
 /**
  * Request the state of the wifi (either WIFI_OFFLINE or WIFI_ONLINE).
