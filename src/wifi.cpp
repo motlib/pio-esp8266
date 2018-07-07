@@ -197,6 +197,8 @@ void wifi_main(void)
 
 /**
  * Return the current state of the wifi statemachine.
+ * 
+ * @returns One of the WIFI_OFFLINE, WIFI_GO_ONLINE, WIFI_ONLINE constants.
  */
 uint8_t wifi_get_state(void)
 {
@@ -205,11 +207,20 @@ uint8_t wifi_get_state(void)
 
 
 /**
- * Request the state of the wifi (either WIFI_OFFLINE or WIFI_ONLINE).
+ * Request the state of the wifi to be online or offline.
+ *
+ * @param state 0 to go offline, any other value to go online.
  */
 void wifi_request_state(uint8_t state)
 {
-    wifi_data.request = state;
+    if(state)
+    {
+        wifi_data.request = WIFI_ONLINE;
+    }
+    else
+    {
+        wifi_data.request = WIFI_OFFLINE;
+    }
 }
 
 
