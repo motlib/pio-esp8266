@@ -98,7 +98,6 @@ static diag_err_t diag_load_cfg(char const * key, char * const val, diag_mode_t 
     {
         return diag_err_mode_unsupported;
     }
-
 }
 
 
@@ -120,6 +119,10 @@ static diag_err_t diag_save_cfg(char const * key, char * const val, diag_mode_t 
     
 }
 
+
+/**
+ * Helper function for reading / wrinting of strings by diagnosis.
+ */
 static diag_err_t diag_handle_string(char const * key, char * const val, diag_mode_t mode, char* strvar, size_t len)
 {
     if(mode == diag_mode_read)
@@ -155,7 +158,7 @@ static diag_err_t diag_wifi_name(char const * key, char * const val, diag_mode_t
 /**
  * Diagnostic service implementation to write the wifi password.
  */
-static diag_err_t diag_wifi_pwd(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_wifi_password(char const * key, char * const val, diag_mode_t mode)
 {
     if(mode == diag_mode_write)
     {
@@ -209,6 +212,7 @@ static diag_err_t diag_wifi_state(char const * key, char * const val, diag_mode_
     }
 }
 
+
 /**
  * Diagnostic service implementation to handle the sensor cycle timer.
  */
@@ -242,6 +246,39 @@ static diag_err_t diag_sensor_print(char const * key, char * const val, diag_mod
 }
 
 
+/**
+ * Diagnostic service implementation to access the wifi power-on state setting.
+ */
+static diag_err_t diag_wifi_pon_connect(char const * key, char * const val, diag_mode_t mode)
+{
+    if(mode == diag_mode_write)
+    {
+        int state = atoi(val);
+
+        if((state == 0) || (state == 1))
+        {
+            cfg.wifi_power_on_state = state;
+            return diag_err_ok;
+        }
+        else
+        {
+            return diag_err_value;
+        }
+    }
+    else if(mode == diag_mode_read)
+    {
+        snprintf(val, DIAG_VAL_BUF_LEN, "%i", cfg.wifi_power_on_state);
+
+        return diag_err_ok;
+    }
+    else
+    {
+        return diag_err_mode_unsupported;
+    }
+}
+
+
+
 static diag_err_t diag_keys(char const * key, char * const val, diag_mode_t mode);
 
 
@@ -255,8 +292,9 @@ diag_tbl_t diag_service_tbl[] =
     { "uptime", diag_uptime },
     { "cfgload", diag_load_cfg },
     { "cfgsave", diag_save_cfg },
-    { "wifinam", diag_wifi_name },
-    { "wifipwd", diag_wifi_pwd },
+    { "wifiname", diag_wifi_name },
+    { "wifipwd", diag_wifi_password },
+    { "wifipon", diag_wifi_pon_connect },
     { "wifistat", diag_wifi_status },
     { "nodename", diag_node_name },
     { "wifi", diag_wifi_state },

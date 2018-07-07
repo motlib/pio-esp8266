@@ -40,8 +40,8 @@ void setup()
     Serial.println(err);
 
     sensor_init();
-
     httpsrv_init();
+    wifi_init();
 }
 
 

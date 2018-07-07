@@ -11,6 +11,7 @@
 #define WIFI_ONLINE 2u
 
 
+void wifi_init(void);
 void wifi_main(void);
 void wifi_request_state(uint8_t state);
 uint8_t wifi_get_state(void);
