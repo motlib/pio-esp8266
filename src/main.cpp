@@ -32,7 +32,7 @@ void setup()
     Serial.begin(115200);
 
     term_init(&serterm_desc);
-    term_put_str(&serterm_desc, "i:booting\n");
+    term_put_line(&serterm_desc, "i:booting");
 
     /* Initialize and load the configuration. */
     cfg_init();
@@ -42,7 +42,7 @@ void setup()
     httpsrv_init();
     wifi_init();
 
-    term_put_str(&serterm_desc, "i:booted\n");
+    term_put_line(&serterm_desc, "i:booted");
 }
 
 

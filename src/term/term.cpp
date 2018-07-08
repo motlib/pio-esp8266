@@ -8,8 +8,6 @@
 /** Ansi escape command to clear screen. */
 #define TERM_VT102_RESET "\033[2J"
 
-/* A linefeed */
-#define TERM_LINEFEED "\r\n"
 
 
 /* Key definitiosn */

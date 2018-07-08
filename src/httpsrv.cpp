@@ -9,10 +9,13 @@
 
 #include <ESP8266WebServer.h>
 #include "sensor.h"
+#include "uptime.h"
 
 static ESP8266WebServer server(80);
 
-static char buf[128];
+#define HTTPSRV_BUF_LEN 128
+
+static char buf[HTTPSRV_BUF_LEN];
 
 
 /**
@@ -24,11 +27,12 @@ static void handleData(void)
 {
     snprintf(
         buf,
-        512,
-        "temp=%.2f\nhum=%.2f\npressure=%.2f\n",
+        HTTPSRV_BUF_LEN,
+        "temp=%.2f\nhum=%.2f\npressure=%.2f\nuptime=%i\n",
         sensor_get_temp(),
         sensor_get_hum(),
-        sensor_get_pres());
+        sensor_get_pres(),
+        uptime_get_seconds());
 
     server.send(200, "text/plain", buf);
 }

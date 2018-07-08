@@ -4,6 +4,15 @@
 
 #include <stdint.h>
 
+/** A linefeed */
+#define TERM_LINEFEED "\r\n"
+
+
+#define term_put_line(DESC, STR) \
+    term_put_str((DESC), STR);   \
+    term_put_str((DESC), TERM_LINEFEED)
+
+
 /**
  * Terminal descriptor data type.
  *
@@ -43,6 +52,8 @@ void term_init(term_desc_t * const term_desc);
 void term_main(term_desc_t * const term_desc);
 
 void term_put_str(term_desc_t const * const term_desc, char const * str);
+
+
 
 
 #endif /* TERM_H */
