@@ -7,7 +7,6 @@
 
 #include <Arduino.h>
 
-
 #include "system.h"
 #include "sensor.h"
 #include "term/term.h"
@@ -16,7 +15,7 @@
 #include "cfg/cfg.h"
 #include "wifi.h"
 #include "httpsrv.h"
-
+#include "net/telnet.h"
 
 /**
  * Cycle time of the main loop.
@@ -34,6 +33,9 @@ void setup()
     term_init(&serterm_desc);
     term_put_line(&serterm_desc, "i:booting");
 
+    telnet_init();
+    term_init(&telnet_term_desc);
+    
     /* Initialize and load the configuration. */
     cfg_init();
     (void)cfg_load();
@@ -65,6 +67,8 @@ void loop()
     uptime_main();
     wifi_main();
     httpsrv_main();
+    telnet_main();
+    term_main(&telnet_term_desc);
 
     uint32_t end = millis();
 
