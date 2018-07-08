@@ -31,18 +31,18 @@ void setup()
 {
     Serial.begin(115200);
 
-    Serial.print(F("i:booting..."));
+    term_init(&serterm_desc);
+    term_put_str(&serterm_desc, "i:booting\n");
 
     /* Initialize and load the configuration. */
     cfg_init();
-
-    uint8_t err = cfg_load();
-    Serial.print(F("i:cfg_load="));
-    Serial.println(err);
+    (void)cfg_load();
 
     sensor_init();
     httpsrv_init();
     wifi_init();
+
+    term_put_str(&serterm_desc, "i:booted\n");
 }
 
 

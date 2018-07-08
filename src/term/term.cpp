@@ -5,44 +5,64 @@
 #include <stdint.h>
 
 
-typedef struct
+/** Ansi escape command to clear screen. */
+#define TERM_VT102_RESET "\033[2J"
+
+/* A linefeed */
+#define TERM_LINEFEED "\r\n"
+
+
+/* Key definitiosn */
+
+#define TERM_KEY_CR '\r'
+#define TERM_KEY_LF '\n'
+#define TERM_KEY_BACKSPACE '\b'
+#define TERM_KEY_CTRL_C '\03'
+
+
+
+
+/**
+ * Print a string to the terminal.
+ *
+ * @param term_desc The terminal descriptor data structure.
+ * @param str The string to print.
+ */
+void term_put_str(term_desc_t const * const term_desc, char const * str)
 {
-    /** Terminal line buffer */
-    char buf[TERM_BUF_LEN];
-    /** Pointer to the next free position in buf. */
-    uint8_t idx;
-} term_data_t;
+    while(*str)
+    {
+        term_desc->put_char(*str);
+
+        str++;
+    }
+}
 
 
-static term_data_t term_data =
-{
-    .buf = { '\0' },
-    .idx = 0,
-};
 
-
-static void term_handle_char(term_desc_t const * const term_desc, char c)
+static void term_handle_char(term_desc_t * const term_desc, char c)
 {
     /* Depending on the connected terminal, we receive CR or LF, so we
      * handle both as end-of-command. */
-    if((c == '\r') || (c == '\n'))
+    if((c == TERM_KEY_CR) || (c == TERM_KEY_LF))
     {
-        term_desc->put_char('\r');
-        term_desc->put_char('\n');
+        term_put_str(term_desc, TERM_LINEFEED);
 
         /* process the entered line */
-        term_desc->line_handler(term_data.buf);
-        
+        term_desc->line_handler(term_desc->buf);
+
         /* reset request buffer */
-        term_data.idx = 0;
-        term_data.buf[0] = '\0';
+        term_desc->idx = 0;
+        term_desc->buf[0] = '\0';
+
+        term_put_str(term_desc, TERM_PROMPT);
     }
-    else if(c == '\b')
+    else if(c == TERM_KEY_BACKSPACE)
     {
-        if(term_data.idx > 0)
+        if(term_desc->idx > 0)
         {
-            --term_data.idx;
-            term_data.buf[term_data.idx] = '\0';
+            --term_desc->idx;
+            term_desc->buf[term_desc->idx] = '\0';
 
             /* Backspace is non-desctructive on VT102 (?), so a \b moves the
              * cursor back one character, but does not delete it on
@@ -53,19 +73,27 @@ static void term_handle_char(term_desc_t const * const term_desc, char c)
             term_desc->put_char('\b');
         }
     }
+    else if(c == TERM_KEY_CTRL_C)
+    {
+        /* reset request buffer without handling contents. */
+        term_desc->idx = 0;
+        term_desc->buf[0] = '\0';
+
+        term_put_str(term_desc, TERM_LINEFEED);
+        term_put_str(term_desc, TERM_PROMPT);
+    }
     else
     {
-        if(term_data.idx >= TERM_BUF_LEN - 2)
+        if(term_desc->idx >= term_desc->buf_len - 2)
         {
             /* overflow */
-            //term_data.err = diag_err_input_length;
         }
         else
         {
             /* Add received character to buffer and always terminate with \0. */
-            term_data.buf[term_data.idx] = (char)c;
-            term_data.idx++;
-            term_data.buf[term_data.idx] = '\0';
+            term_desc->buf[term_desc->idx] = (char)c;
+            term_desc->idx++;
+            term_desc->buf[term_desc->idx] = '\0';
 
             term_desc->put_char(c);
         }
@@ -74,15 +102,27 @@ static void term_handle_char(term_desc_t const * const term_desc, char c)
 
 
 /**
+ * Init the terminal.
+ *
+ * This clears the screen by sending the VT102 reset code.
+ */
+void term_init(term_desc_t * const term_desc)
+{
+    term_put_str(term_desc, TERM_VT102_RESET);
+    term_put_str(term_desc, TERM_PROMPT);
+}
+
+
+/**
  * Main method of terminal implementation.
  *
  * @param term_desc The terminal descriptor providing low-level functions to
- * read and write characters to the terminal.
+ *   read and write characters to the terminal.
  */
-void term_main(term_desc_t const * const term_desc)
+void term_main(term_desc_t * const term_desc)
 {
     int c;
-    
+
     while(true)
     {
         c = term_desc->get_char();

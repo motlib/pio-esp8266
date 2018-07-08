@@ -3,6 +3,9 @@
 
 #include "term/term.h"
 
+/**
+ * Terminal descriptor for terminal connected to Serial interface.
+ */
 extern term_desc_t serterm_desc;
 
 
