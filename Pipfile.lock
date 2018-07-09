@@ -66,11 +66,11 @@
         },
         "platformio": {
             "hashes": [
-                "sha256:21809f0d7e7ab368946dc3b939bca03992bfe3bfeaa759d53107a61b60179ad0",
-                "sha256:23149e5b6bacbd1834c725b0c5062838e24b5a081bf2995ebb6d0ca5fe13d742"
+                "sha256:145ffe317fc5db8dfb32ecfa5a6d1fdc035f609250ccd3ab48ff472065b37c22",
+                "sha256:31fe659624c3b14c7a574c4999e15cf672f5ae974f4ffdf8917b36b71479cc8c"
             ],
             "index": "pypi",
-            "version": "==3.5.3"
+            "version": "==3.5.4"
         },
         "pyserial": {
             "hashes": [
