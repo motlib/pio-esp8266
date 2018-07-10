@@ -1,5 +1,12 @@
+/**
+ * Compile-time configuration for the terminal interface.
+ */
 #ifndef TERM_CFG_H
 #define TERM_CFG_H
+
+
+/** Ansi escape command to clear screen. */
+#define TERM_VT102_RESET "\033[2J"
 
 /** Ansi escape command to set bright text attribute. */
 #define TERM_VT102_ATTR_BRIGHT "\033[1m"

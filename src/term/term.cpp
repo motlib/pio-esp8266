@@ -1,12 +1,13 @@
+/**
+ * @file
+ *
+ * Implementation of a simple terminal / command-line interface. 
+ */
 
 #include "term.h"
 #include "term_cfg.h"
 
 #include <stdint.h>
-
-
-/** Ansi escape command to clear screen. */
-#define TERM_VT102_RESET "\033[2J"
 
 
 
@@ -16,8 +17,6 @@
 #define TERM_KEY_LF '\n'
 #define TERM_KEY_BACKSPACE '\b'
 #define TERM_KEY_CTRL_C '\03'
-
-
 
 
 /**

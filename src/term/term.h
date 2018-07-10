@@ -1,3 +1,9 @@
+/**
+ * @file
+ *
+ * Implementation of a simple terminal / command-line interface. 
+ */
+
 #ifndef TERM_H
 #define TERM_H
 
@@ -8,6 +14,9 @@
 #define TERM_LINEFEED "\r\n"
 
 
+/**
+ * Macro to print a string on the terminal, automatically adding a line-feed.
+ */
 #define term_put_line(DESC, STR) \
     term_put_str((DESC), STR);   \
     term_put_str((DESC), TERM_LINEFEED)
@@ -37,16 +46,24 @@ typedef struct
      */
     void (*line_handler)(char * line);
 
-    /** Terminal line buffer */
+    /**
+     * Terminal line buffer
+     */
     char *buf;
 
-    /** Length of the line buffer. */
+    /**
+     * Length of the line buffer.
+     */
     uint16_t buf_len;
     
-    /** Pointer to the next free position in buf. */
+    /**
+     * Pointer to the next free position in buf. This will be managed by the
+     * terminal implementation.
+     */
     uint8_t idx;
 
 } term_desc_t;
+
 
 void term_init(term_desc_t * const term_desc);
 void term_main(term_desc_t * const term_desc);
