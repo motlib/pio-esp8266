@@ -1,4 +1,4 @@
 .pioenvs
 .piolibdeps
 .travis.yml
-doc/*
+doc/html/*
