@@ -10,36 +10,48 @@
 #include <ESP8266WebServer.h>
 #include "sensor.h"
 #include "uptime.h"
+#include "cfg/cfg.h"
+#include "utils/det.h"
 
-static ESP8266WebServer server(80);
 
+/* Web server instance to listen on port 80. */
+static ESP8266WebServer server(HTTPSRV_PORT);
+
+/* Server scratch pad size */
 #define HTTPSRV_BUF_LEN 128
 
+/* Server scratch pad buffer. */
 static char buf[HTTPSRV_BUF_LEN];
 
 
 /**
  * HTTP handler for /data.
  *
- * Prints the last sampled sensor data.
+ * Prints some node information and the last sampled sensor data.
  */
 static void handleData(void)
 {
-    snprintf(
+    int n;
+    
+    n = snprintf(
         buf,
         HTTPSRV_BUF_LEN,
-        "temp=%.2f\nhum=%.2f\npressure=%.2f\nuptime=%i\n",
+        "node=%s\ntemp=%.2f\nhum=%.2f\npressure=%.2f\nuptime=%i\n",
+        cfg.node_name,
         sensor_get_temp(),
         sensor_get_hum(),
         sensor_get_pres(),
         uptime_get_seconds());
+
+    /* Ensure that the scratch pad is big enough. */
+    DET_ASSERT(n < HTTPSRV_BUF_LEN - 1);
 
     server.send(200, "text/plain", buf);
 }
 
 
 /**
- * HTTP handler for /.
+ * HTTP handler for root document (/).
  */
 static void handleRoot(void)
 {
@@ -47,9 +59,6 @@ static void handleRoot(void)
 }
 
 
-/**
- * Initialize the HTTP server. 
- */
 void httpsrv_init(void)
 {
     server.on("/", handleRoot);
@@ -59,9 +68,6 @@ void httpsrv_init(void)
 }
 
 
-/**
- * Main function to operate the HTTP server.
- */
 void httpsrv_main(void)
 {
     server.handleClient();
