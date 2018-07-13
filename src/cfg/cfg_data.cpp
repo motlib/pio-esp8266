@@ -1,16 +1,19 @@
-#include "cfg_data.h"
-
-#include <Arduino.h>
-
 /**
- * Ram shadow variable for loading configuration data from EEPROM.
+ * @file
+ * 
+ * This module defines the global instance of the configuration data cfg and the
+ * default data to be used if configuration data in EEPROM is not valid.
  */
+
+#include "cfg_data.h"
+#include <pgmspace.h>
+
+
+/* Ram shadow variable for loading configuration data from EEPROM. */
 cfg_data_t cfg;
 
 
-/**
- * Default data for configuration. 
- */
+/* Default data for configuration. */
 cfg_data_t const cfg_defaults PROGMEM =
 {
     /* general system data */
