@@ -10,7 +10,8 @@
 #include <stdlib.h>
 /* snprintf */
 #include <stdio.h>
-
+/* Serial */
+#include <Arduino.h>
 
 /**
  * Diagnostic service implementation to handle the sensor cycle timer.
@@ -42,7 +43,6 @@ static diag_err_t diag_sensor_timer(char const * key, char * const val, diag_mod
     {
         return diag_err_mode_unsupported;
     }
-
 }
 
 
@@ -116,7 +116,6 @@ static diag_err_t diag_save_cfg(char const * key, char * const val, diag_mode_t 
     {
         return diag_err_mode_unsupported;
     }
-    
 }
 
 

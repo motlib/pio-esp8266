@@ -14,8 +14,9 @@
 #include "uptime.h"
 #include "cfg/cfg.h"
 #include "wifi.h"
-#include "httpsrv.h"
+#include "net/httpsrv.h"
 #include "net/telnet.h"
+
 
 /**
  * Cycle time of the main loop.
@@ -48,6 +49,17 @@ void setup()
 }
 
 
+static void main_tasks(void)
+{
+    system_main();
+    term_main(&serterm_desc);
+    uptime_main();
+    wifi_main();
+    httpsrv_main();
+    telnet_main();
+    term_main(&telnet_term_desc);
+}
+
 /**
  * Arduino style loop function. This is called cyclically and runs the main
  * software.
@@ -60,21 +72,17 @@ void loop()
 {
     static uint32_t max_time = 0;
 
+    /* Run task functions and measure time. */
+    
+    /* TODO: this only measures the time of the application tasks, but not the
+     * time of the background esp tasks like wifi and tcp operation. */
+    
     uint32_t start = millis();
-
-    system_main();
-    term_main(&serterm_desc);
-    uptime_main();
-    wifi_main();
-    httpsrv_main();
-    telnet_main();
-    term_main(&telnet_term_desc);
-
+    main_tasks();
     uint32_t end = millis();
 
     /* This even works with overflows of the millis counter. :-) */
     uint32_t time = end - start;
-
     if(max_time < time)
     {
         max_time = time;
@@ -82,6 +90,7 @@ void loop()
         Serial.println(max_time);
     }
 
+    /* If we did not use up all the available time, we delay a bit. */
     if(time < MAIN_CYCLE_TIME)
     {
         delay(MAIN_CYCLE_TIME - time);
