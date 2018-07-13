@@ -16,6 +16,7 @@
 #include "wifi.h"
 #include "net/httpsrv.h"
 #include "net/telnet.h"
+#include "led.h"
 
 
 /**
@@ -45,6 +46,8 @@ void setup()
     httpsrv_init();
     wifi_init();
 
+    led_init();
+
     term_put_line(&serterm_desc, "i:booted");
 }
 
@@ -58,7 +61,9 @@ static void main_tasks(void)
     httpsrv_main();
     telnet_main();
     term_main(&telnet_term_desc);
+    led_main();
 }
+
 
 /**
  * Arduino style loop function. This is called cyclically and runs the main
