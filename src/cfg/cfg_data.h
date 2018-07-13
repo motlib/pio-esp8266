@@ -18,20 +18,17 @@
 #include <stdint.h>
 
 
-/**
- * Maximum length of the node name.
- */
+/** Maximum length of the node name. */
 #define CFG_NODE_NAME_LEN 32 
 
-/**
- * Maximum length of the wifi name.
- */
+/** Maximum length of the wifi name. */
 #define CFG_WIFI_NAME_LEN 32
 
-/**
- * Maximum length of the wifi password.
- */
+/** Maximum length of the wifi password. */
 #define CFG_WIFI_PWD_LEN 32
+
+/** Maximum length of the OTA update url. */
+#define CFG_OTA_URL_LEN 128
 
 
 /**
@@ -59,6 +56,8 @@ typedef struct
     /** Print sensor values to serial interface. */
     uint8_t sens_print;
 
+    /** over-the-air update URL. */
+    char ota_url[CFG_OTA_URL_LEN];
     
     /** CRC16 checksum protection of the eeprom data. */
     uint16_t crc16;

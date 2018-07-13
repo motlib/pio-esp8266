@@ -277,6 +277,11 @@ static diag_err_t diag_wifi_pon_connect(char const * key, char * const val, diag
 }
 
 
+static diag_err_t diag_ota_url(char const * key, char * const val, diag_mode_t mode)
+{
+    return diag_handle_string(key, val, mode, cfg.ota_url, CFG_NODE_NAME_LEN);
+}
+
 
 static diag_err_t diag_keys(char const * key, char * const val, diag_mode_t mode);
 
@@ -298,6 +303,7 @@ diag_tbl_t diag_service_tbl[] =
     { "nodename", diag_node_name },
     { "wifi", diag_wifi_state },
     { "diagkeys", diag_keys },
+    { "otaurl", diag_ota_url },
     { {'\0'}, NULL },
 };
 
