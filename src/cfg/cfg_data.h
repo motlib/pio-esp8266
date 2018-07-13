@@ -27,8 +27,11 @@
 /** Maximum length of the wifi password. */
 #define CFG_WIFI_PWD_LEN 32
 
-/** Maximum length of the OTA update url. */
-#define CFG_OTA_URL_LEN 128
+/** Maximum length of the OTA update host. */
+#define CFG_OTA_HOST_LEN 32
+
+/** Maximum length of the OTA update url path. */
+#define CFG_OTA_PATH_LEN 32
 
 
 /**
@@ -57,7 +60,10 @@ typedef struct
     uint8_t sens_print;
 
     /** over-the-air update URL. */
-    char ota_url[CFG_OTA_URL_LEN];
+    char ota_host[CFG_OTA_HOST_LEN];
+
+    /** over-the-air update URL. */
+    char ota_path[CFG_OTA_PATH_LEN];
     
     /** CRC16 checksum protection of the eeprom data. */
     uint16_t crc16;

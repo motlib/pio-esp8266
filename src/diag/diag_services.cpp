@@ -5,6 +5,8 @@
 #include "uptime.h"
 #include "cfg/cfg.h"
 #include "wifi.h"
+#include "version.h"
+
 
 /* for atoi */
 #include <stdlib.h>
@@ -12,6 +14,9 @@
 #include <stdio.h>
 /* Serial */
 #include <Arduino.h>
+#include <ESP8266httpUpdate.h>
+
+
 
 /**
  * Diagnostic service implementation to handle the sensor cycle timer.
@@ -277,9 +282,63 @@ static diag_err_t diag_wifi_pon_connect(char const * key, char * const val, diag
 }
 
 
-static diag_err_t diag_ota_url(char const * key, char * const val, diag_mode_t mode)
+/**
+ * Read or set the OTA URL host.
+ */
+static diag_err_t diag_ota_host(char const * key, char * const val, diag_mode_t mode)
 {
-    return diag_handle_string(key, val, mode, cfg.ota_url, CFG_NODE_NAME_LEN);
+    return diag_handle_string(key, val, mode, cfg.ota_host, CFG_NODE_NAME_LEN);
+}
+
+
+/**
+ * Read or set the OTA URL path.
+ */
+static diag_err_t diag_ota_path(char const * key, char * const val, diag_mode_t mode)
+{
+    return diag_handle_string(key, val, mode, cfg.ota_path, CFG_NODE_NAME_LEN);
+}
+
+
+/**
+ * Read the firmware version.
+ */
+static diag_err_t diag_fw_version(char const * key, char * const val, diag_mode_t mode)
+{
+    if(mode == diag_mode_read)
+    {
+        strncpy(val, VERSION_FW, DIAG_VAL_BUF_LEN);
+        val[DIAG_VAL_BUF_LEN - 1] = '\0';
+
+        return diag_err_ok;
+    }
+    else
+    {
+        return diag_err_mode_unsupported;
+    }
+}
+
+/**
+ * Trigger the OTA update process.
+ */
+static diag_err_t diag_ota(char const * key, char * const val, diag_mode_t mode)
+{
+    if(mode == diag_mode_write)
+    {
+        HTTPUpdateResult res;
+        
+        res = ESPhttpUpdate.update(cfg.ota_host, 80, cfg.ota_path);
+        /* updater only returns, if nothing to do or error. On success, the MCU
+         * does a reset. */
+        snprintf(val, DIAG_VAL_BUF_LEN, "res=%i", res);
+        
+        return diag_err_ok;
+    }
+    else
+    {
+        return diag_err_mode_unsupported;
+    }
+    
 }
 
 
@@ -290,20 +349,23 @@ static diag_err_t diag_keys(char const * key, char * const val, diag_mode_t mode
 /* Table mapping service keys to service implementations. */
 diag_tbl_t diag_service_tbl[] =
 {
-    { "stime", diag_sensor_timer },
-    { "sprint", diag_sensor_print },
-    { "reset", diag_do_reset },
-    { "uptime", diag_uptime },
     { "cfgload", diag_load_cfg },
     { "cfgsave", diag_save_cfg },
-    { "wifiname", diag_wifi_name },
-    { "wifipwd", diag_wifi_password },
-    { "wifipon", diag_wifi_pon_connect },
-    { "wifistat", diag_wifi_status },
-    { "nodename", diag_node_name },
-    { "wifi", diag_wifi_state },
     { "diagkeys", diag_keys },
-    { "otaurl", diag_ota_url },
+    { "fwvers", diag_fw_version },
+    { "nodename", diag_node_name },
+    { "otahost", diag_ota_host },
+    { "otapath", diag_ota_path },
+    { "ota", diag_ota },
+    { "reset", diag_do_reset },
+    { "sprint", diag_sensor_print },
+    { "stime", diag_sensor_timer },
+    { "uptime", diag_uptime },
+    { "wifi", diag_wifi_state },
+    { "wifiname", diag_wifi_name },
+    { "wifipon", diag_wifi_pon_connect },
+    { "wifipwd", diag_wifi_password },
+    { "wifistat", diag_wifi_status },
     { {'\0'}, NULL },
 };
 

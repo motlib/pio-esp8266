@@ -30,8 +30,10 @@ cfg_data_t const cfg_defaults PROGMEM =
     /* Print sensor values to serial interface */
     .sens_print = 1u,
 
-    /* Over-the-air update URL. */
-    .ota_url = {0},
+    /* Over-the-air update server. */
+    .ota_host = {0},
+    /* Over-the-air update URL path. */
+    .ota_path = {0},
 
     /* config checksum. Value is not relevant, as it is calculated before
      * writing to EEPROM. */
