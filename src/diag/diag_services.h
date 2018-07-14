@@ -69,6 +69,6 @@ typedef struct
  *
  * Last entry is marked by a NULL pointer in the srv_svc member.
  */
-extern diag_tbl_t diag_service_tbl[];
+extern diag_tbl_t const diag_service_tbl[];
 
 #endif /* DIAG_SERVICES_H */

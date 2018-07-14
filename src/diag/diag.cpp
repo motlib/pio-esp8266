@@ -6,12 +6,10 @@
  *
  * request:
  *   <key>? | <key>=<value>
- * if the service needs to reply with much data: 
- *   dd:<response_data>
- * for reading
- * 
-
-
+ * if the service needs to reply with data: 
+ *   dd:<service_data>
+ * response:
+ *   dr:<response code>
  */
 
 #include "diag.h"
@@ -42,9 +40,9 @@ static term_desc_t const * diag_term = NULL;
  * @return Pointer to the diagnostic service in the service table or NULL, if no
  *   service can be found.
  */
-static diag_tbl_t* diag_find_service(char const * const key)
+static diag_tbl_t const * diag_find_service(char const * const key)
 {
-    diag_tbl_t *entry = NULL;
+    diag_tbl_t const * entry = NULL;
     int i = 0;
     
     for(entry = &(diag_service_tbl[i]);
@@ -86,24 +84,16 @@ static diag_err_t diag_handle_request(char * line_buf)
     char const * const key = line_buf;
     char * const val = (sep + 1);
 
-    diag_tbl_t *entry = diag_find_service(key);
+    /* find the diag service table entry for the given key */
+    diag_tbl_t const *entry = diag_find_service(key);
     if(entry == NULL)
     {
         return diag_err_key;
     }
 
+    /* execute the service. */
     diag_err_t err = entry->svc_fct(key, val, mode);
 
-    /* In read mode, the returned value is placed into the value buffer. */
-    if((err == diag_err_ok) && (mode == diag_mode_read))
-    {
-        diag_print_data(val);
-        
-        //Serial.print(key);
-        //Serial.print('=');
-        //Serial.println(val);
-    }
-    
     return err;
 }
 
@@ -135,7 +125,7 @@ void diag_handle_input(term_desc_t const * const desc)
 }
 
 
-void diag_print_data(char * data)
+void diag_print_data(char const * data)
 {
     if(diag_term != NULL)
     {

@@ -23,7 +23,7 @@ void diag_handle_input(term_desc_t const * const desc);
  * @attention This function must only be called while a diafgnostic service
  *   function is executed.
  */
-void diag_print_data(char * data);
+void diag_print_data(char const * data);
 
 
 #endif /* DIAG_H */

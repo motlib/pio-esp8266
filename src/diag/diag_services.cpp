@@ -357,7 +357,7 @@ static diag_err_t diag_keys(char const * key, char * const val, diag_mode_t mode
 
 
 /* Table mapping service keys to service implementations. */
-diag_tbl_t diag_service_tbl[] =
+diag_tbl_t const diag_service_tbl[] =
 {
     { "cfgload", diag_load_cfg },
     { "cfgsave", diag_save_cfg },
@@ -383,10 +383,11 @@ static diag_err_t diag_keys(char const * key, char * const val, diag_mode_t mode
 {
     if(mode == diag_mode_read)
     {
-        for(diag_tbl_t *e = &(diag_service_tbl[0]); e->svc_fct != NULL; ++e)
+        for(diag_tbl_t const * entry = &(diag_service_tbl[0]);
+            entry->svc_fct != NULL;
+            ++entry)
         {
-            Serial.print(F("dda:"));
-            Serial.println(e->key);
+            diag_print_data(entry->key);
         }
 
         return diag_err_ok;
