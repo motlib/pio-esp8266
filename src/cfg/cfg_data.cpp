@@ -12,18 +12,13 @@
 /* Ram shadow variable for loading configuration data from EEPROM. */
 cfg_data_t cfg;
 
+/* Ram shadow variable for loading wifi configuration data from EEPROM. */
+cfg_wifi_t cfg_wifi;
+
 
 /* Default data for configuration. */
 cfg_data_t const cfg_defaults PROGMEM =
-{
-    /* general system data */
-    .node_name = {0},
-
-    /* Network data */
-    .wifi_name = {0},
-    .wifi_password = {0},
-    .wifi_power_on_state = 1,
-    
+{    
     /* Read sensor cycle time in [10ms]. */
     .sens_cycle_time = 500u,
 
@@ -40,3 +35,31 @@ cfg_data_t const cfg_defaults PROGMEM =
     .crc16 = 0x0u,
 };
 
+
+cfg_wifi_t const cfg_wifi_defaults PROGMEM =
+{
+    /* general system data */
+    .node_name = {0},
+
+    /* Network data */
+    .wifi_name = {0},
+    .wifi_password = {0},
+    .wifi_power_on_state = 1u,
+
+    .crc16 = 0x0u,
+};    
+
+
+cfg_block_t const cfg_block_tbl[CFG_BLOCK_COUNT] =
+{
+    {
+        .shadow = &cfg_wifi,
+        .defaults = &cfg_wifi_defaults,
+        .size = sizeof(cfg_wifi),
+    },
+    {
+        .shadow = &cfg,
+        .defaults = &cfg_defaults,
+        .size = sizeof(cfg),
+    }
+};

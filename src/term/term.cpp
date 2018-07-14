@@ -52,7 +52,10 @@ static void term_handle_char(term_desc_t * const term_desc, char c)
         term_desc->idx = 0;
         term_desc->buf[0] = '\0';
 
-        term_put_str(term_desc, TERM_PROMPT);
+        if(term_desc->flags & TERM_FLAG_PROMPT)
+        {
+            term_put_str(term_desc, TERM_PROMPT);
+        }
     }
     else if(c == TERM_KEY_BACKSPACE)
     {
@@ -92,7 +95,10 @@ static void term_handle_char(term_desc_t * const term_desc, char c)
             term_desc->idx++;
             term_desc->buf[term_desc->idx] = '\0';
 
-            term_desc->put_char(c);
+            if(term_desc->flags & TERM_FLAG_ECHO)
+            {
+                term_desc->put_char(c);
+            }
         }
     }
 }

@@ -37,7 +37,7 @@ static void handleData(void)
         buf,
         HTTPSRV_BUF_LEN,
         "node=%s\ntemp=%.2f\nhum=%.2f\npressure=%.2f\nuptime=%i\n",
-        cfg.node_name,
+        cfg_wifi.node_name,
         sensor_get_temp(),
         sensor_get_hum(),
         sensor_get_pres(),

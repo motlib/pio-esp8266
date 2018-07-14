@@ -18,6 +18,9 @@
 #include <stdint.h>
 
 
+#define CFG_BLOCK_COUNT 2
+
+
 /** Maximum length of the node name. */
 #define CFG_NODE_NAME_LEN 32 
 
@@ -34,9 +37,13 @@
 #define CFG_OTA_PATH_LEN 32
 
 
-/**
- * Configuration data type.
- */
+typedef struct {
+    void * shadow;
+    void const * defaults;
+    uint8_t size;
+} cfg_block_t;
+
+
 typedef struct
 {
     /** Node name of this node. */
@@ -52,7 +59,16 @@ typedef struct
     /** Required wifi state after power-on. (==0: no wifi, !=0: wifi enabled) */
     uint8_t wifi_power_on_state;
 
-    
+    /** CRC16 checksum protection of the eeprom data. */
+    uint16_t crc16;
+} cfg_wifi_t;
+
+
+/**
+ * Configuration data type.
+ */
+typedef struct
+{
     /** Sensor read cycle time (in [10ms], i.e. main loop cycle time). */
     uint16_t sens_cycle_time;
     
@@ -71,6 +87,13 @@ typedef struct
 
 
 /**
+ * Configuration for wifi. Kept separate, so this block stays valid after update
+ * of cfg_data_t configuration structure.
+ */
+extern cfg_wifi_t cfg_wifi;
+
+
+/**
  * Configuration data available for access in all modules.
  */
 extern cfg_data_t cfg;
@@ -83,6 +106,9 @@ extern cfg_data_t cfg;
  * valid.  This variable shall only be used internally in the cfg module.
  */
 extern cfg_data_t const cfg_defaults PROGMEM;
+extern cfg_wifi_t const cfg_wifi_defaults PROGMEM;
 
+
+extern cfg_block_t const cfg_block_tbl[CFG_BLOCK_COUNT];
 
 #endif /* CFG_DATA_H */

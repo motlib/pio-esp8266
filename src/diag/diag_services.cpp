@@ -161,7 +161,7 @@ static diag_err_t diag_handle_string(char const * key, char * const val, diag_mo
  */
 static diag_err_t diag_wifi_name(char const * key, char * const val, diag_mode_t mode)
 {
-    return diag_handle_string(key, val, mode, cfg.wifi_name, CFG_WIFI_NAME_LEN);
+    return diag_handle_string(key, val, mode, cfg_wifi.wifi_name, CFG_WIFI_NAME_LEN);
 }
 
 
@@ -172,7 +172,7 @@ static diag_err_t diag_wifi_password(char const * key, char * const val, diag_mo
 {
     if(mode == diag_mode_write)
     {
-        return diag_handle_string(key, val, mode, cfg.wifi_password, CFG_WIFI_PWD_LEN);
+        return diag_handle_string(key, val, mode, cfg_wifi.wifi_password, CFG_WIFI_PWD_LEN);
     }
     else
     {
@@ -186,7 +186,7 @@ static diag_err_t diag_wifi_password(char const * key, char * const val, diag_mo
  */
 static diag_err_t diag_node_name(char const * key, char * const val, diag_mode_t mode)
 {
-    return diag_handle_string(key, val, mode, cfg.node_name, CFG_NODE_NAME_LEN);
+    return diag_handle_string(key, val, mode, cfg_wifi.node_name, CFG_NODE_NAME_LEN);
 } 
 
 
@@ -269,7 +269,7 @@ static diag_err_t diag_wifi_pon_connect(char const * key, char * const val, diag
 
         if((state == 0) || (state == 1))
         {
-            cfg.wifi_power_on_state = state;
+            cfg_wifi.wifi_power_on_state = state;
             return diag_err_ok;
         }
         else
@@ -279,7 +279,7 @@ static diag_err_t diag_wifi_pon_connect(char const * key, char * const val, diag
     }
     else if(mode == diag_mode_read)
     {
-        snprintf(val, DIAG_VAL_BUF_LEN, "%i", cfg.wifi_power_on_state);
+        snprintf(val, DIAG_VAL_BUF_LEN, "%i", cfg_wifi.wifi_power_on_state);
         diag_print_data(val);
 
         return diag_err_ok;

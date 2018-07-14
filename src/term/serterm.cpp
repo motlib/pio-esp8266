@@ -33,5 +33,6 @@ term_desc_t serterm_desc =
     .buf = serterm_line_buf,
     .buf_len = sizeof(serterm_line_buf),
     .idx = 0,
+    .flags = TERM_FLAG_ECHO | TERM_FLAG_PROMPT,
 };
 

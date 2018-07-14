@@ -13,6 +13,9 @@
 /** A linefeed */
 #define TERM_LINEFEED "\r\n"
 
+#define TERM_FLAG_ECHO 0x01
+#define TERM_FLAG_PROMPT 0x02
+
 
 /**
  * Macro to print a string on the terminal, automatically adding a line-feed.
@@ -63,6 +66,9 @@ struct s_term_desc_t
      * terminal implementation.
      */
     uint8_t idx;
+
+    /** Terminal flags (echo, prompt) */
+    uint8_t flags;
 
 };
 

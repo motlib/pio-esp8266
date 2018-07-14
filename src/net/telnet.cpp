@@ -59,5 +59,7 @@ term_desc_t telnet_term_desc =
     .buf = telnet_line_buf,
     .buf_len = sizeof(telnet_line_buf),
     .idx = 0,
+    /* no echo, but show prompt */
+    .flags = TERM_FLAG_PROMPT,
 };
 
