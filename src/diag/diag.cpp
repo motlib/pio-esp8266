@@ -23,8 +23,15 @@
 
 #include "term/term.h"
 
-/* TODO: correctly handle terminal input and output. Curently terminal input and
- * serial output are mixed. */
+/** Tag to mark diagnostic service data on the terminal. */
+#define DIAG_DATA_TAG "dd:"
+
+/** Tag to mark diagnostic service response status on the terminal. */
+#define DIAG_RESPONSE_TAG "dr:"
+
+/** Length of the buffer to render the response tag */
+#define DIAG_RESPONSE_TAG_LEN 12
+
 
 /**
  * Pointer to the currently active terminal for diagnostics i/o.
@@ -118,8 +125,8 @@ void diag_handle_input(term_desc_t const * const desc)
     
     diag_err_t err = diag_handle_request(desc->buf);
 
-    char buf[12];
-    snprintf(buf, 12, "dresp:0x%x", err);
+    char buf[DIAG_RESPONSE_TAG_LEN];
+    snprintf(buf, DIAG_RESPONSE_TAG_LEN, DIAG_RESPONSE_TAG "0x%x", err);
     
     term_put_line(desc, buf);
 }
@@ -129,7 +136,7 @@ void diag_print_data(char const * data)
 {
     if(diag_term != NULL)
     {
-        term_put_str(diag_term, "dd:");
+        term_put_str(diag_term, DIAG_DATA_TAG);
         term_put_line(diag_term, data);
     }
 }
