@@ -46,7 +46,7 @@ static void term_handle_char(term_desc_t * const term_desc, char c)
         term_put_str(term_desc, TERM_LINEFEED);
 
         /* process the entered line */
-        term_desc->line_handler(term_desc->buf);
+        term_desc->line_handler(term_desc);
 
         /* reset request buffer */
         term_desc->idx = 0;

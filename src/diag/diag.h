@@ -1,6 +1,8 @@
 #ifndef DIAG_H
 #define DIAG_H
 
+#include "term/term.h"
+
 
 /**
  * Length of the value buffer of diagnostic service requests / responses.
@@ -9,14 +11,19 @@
 
 
 /**
- * Main method of diagnosis component.
- *
- * Call cyclically to process incoming diagnosis requests.
+ * This function handles a line of input from the terminal and processes it
+ * (e.g. by executing the diagnostic service).
  */
-void diag_main();
+void diag_handle_input(term_desc_t const * const desc);
 
 
-void diag_handle_input(char * line_buf);
+/**
+ * Function to print data to the terminal while executing a diagnostic service.
+ *
+ * @attention This function must only be called while a diafgnostic service
+ *   function is executed.
+ */
+void diag_print_data(char * data);
 
 
 #endif /* DIAG_H */

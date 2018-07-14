@@ -42,6 +42,8 @@ static diag_err_t diag_sensor_timer(char const * key, char * const val, diag_mod
     {
         snprintf(val, DIAG_VAL_BUF_LEN, "%i", cfg.sens_cycle_time);
 
+        diag_print_data(val);
+
         return diag_err_ok;
     }
     else
@@ -59,6 +61,7 @@ static diag_err_t diag_uptime(char const * const key, char * const val, diag_mod
     if(mode == diag_mode_read)
     {
         snprintf(val, DIAG_VAL_BUF_LEN, "%i", uptime_get_seconds());
+        diag_print_data(val);
 
         return diag_err_ok;
     }
@@ -81,8 +84,10 @@ static diag_err_t diag_do_reset(char const * const key, char * const val, diag_m
         system_request_reset();
         return diag_err_ok;
     }
-
-    return diag_err_mode_unsupported;
+    else
+    {
+        return diag_err_mode_unsupported;
+    }
 }
 
 
@@ -132,6 +137,7 @@ static diag_err_t diag_handle_string(char const * key, char * const val, diag_mo
     if(mode == diag_mode_read)
     {
         snprintf(val, DIAG_VAL_BUF_LEN, "%s", strvar);
+        diag_print_data(val);
 
         return diag_err_ok;
     }
@@ -207,6 +213,7 @@ static diag_err_t diag_wifi_state(char const * key, char * const val, diag_mode_
     else if(mode == diag_mode_read)
     {
         snprintf(val, DIAG_VAL_BUF_LEN, "%i", wifi_get_state());
+        diag_print_data(val);
 
         return diag_err_ok;
     }
@@ -240,6 +247,7 @@ static diag_err_t diag_sensor_print(char const * key, char * const val, diag_mod
     else if(mode == diag_mode_read)
     {
         snprintf(val, DIAG_VAL_BUF_LEN, "%i", cfg.sens_print);
+        diag_print_data(val);
 
         return diag_err_ok;
     }
@@ -272,6 +280,7 @@ static diag_err_t diag_wifi_pon_connect(char const * key, char * const val, diag
     else if(mode == diag_mode_read)
     {
         snprintf(val, DIAG_VAL_BUF_LEN, "%i", cfg.wifi_power_on_state);
+        diag_print_data(val);
 
         return diag_err_ok;
     }
@@ -309,6 +318,7 @@ static diag_err_t diag_fw_version(char const * key, char * const val, diag_mode_
     {
         strncpy(val, VERSION_FW, DIAG_VAL_BUF_LEN);
         val[DIAG_VAL_BUF_LEN - 1] = '\0';
+        diag_print_data(val);
 
         return diag_err_ok;
     }

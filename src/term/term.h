@@ -22,6 +22,8 @@
     term_put_str((DESC), TERM_LINEFEED)
 
 
+typedef struct s_term_desc_t term_desc_t;
+
 /**
  * Terminal descriptor data type.
  *
@@ -29,7 +31,7 @@
  * function pointers to the necessary functionality (read a character, write a
  * character, handle user input).
  */
-typedef struct
+struct s_term_desc_t
 {
     /**
      * Read input.
@@ -44,7 +46,7 @@ typedef struct
     /**
      * Handle the input after the user entered a whole line.
      */
-    void (*line_handler)(char * line);
+    void (*line_handler)(term_desc_t const * const desc);
 
     /**
      * Terminal line buffer
@@ -62,7 +64,7 @@ typedef struct
      */
     uint8_t idx;
 
-} term_desc_t;
+};
 
 
 void term_init(term_desc_t * const term_desc);

@@ -1,6 +1,7 @@
 #include "telnet.h"
 
 #include "term/term.h"
+#include "diag/diag.h"
 #include <ESP8266WiFi.h>
 
 
@@ -47,11 +48,6 @@ void telnet_main(void)
     }
 }
 
-static void telnet_line_handler(char * line)
-{
-    term_put_str(&telnet_term_desc, "yeah, got it!\r\n");
-}
-
 
 static char telnet_line_buf[64];
 
@@ -59,7 +55,7 @@ term_desc_t telnet_term_desc =
 {
     .get_char = telnet_get_char,
     .put_char = telnet_put_char,
-    .line_handler = telnet_line_handler,
+    .line_handler = diag_handle_input,
     .buf = telnet_line_buf,
     .buf_len = sizeof(telnet_line_buf),
     .idx = 0,

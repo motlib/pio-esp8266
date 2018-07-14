@@ -4,7 +4,14 @@
  * This module implements the diagnosis component. It receives text commands
  * from the terminal and processes them. 
  *
- * Commands and responses are always in the format "key=value".
+ * request:
+ *   <key>? | <key>=<value>
+ * if the service needs to reply with much data: 
+ *   dd:<response_data>
+ * for reading
+ * 
+
+
  */
 
 #include "diag.h"
@@ -16,10 +23,25 @@
 #include "system.h"
 #include "diag_services.h"
 
+#include "term/term.h"
+
 /* TODO: correctly handle terminal input and output. Curently terminal input and
  * serial output are mixed. */
 
+/**
+ * Pointer to the currently active terminal for diagnostics i/o.
+ */
+static term_desc_t const * diag_term = NULL;
 
+
+/**
+ * Find the pointer to the diagnostic service in the service table.
+ *
+ * @param key The service key (name) to look up.
+ *
+ * @return Pointer to the diagnostic service in the service table or NULL, if no
+ *   service can be found.
+ */
 static diag_tbl_t* diag_find_service(char const * const key)
 {
     diag_tbl_t *entry = NULL;
@@ -75,21 +97,49 @@ static diag_err_t diag_handle_request(char * line_buf)
     /* In read mode, the returned value is placed into the value buffer. */
     if((err == diag_err_ok) && (mode == diag_mode_read))
     {
-        Serial.print(key);
-        Serial.print('=');
-        Serial.println(val);
+        diag_print_data(val);
+        
+        //Serial.print(key);
+        //Serial.print('=');
+        //Serial.println(val);
     }
     
     return err;
 }
 
+
 /**
  * Handler to process a received diagnosis command. 
  */
-void diag_handle_input(char * line_buf)
+void diag_handle_input(term_desc_t const * const desc)
 {
-    diag_err_t err = diag_handle_request(line_buf);
+    if(diag_term == NULL)
+    {
+        diag_term = desc;
+    }
+    else
+    {
+        if(diag_term != desc)
+        {
+            // TODO: log out last session
+            diag_term = desc;
+        }
+    }
+    
+    diag_err_t err = diag_handle_request(desc->buf);
 
-    Serial.print(F("dresp="));
-    Serial.println(err, HEX);
+    char buf[12];
+    snprintf(buf, 12, "dresp:0x%x", err);
+    
+    term_put_line(desc, buf);
+}
+
+
+void diag_print_data(char * data)
+{
+    if(diag_term != NULL)
+    {
+        term_put_str(diag_term, "dd:");
+        term_put_line(diag_term, data);
+    }
 }
