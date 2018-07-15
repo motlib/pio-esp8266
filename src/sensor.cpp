@@ -118,6 +118,9 @@ diag_err_t diag_sensor_info(char const * key, char * const val, diag_mode_t mode
         snprintf(val, DIAG_VAL_BUF_LEN, "humidity=%f", sensor_data.humidity);
         diag_print_data(val);
 
+        snprintf(val, DIAG_VAL_BUF_LEN, "errors=0x%x", sensor_data.errors);
+        diag_print_data(val);
+        
         return diag_err_ok;
     }
     else
