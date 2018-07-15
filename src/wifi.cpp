@@ -13,6 +13,7 @@
 #include "utils/det.h"
 
 #include "diag/diag_services.h"
+#include "diag/diag.h"
 
 #include <stdint.h>
 #include <ESP8266WiFi.h>
@@ -29,6 +30,8 @@ typedef struct
 
     /** Wifi connect timeout. */
     uint16_t timeout;
+
+    uint32_t connect_counter;
 } wifi_data_t;
 
 
@@ -40,6 +43,7 @@ static wifi_data_t wifi_data =
     .request = WIFI_OFFLINE,
     .wifi_state = WIFI_OFFLINE,
     .timeout = 0,
+    .connect_counter = 0,
 };
 
 
@@ -72,6 +76,11 @@ static void wifi_entry_go_online(void)
 
     WiFi.begin(cfg_wifi.wifi_name, cfg_wifi.wifi_password);
     Serial.println(F("i:wifi=connecting"));
+
+    if(wifi_data.connect_counter < 0xffffffffu)
+    {
+        ++wifi_data.connect_counter;
+    }
 }
 
 
@@ -148,6 +157,7 @@ static sm_state_t wifi_do_online(void)
     }
 }
 
+
 /* Statemachine table for wifi handling */
 static sm_tbl_entry_t wifi_sm_tbl[] = 
 {
@@ -156,8 +166,10 @@ static sm_tbl_entry_t wifi_sm_tbl[] =
     SM_TBL_ENTRY(wifi_do_online, wifi_entry_online, NULL),
 };
 
+
 /* Statemachine configuration */
 static sm_cfg_t wifi_sm_cfg = SM_DEF_CFG(WIFI_OFFLINE, wifi_sm_tbl);
+
 
 /* Statemachine run-time data */
 static sm_data_t wifi_sm_data = SM_DEF_DATA();
@@ -231,19 +243,37 @@ diag_err_t diag_wifi_status(char const * key, char * const val, diag_mode_t mode
 {
     if(mode == diag_mode_read)
     {
-        Serial.print(F("dda:hostname="));
-        Serial.println(WiFi.hostname());
-        Serial.print(F("dda:local-ip="));
-        Serial.println(WiFi.localIP());
-        Serial.print(F("dda:netmask="));
-        Serial.println(WiFi.subnetMask());
-        Serial.print(F("dda:gateway="));
-        Serial.println(WiFi.gatewayIP());
-        Serial.print(F("dda:dns="));
-        Serial.println(WiFi.dnsIP());
-        Serial.print(F("dda:rssi="));
-        Serial.println(WiFi.RSSI());
+        IPAddress addr;
+        
+        snprintf(val, DIAG_VAL_BUF_LEN, "hostname=%s", WiFi.hostname().c_str());
+        diag_print_data(val);
 
+        addr = WiFi.localIP();
+        snprintf(val, DIAG_VAL_BUF_LEN, "local-ip=%i.%i.%i.%i",
+                 addr[0], addr[1], addr[2], addr[3]);
+        diag_print_data(val);
+
+        addr = WiFi.subnetMask();
+        snprintf(val, DIAG_VAL_BUF_LEN, "mask=%i.%i.%i.%i",
+                 addr[0], addr[1], addr[2], addr[3]);
+        diag_print_data(val);
+
+        addr = WiFi.gatewayIP();
+        snprintf(val, DIAG_VAL_BUF_LEN, "gateway=%i.%i.%i.%i",
+                 addr[0], addr[1], addr[2], addr[3]);
+        diag_print_data(val);
+        
+        addr = WiFi.dnsIP();
+        snprintf(val, DIAG_VAL_BUF_LEN, "dns=%i.%i.%i.%i",
+                 addr[0], addr[1], addr[2], addr[3]);
+        diag_print_data(val);
+
+        snprintf(val, DIAG_VAL_BUF_LEN, "rssi=%i", WiFi.RSSI());
+        diag_print_data(val);
+
+        snprintf(val, DIAG_VAL_BUF_LEN, "connect-count=%i", wifi_data.connect_counter);
+        diag_print_data(val);
+        
         return diag_err_ok;
     }
     else
