@@ -365,7 +365,7 @@ static diag_err_t diag_ota(char const * key, char * const val, diag_mode_t mode)
         HTTPUpdateResult res;
 
         res = ESPhttpUpdate.update(cfg.ota_host, cfg.ota_port, cfg.ota_path);
-        
+
         /* updater only returns, if nothing to do or error. On success, the MCU
          * does a reset. */
         

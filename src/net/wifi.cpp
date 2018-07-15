@@ -6,14 +6,14 @@
  * disconnects, the module will try to reconnect. 
  */
 
+#include "cfg/cfg.h"
+#include "diag/diag.h"
+#include "diag/diag_services.h"
+#include "led.h"
+#include "utils/det.h"
+#include "utils/sm.h"
 #include "wifi.h"
 #include "wifi_cfg.h"
-#include "utils/sm.h"
-#include "cfg/cfg.h"
-#include "utils/det.h"
-
-#include "diag/diag_services.h"
-#include "diag/diag.h"
 
 #include <stdint.h>
 #include <ESP8266WiFi.h>
@@ -52,6 +52,9 @@ static wifi_data_t wifi_data =
  */    
 static sm_state_t wifi_do_offline(void)
 {
+    /* very slow flashing to indicate offline mode. */
+    led_set(1, 1000);
+    
     /* Check if we shall go online and if the wifi name and password are set. */
     if((wifi_data.request == WIFI_ONLINE)
        && (cfg_wifi.wifi_name[0] != '\0')
@@ -71,6 +74,9 @@ static sm_state_t wifi_do_offline(void)
  */
 static void wifi_entry_go_online(void)
 {
+    /* faster flashing to indicate connection process */
+    led_set(1, 100);
+    
     /* Rewind the timeout counter. */
     wifi_data.timeout = WIFI_CONNECT_TIMEOUT;
 
@@ -114,7 +120,10 @@ static sm_state_t wifi_do_go_online(void)
  */
 static void wifi_entry_online(void)
 {
-    Serial.println(F("i:wifi=connected"));
+    //Serial.println(F("i:wifi=connected"));
+
+    /* default led flashing. */
+    led_set(LED_ON_TIME, LED_OFF_TIME);
 }
 
 
@@ -123,6 +132,7 @@ static void wifi_entry_online(void)
  */
 static sm_state_t wifi_do_online(void)
 {
+    
     /* If we are asked to go offline, we disconnect and transition to the
      * WIFI_OFFLINE state. */
     if(wifi_data.request == WIFI_OFFLINE)

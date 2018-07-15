@@ -3,20 +3,18 @@
 #include <Arduino.h>
 #include <stdint.h>
 
-#include "sensor.h"
-#include "utils/sm.h"
 #include "cfg/cfg.h"
+#include "sensor.h"
 #include "utils/det.h"
+#include "utils/sm.h"
 
 #define STATE_INIT 0
 #define STATE_IDLE 1
-#define STATE_READ 2
-#define STATE_RESET 3
+#define STATE_RESET 2
 
 
 typedef struct
 {
-    uint16_t sens_timer;
     bool reset_request;
 } sys_data_t;
 
@@ -26,7 +24,6 @@ typedef struct
  */
 static sys_data_t sys_data =
 {
-    .sens_timer = 0,
     .reset_request = false,
 };
 
@@ -37,19 +34,13 @@ static sys_data_t sys_data =
  * Initialize the system and then proceed to IDLE state.
  */
 static sm_state_t sys_do_init(void)
-{
-    /* currently nothing to do. Proceed to IDLE. */
-
-    Serial.println(F("BME280"));
-    
+{    
     return STATE_IDLE;
 }
 
 
 /**
  * Statemachine handler for the IDLE state.
- * 
- * Do the timekeeping for changing to READ state regularly. 
  */
 static sm_state_t sys_do_idle()
 {
@@ -58,30 +49,10 @@ static sm_state_t sys_do_idle()
     {
         return STATE_RESET;
     }
-    
-    if(sys_data.sens_timer != 0)
-    {
-        sys_data.sens_timer -= 1;
-
-        return STATE_IDLE;
-    }
     else
     {
-        sys_data.sens_timer = cfg.sens_cycle_time;
-
-        return STATE_READ;
+        return STATE_IDLE;
     }
-}
-
-
-/**
- * Statemachine handler for the READ state.
- *
- * Sample the sensor, print the values and return to IDLE state.
- */
-static sm_state_t sys_do_read()
-{
-    return STATE_IDLE;
 }
 
 
@@ -101,7 +72,6 @@ static sm_tbl_entry_t sys_sm_tbl[] =
 {
     SM_TBL_ENTRY(sys_do_init, NULL, NULL),
     SM_TBL_ENTRY(sys_do_idle, NULL, NULL),
-    SM_TBL_ENTRY(sys_do_read, NULL, NULL),
     SM_TBL_ENTRY(sys_do_reset, NULL, NULL),
 };
 
@@ -109,7 +79,6 @@ static sm_tbl_entry_t sys_sm_tbl[] =
 static sm_cfg_t sys_sm_cfg = SM_DEF_CFG(STATE_INIT, sys_sm_tbl);
 
 static sm_data_t sys_sm_data = SM_DEF_DATA();
-
 
 
 /**
