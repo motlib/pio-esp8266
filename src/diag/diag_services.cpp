@@ -4,9 +4,9 @@
 #include "diag.h"
 #include "uptime.h"
 #include "cfg/cfg.h"
-#include "wifi.h"
+#include "net/wifi.h"
 #include "version.h"
-
+#include "sensor.h"
 
 /* for atoi */
 #include <stdlib.h>
@@ -403,6 +403,7 @@ diag_tbl_t const diag_service_tbl[] =
     { "ota-path", diag_ota_path },
     { "ota", diag_ota },
     { "reset", diag_do_reset },
+    { "sens", diag_sensor_info },
     { "sprint", diag_sensor_print },
     { "stime", diag_sensor_timer },
     { "uptime", diag_uptime },

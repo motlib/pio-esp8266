@@ -7,20 +7,20 @@
 
 #include <Arduino.h>
 
-#include "system.h"
-#include "sensor.h"
-#include "term/term.h"
-#include "term/serterm.h"
-#include "uptime.h"
 #include "cfg/cfg.h"
-#include "wifi.h"
+#include "led.h"
 #include "net/httpsrv.h"
 #include "net/telnet.h"
-#include "led.h"
+#include "net/wifi.h"
+#include "sensor.h"
+#include "system.h"
+#include "term/serterm.h"
+#include "term/term.h"
+#include "uptime.h"
 
 
 /**
- * Cycle time of the main loop.
+ * Cycle time of the main loop [10ms].
  */
 #define MAIN_CYCLE_TIME 10
 
@@ -55,12 +55,15 @@ void setup()
 static void main_tasks(void)
 {
     system_main();
+
     term_main(&serterm_desc);
+    term_main(&telnet_term_desc);
+
     uptime_main();
     wifi_main();
     httpsrv_main();
     telnet_main();
-    term_main(&telnet_term_desc);
+    sensor_main();
     led_main();
 }
 

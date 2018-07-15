@@ -81,12 +81,6 @@ static sm_state_t sys_do_idle()
  */
 static sm_state_t sys_do_read()
 {
-    sensor_sample();
-    if(cfg.sens_print != 0)
-    {
-        sensor_print_values();
-    }
-    
     return STATE_IDLE;
 }
 
@@ -127,8 +121,8 @@ void system_main(void)
 {
     sm_step(&sys_sm_cfg, &sys_sm_data);    
 }
-    
-    
+
+
 void system_request_reset(void)
 {
     sys_data.reset_request = true;

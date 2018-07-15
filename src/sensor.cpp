@@ -4,104 +4,140 @@
 #include <Adafruit_BME280.h>
 
 #include "uptime.h"
+#include "diag/diag.h"
+#include "diag/diag_services.h"
+#include "cfg/cfg.h"
 
 #define BME280_MY_ADDRESS (0x76)
 
+/*
+- no serial output
+- use my own lib
+- implement statemachine (merge with system.cpp)
+- error handling
+- better naming of variables
+*/
 
-typedef struct {
-    float temp;
-    float pres;
-    float hum;
+#define SENS_ERR_NO_ACK 0x01
+#define SENS_ERR_INIT_FAILED 0x02
+
+typedef struct
+{
+    float temperature;
+    float pressure;
+    float humidity;
+    uint8_t errors;
+    uint16_t sample_timer;
 } sensor_data_t;
 
-static sensor_data_t sensor_data;
+
+/* Sensor runtime data. */
+static sensor_data_t sensor_data = {
+    .temperature = 0.0f,
+    .pressure = 0.0f,
+    .humidity = 0.0f,
+  
+    .errors = 0x0u,
+
+    .sample_timer = 0,
+};
 
 
-static Adafruit_BME280 bme; // I2C
-
-
+/* Sensor instance, by default uses I2C interface. */
+static Adafruit_BME280 bme; 
 
 
 void sensor_init(void)
 {
     Wire.begin();
 
-
     Wire.beginTransmission(BME280_MY_ADDRESS);
     uint8_t error = Wire.endTransmission();
-    if (error == 0)
+    if(error != 0)
     {
-        Serial.print(F("OK: Sensor acknowledges address "));
+        sensor_data.errors |= SENS_ERR_NO_ACK;
     }
-    else
-    {
-        Serial.print(F("ERROR: Sensor does not acknowledge I2C address "));
-    }
-    Serial.print(BME280_MY_ADDRESS, HEX);
-
     
     bme.begin(BME280_MY_ADDRESS);
     
     if(bme.init() == false)
     {
-        Serial.print(F("ERROR: Sensor init failed. Code: "));
-        Serial.println(error);
-        
-        while(1);
+        sensor_data.errors |= SENS_ERR_INIT_FAILED;
     }
 
-    bme.setSampling(
-        Adafruit_BME280::MODE_NORMAL, // cyclic sampling
-        Adafruit_BME280::SAMPLING_X16, // temperature
-        Adafruit_BME280::SAMPLING_X16, // pressure
-        Adafruit_BME280::SAMPLING_X16, // humidity
-        Adafruit_BME280::FILTER_OFF);
-
+    if(sensor_data.errors == 0)
+    {
+        bme.setSampling(
+            Adafruit_BME280::MODE_NORMAL, // cyclic sampling
+            Adafruit_BME280::SAMPLING_X16, // temperature
+            Adafruit_BME280::SAMPLING_X16, // pressure
+            Adafruit_BME280::SAMPLING_X16, // humidity
+            Adafruit_BME280::FILTER_OFF);
+    }
 }
 
-void sensor_sample()
+static void sensor_sample()
 {
-    sensor_data.temp = bme.readTemperature();
-    sensor_data.pres = bme.readPressure() / 100.0f;
-    sensor_data.hum = bme.readHumidity();
+    sensor_data.temperature = bme.readTemperature();
+    sensor_data.pressure = bme.readPressure() / 100.0f;
+    sensor_data.humidity = bme.readHumidity();
+}
+
+
+void sensor_main(void)
+{
+    if(sensor_data.sample_timer == 0)
+    {
+        sensor_data.sample_timer = cfg.sens_cycle_time;
+        if(sensor_data.errors == 0)
+        {
+            sensor_sample();
+        }
+    }
+    else
+    {
+        --sensor_data.sample_timer;
+    }
 }
 
 
 
-void sensor_print_values()
+/**
+ * Diagnostic service to print current connection data for wifi.
+ */
+diag_err_t diag_sensor_info(char const * key, char * const val, diag_mode_t mode)
 {
-#ifdef SENSOR_PRINT_UPTIME
-    Serial.print(F("Uptime = "));
-    Serial.print(uptime_get_seconds());
-    Serial.println(F("s"));
-#endif /* SENSOR_PRINT_UPTIME */
-    
-    Serial.print(F("temperature="));
-    Serial.print(sensor_data.temp);
-    Serial.println(F(" *C"));
+    if(mode == diag_mode_read)
+    {
+        snprintf(val, DIAG_VAL_BUF_LEN, "temperature=%f", sensor_data.temperature);
+        diag_print_data(val);
 
-    Serial.print(F("pressure="));
-    Serial.print(sensor_data.pres);
-    Serial.println(F("hPa"));
+        snprintf(val, DIAG_VAL_BUF_LEN, "pressure=%f", sensor_data.pressure);
+        diag_print_data(val);
 
-    Serial.print("humidity = ");
-    Serial.print(sensor_data.hum);
-    Serial.println("%");
+        snprintf(val, DIAG_VAL_BUF_LEN, "humidity=%f", sensor_data.humidity);
+        diag_print_data(val);
 
-    Serial.println();
+        return diag_err_ok;
+    }
+    else
+    {
+
+        return diag_err_mode_unsupported;
+    }
 }
 
 float sensor_get_temp(void)
 {
-    return sensor_data.temp;
+    return sensor_data.temperature;
 }
 
 float sensor_get_pres(void)
 {
-    return sensor_data.pres;
+    return sensor_data.pressure;
 }
 
 float sensor_get_hum(void)
 {
-    return sensor_data.hum;
+    return sensor_data.humidity;
 }
