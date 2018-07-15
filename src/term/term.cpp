@@ -40,10 +40,14 @@ void term_put_str(term_desc_t const * const term_desc, char const * str)
 static void term_handle_char(term_desc_t * const term_desc, char c)
 {
     /* Depending on the connected terminal, we receive CR or LF, so we
-     * handle both as end-of-command. */
-    if((c == TERM_KEY_CR) || (c == TERM_KEY_LF))
+     * handle them as end-of-command. */
+    if(((c == TERM_KEY_CR) && term_desc->flags & TERM_FLAG_HANDLE_CR)
+        || (c == TERM_KEY_LF))
     {
-        term_put_str(term_desc, TERM_LINEFEED);
+        if(term_desc->flags & TERM_FLAG_ECHO)
+        {
+            term_put_str(term_desc, TERM_LINEFEED);
+        }
 
         /* process the entered line */
         term_desc->line_handler(term_desc);

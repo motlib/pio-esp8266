@@ -13,8 +13,17 @@
 /** A linefeed */
 #define TERM_LINEFEED "\r\n"
 
+
+/** Enable echo of every received charater. If the connected terminal has local
+ * echo, this is not needed. */
 #define TERM_FLAG_ECHO 0x01
+
+/** Setting to determine if a prompt is shown at all. */
 #define TERM_FLAG_PROMPT 0x02
+
+/** With this flag, both \r and \n are handled as "enter". If this flag is not
+ * used, only \n is handled as "enter". */
+#define TERM_FLAG_HANDLE_CR 0x04
 
 
 /**

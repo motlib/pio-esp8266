@@ -364,12 +364,11 @@ static diag_err_t diag_ota(char const * key, char * const val, diag_mode_t mode)
     {
         HTTPUpdateResult res;
 
-        diag_print_data("ota-start");
-        
         res = ESPhttpUpdate.update(cfg.ota_host, cfg.ota_port, cfg.ota_path);
         
         /* updater only returns, if nothing to do or error. On success, the MCU
          * does a reset. */
+        
         snprintf(val, DIAG_VAL_BUF_LEN, "res=%i", res);
         diag_print_data(val);
 
@@ -389,7 +388,6 @@ static diag_err_t diag_ota(char const * key, char * const val, diag_mode_t mode)
 
 
 static diag_err_t diag_keys(char const * key, char * const val, diag_mode_t mode);
-
 
 
 /* Table mapping service keys to service implementations. */

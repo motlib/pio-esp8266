@@ -2,8 +2,11 @@
 #include <Arduino.h>
 
 #include "term.h"
-
 #include "diag/diag.h"
+
+/** Length of the internal line buffer. */
+#define SERTERM_LINE_BUF_LEN 64
+
 
 static int serterm_get_char(void)
 {
@@ -17,13 +20,16 @@ static int serterm_get_char(void)
     }
 }
 
+
 static void serterm_put_char(char c)
 {
     Serial.print(c);
 }
 
 
-static char serterm_line_buf[64];
+/* Line buffer */
+static char serterm_line_buf[SERTERM_LINE_BUF_LEN];
+
 
 term_desc_t serterm_desc =
 {
@@ -33,6 +39,6 @@ term_desc_t serterm_desc =
     .buf = serterm_line_buf,
     .buf_len = sizeof(serterm_line_buf),
     .idx = 0,
-    .flags = TERM_FLAG_ECHO | TERM_FLAG_PROMPT,
+    .flags = TERM_FLAG_ECHO | TERM_FLAG_PROMPT | TERM_FLAG_HANDLE_CR,
 };
 
