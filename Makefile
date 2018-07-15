@@ -16,4 +16,6 @@ clean:
 doc:
 	cd tools && doxygen
 
-
+.PHONY: check
+check:
+	cppcheck --enable=all src

@@ -271,7 +271,7 @@ diag_err_t diag_wifi_status(char const * key, char * const val, diag_mode_t mode
         snprintf(val, DIAG_VAL_BUF_LEN, "rssi=%i", WiFi.RSSI());
         diag_print_data(val);
 
-        snprintf(val, DIAG_VAL_BUF_LEN, "connect-count=%i", wifi_data.connect_counter);
+        snprintf(val, DIAG_VAL_BUF_LEN, "connect-count=%u", wifi_data.connect_counter);
         diag_print_data(val);
         
         return diag_err_ok;

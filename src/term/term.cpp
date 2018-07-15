@@ -124,11 +124,9 @@ void term_init(term_desc_t * const term_desc)
  */
 void term_main(term_desc_t * const term_desc)
 {
-    int c;
-
     while(true)
     {
-        c = term_desc->get_char();
+        int c = term_desc->get_char();
         if(c < 0)
         {
             break;
