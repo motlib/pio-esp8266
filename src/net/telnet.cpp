@@ -32,6 +32,7 @@ static void telnet_put_char(char c)
 void telnet_init(void)
 {
     telnet_srv.begin();
+    telnet_srv.setNoDelay(true);
 }
 
 void telnet_main(void)
@@ -45,6 +46,7 @@ void telnet_main(void)
         }
 
         telnet_client = telnet_srv.available();
+        telnet_client.setNoDelay(true);
     }
 }
 
