@@ -27,6 +27,8 @@ cfg_data_t const cfg_defaults PROGMEM =
 
     /* Over-the-air update server. */
     .ota_host = {0},
+    /* Over-the-air update port. */    
+    .ota_port = 80,
     /* Over-the-air update URL path. */
     .ota_path = {0},
 

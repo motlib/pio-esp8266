@@ -303,6 +303,33 @@ static diag_err_t diag_ota_host(char const * key, char * const val, diag_mode_t 
 /**
  * Read or set the OTA URL path.
  */
+static diag_err_t diag_ota_port(char const * key, char * const val, diag_mode_t mode)
+{
+    if(mode == diag_mode_write)
+    {
+        int port = atoi(val);
+
+        cfg.ota_port = port;
+        
+        return diag_err_ok;
+    }
+    else if(mode == diag_mode_read)
+    {
+        snprintf(val, DIAG_VAL_BUF_LEN, "%u", cfg.ota_port);
+        diag_print_data(val);
+
+        return diag_err_ok;
+    }
+    else
+    {
+        return diag_err_mode_unsupported;
+    }
+}
+
+
+/**
+ * Read or set the OTA URL path.
+ */
 static diag_err_t diag_ota_path(char const * key, char * const val, diag_mode_t mode)
 {
     return diag_handle_string(key, val, mode, cfg.ota_path, CFG_NODE_NAME_LEN);
@@ -336,11 +363,20 @@ static diag_err_t diag_ota(char const * key, char * const val, diag_mode_t mode)
     if(mode == diag_mode_write)
     {
         HTTPUpdateResult res;
+
+        diag_print_data("ota-start");
         
-        res = ESPhttpUpdate.update(cfg.ota_host, 80, cfg.ota_path);
+        res = ESPhttpUpdate.update(cfg.ota_host, cfg.ota_port, cfg.ota_path);
+        
         /* updater only returns, if nothing to do or error. On success, the MCU
          * does a reset. */
         snprintf(val, DIAG_VAL_BUF_LEN, "res=%i", res);
+        diag_print_data(val);
+
+        snprintf(val, DIAG_VAL_BUF_LEN, "err=%i", ESPhttpUpdate.getLastError());
+        diag_print_data(val);
+
+        snprintf(val, DIAG_VAL_BUF_LEN, "str=%s", ESPhttpUpdate.getLastErrorString().c_str());
         
         return diag_err_ok;
     }
@@ -364,8 +400,9 @@ diag_tbl_t const diag_service_tbl[] =
     { "diagkeys", diag_keys },
     { "fwvers", diag_fw_version },
     { "nodename", diag_node_name },
-    { "otahost", diag_ota_host },
-    { "otapath", diag_ota_path },
+    { "ota-host", diag_ota_host },
+    { "ota-port", diag_ota_port },    
+    { "ota-path", diag_ota_path },
     { "ota", diag_ota },
     { "reset", diag_do_reset },
     { "sprint", diag_sensor_print },

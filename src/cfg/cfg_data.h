@@ -75,9 +75,12 @@ typedef struct
     /** Print sensor values to serial interface. */
     uint8_t sens_print;
 
-    /** over-the-air update URL. */
+    /** over-the-air update host. */
     char ota_host[CFG_OTA_HOST_LEN];
 
+    /** over-the-air update server port */
+    uint16_t ota_port;
+    
     /** over-the-air update URL. */
     char ota_path[CFG_OTA_PATH_LEN];
     
