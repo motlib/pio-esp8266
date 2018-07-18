@@ -17,7 +17,7 @@
 #include "term/serterm.h"
 #include "term/term.h"
 #include "uptime.h"
-
+#include "sensorstat.h"
 
 /**
  * Cycle time of the main loop [10ms].
@@ -65,6 +65,8 @@ static void main_tasks(void)
     telnet_main();
     sensor_main();
     led_main();
+
+    sensorstat_main();
 }
 
 

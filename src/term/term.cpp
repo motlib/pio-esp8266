@@ -36,74 +36,104 @@ void term_put_str(term_desc_t const * const term_desc, char const * str)
 }
 
 
-
-static void term_handle_char(term_desc_t * const term_desc, char c)
+static void term_handle_enter(term_desc_t * const term_desc, char c)
 {
-    /* Depending on the connected terminal, we receive CR or LF, so we
-     * handle them as end-of-command. */
-    if(((c == TERM_KEY_CR) && term_desc->flags & TERM_FLAG_HANDLE_CR)
-        || (c == TERM_KEY_LF))
+    if((c == TERM_KEY_CR) && !(term_desc->flags & TERM_FLAG_HANDLE_CR))
     {
-        if(term_desc->flags & TERM_FLAG_ECHO)
-        {
-            term_put_str(term_desc, TERM_LINEFEED);
-        }
-
-        /* process the entered line */
-        term_desc->line_handler(term_desc);
-
-        /* reset request buffer */
-        term_desc->idx = 0;
-        term_desc->buf[0] = '\0';
-
-        if(term_desc->flags & TERM_FLAG_PROMPT)
-        {
-            term_put_str(term_desc, TERM_PROMPT);
-        }
+        return;
     }
-    else if(c == TERM_KEY_BACKSPACE)
+       
+    if(term_desc->flags & TERM_FLAG_ECHO)
     {
-        if(term_desc->idx > 0)
-        {
-            --term_desc->idx;
-            term_desc->buf[term_desc->idx] = '\0';
-
-            /* Backspace is non-desctructive on VT102 (?), so a \b moves the
-             * cursor back one character, but does not delete it on
-             * screen. Workaround: go back one character, print a space
-             * charater, print a backspace again. */
-            term_desc->put_char('\b');
-            term_desc->put_char(' ');
-            term_desc->put_char('\b');
-        }
-    }
-    else if(c == TERM_KEY_CTRL_C)
-    {
-        /* reset request buffer without handling contents. */
-        term_desc->idx = 0;
-        term_desc->buf[0] = '\0';
-
         term_put_str(term_desc, TERM_LINEFEED);
+    }
+
+    /* process the entered line */
+    term_desc->line_handler(term_desc);
+    
+    /* reset request buffer */
+    term_desc->idx = 0;
+    term_desc->buf[0] = '\0';
+    
+    if(term_desc->flags & TERM_FLAG_PROMPT)
+    {
         term_put_str(term_desc, TERM_PROMPT);
+    }
+}
+
+static void term_handle_backspace(term_desc_t * const term_desc, char c)
+{
+    if(term_desc->idx > 0)
+    {
+        --term_desc->idx;
+        term_desc->buf[term_desc->idx] = '\0';
+        
+        /* Backspace is non-desctructive on VT102 (?), so a \b moves the cursor
+         * back one character, but does not delete it on screen. Workaround: go
+         * back one character, print a space charater, print a backspace
+         * again. */
+        term_desc->put_char('\b');
+        term_desc->put_char(' ');
+        term_desc->put_char('\b');
+    }
+}
+
+static void term_handle_abort(term_desc_t * const term_desc, char c)
+{
+    /* clear request buffer without handling contents. */
+    term_desc->idx = 0;
+    term_desc->buf[0] = '\0';
+    
+    term_put_str(term_desc, TERM_LINEFEED);
+    if(term_desc->flags & TERM_FLAG_PROMPT)
+    {
+        term_put_str(term_desc, TERM_PROMPT);
+    }
+}
+ 
+static void term_handle_normal_chars(term_desc_t * const term_desc, char c)
+{
+    if(term_desc->idx >= term_desc->buf_len - 2)
+    {
+        /* Buffer is full, ignore further characters. */
     }
     else
     {
-        if(term_desc->idx >= term_desc->buf_len - 2)
+        /* Add received character to buffer and always terminate with \0. */
+        term_desc->buf[term_desc->idx] = (char)c;
+        term_desc->idx++;
+        term_desc->buf[term_desc->idx] = '\0';
+        
+        if(term_desc->flags & TERM_FLAG_ECHO)
         {
-            /* overflow */
+            term_desc->put_char(c);
         }
-        else
-        {
-            /* Add received character to buffer and always terminate with \0. */
-            term_desc->buf[term_desc->idx] = (char)c;
-            term_desc->idx++;
-            term_desc->buf[term_desc->idx] = '\0';
+    }
+}
 
-            if(term_desc->flags & TERM_FLAG_ECHO)
-            {
-                term_desc->put_char(c);
-            }
-        }
+
+static void term_handle_char(term_desc_t * const term_desc, char c)
+{
+    switch(c)
+    {
+    case TERM_KEY_CR:
+    case TERM_KEY_LF:
+        /* Depending on the connected terminal, we receive CR or LF, so we
+         * handle them as end-of-command. */
+        term_handle_enter(term_desc, c);
+        break;
+        
+    case TERM_KEY_BACKSPACE:
+        term_handle_backspace(term_desc, c);
+        break;
+        
+    case TERM_KEY_CTRL_C:
+        term_handle_abort(term_desc, c);
+        break;
+        
+    default:
+        term_handle_normal_chars(term_desc, c);
+        break;
     }
 }
 
@@ -116,14 +146,18 @@ static void term_handle_char(term_desc_t * const term_desc, char c)
 void term_init(term_desc_t * const term_desc)
 {
     term_put_str(term_desc, TERM_VT102_RESET);
-    term_put_str(term_desc, TERM_PROMPT);
+    
+    if(term_desc->flags & TERM_FLAG_PROMPT)
+    {
+        term_put_str(term_desc, TERM_PROMPT);
+    }
 }
 
 
 /**
  * Main method of terminal implementation.
  *
- * @param term_desc The terminal descriptor providing low-level functions to
+ * @param[in] term_desc The terminal descriptor providing low-level functions to
  *   read and write characters to the terminal.
  */
 void term_main(term_desc_t * const term_desc)
