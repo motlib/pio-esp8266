@@ -11,10 +11,7 @@
 #define BME280_MY_ADDRESS (0x76)
 
 /*
-- no serial output
-- use my own lib
-- implement statemachine (merge with system.cpp)
-- error handling
+- use my own BME280 lib
 - better naming of variables
 */
 
@@ -76,6 +73,7 @@ void sensor_init(void)
     }
 }
 
+
 static void sensor_sample()
 {
     sensor_data.temperature = bme.readTemperature();
@@ -101,7 +99,6 @@ void sensor_main(void)
 }
 
 
-
 /**
  * Diagnostic service to print current connection data for wifi.
  */
@@ -109,13 +106,13 @@ diag_err_t diag_sensor_info(char const * key, char * const val, diag_mode_t mode
 {
     if(mode == diag_mode_read)
     {
-        snprintf(val, DIAG_VAL_BUF_LEN, "temperature=%f", sensor_data.temperature);
+        snprintf(val, DIAG_VAL_BUF_LEN, "temperature=%.2f", sensor_data.temperature);
         diag_print_data(val);
 
-        snprintf(val, DIAG_VAL_BUF_LEN, "pressure=%f", sensor_data.pressure);
+        snprintf(val, DIAG_VAL_BUF_LEN, "pressure=%.2f", sensor_data.pressure);
         diag_print_data(val);
 
-        snprintf(val, DIAG_VAL_BUF_LEN, "humidity=%f", sensor_data.humidity);
+        snprintf(val, DIAG_VAL_BUF_LEN, "humidity=%.2f", sensor_data.humidity);
         diag_print_data(val);
 
         snprintf(val, DIAG_VAL_BUF_LEN, "errors=0x%x", sensor_data.errors);
@@ -125,7 +122,6 @@ diag_err_t diag_sensor_info(char const * key, char * const val, diag_mode_t mode
     }
     else
     {
-
         return diag_err_mode_unsupported;
     }
 }
