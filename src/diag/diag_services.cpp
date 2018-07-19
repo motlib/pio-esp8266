@@ -8,6 +8,7 @@
 #include "version.h"
 #include "sensor.h"
 #include "sensorstat.h"
+#include "version.h"
 
 /* for atoi */
 #include <stdlib.h>
@@ -344,8 +345,10 @@ static diag_err_t diag_fw_version(char const * key, char * const val, diag_mode_
 {
     if(mode == diag_mode_read)
     {
-        strncpy(val, VERSION_FW, DIAG_VAL_BUF_LEN);
-        val[DIAG_VAL_BUF_LEN - 1] = '\0';
+        snprintf(val, DIAG_VAL_BUF_LEN, "fw_version=%s", version_data.fw_version);
+        diag_print_data(val);
+
+        snprintf(val, DIAG_VAL_BUF_LEN, "build_date=%s", version_data.build_date);
         diag_print_data(val);
 
         return diag_err_ok;
@@ -411,19 +414,19 @@ diag_tbl_t const diag_service_tbl[] =
 {
     { "cfgload", diag_load_cfg },
     { "cfgsave", diag_save_cfg },
-    { "diagkeys", diag_keys },
-    { "fwvers", diag_fw_version },
+    { "help", diag_keys },
     { "nodename", diag_node_name },
-    { "ota-host", diag_ota_host },
-    { "ota-port", diag_ota_port },    
-    { "ota-path", diag_ota_path },
     { "ota", diag_ota },
+    { "ota-host", diag_ota_host },
+    { "ota-path", diag_ota_path },
+    { "ota-port", diag_ota_port },    
     { "reset", diag_do_reset },
     { "sens", diag_sensor_info },
     { "senstrnd", diag_sensorstat_info },
     { "sprint", diag_sensor_print },
     { "stime", diag_sensor_timer },
     { "uptime", diag_uptime },
+    { "vers", diag_fw_version },
     { "wifi", diag_wifi_state },
     { "wifiname", diag_wifi_name },
     { "wifipon", diag_wifi_pon_connect },
