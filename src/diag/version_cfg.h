@@ -1,6 +1,7 @@
 #ifndef VERSION_CFG_H
 #define VERSION_CFG_H
 
+
 /* format 00.00.00[-dev] */
 #define VERSION_FW "0.0.1"
 

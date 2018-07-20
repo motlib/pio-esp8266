@@ -351,6 +351,9 @@ static diag_err_t diag_fw_version(char const * key, char * const val, diag_mode_
         snprintf(val, DIAG_VAL_BUF_LEN, "build_date=%s", version_data.build_date);
         diag_print_data(val);
 
+        snprintf(val, DIAG_VAL_BUF_LEN, "git_hash=%s", version_data.git_hash);
+        diag_print_data(val);
+        
         return diag_err_ok;
     }
     else

@@ -1,14 +1,8 @@
 #include "version.h"
 #include "version_cfg.h"
 
-#ifndef BUILD_DATE
-#warning BUILD_DATE define must be available!
-#endif
+#include "version_info.h"
 
-/* workaround to stringify the build date. See
-* https://gcc.gnu.org/onlinedocs/gcc-3.1/cpp/Stringification.html */
-#define XSTR(X) STR(X)
-#define STR(X) #X
 
 version_data_t version_data =
 {
@@ -16,5 +10,7 @@ version_data_t version_data =
     .fw_version = VERSION_FW,
 
     /* the build date. */
-    .build_date = XSTR(BUILD_DATE),
+    .build_date = VERSION_BUILD_DATE,
+
+    .git_hash = VERSION_GIT_HASH
 };

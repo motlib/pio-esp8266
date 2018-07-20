@@ -12,6 +12,9 @@ typedef struct
 
     /* Build date in yyyymmdd-HHMM format */
     char build_date[14];
+
+    /* The git hash code to identify the commit. */
+    char git_hash[41];
 } version_data_t;
 
 
