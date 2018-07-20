@@ -1,4 +1,3 @@
-
 #include "led.h"
 #include "led_cfg.h"
 
@@ -6,65 +5,61 @@
 #include <Arduino.h>
 
 
-#define LED_STATE_OFF 0
-#define LED_STATE_ON 1
 
-
-typedef struct
+void led_init(led_cfg_t const * led)
 {
-    uint16_t on_time;
-    uint16_t off_time;
-    uint8_t state;
-    uint16_t cnt;
-} led_data_t;
-
-static led_data_t led_data = {
-    .on_time = LED_ON_TIME,
-    .off_time = LED_OFF_TIME,
-    .state = 0,
-    .cnt = 0,
-};
-
-
-void led_init(void)
-{
-    pinMode(LED_PIN, OUTPUT);
+    pinMode(led->pin, OUTPUT);
 }
 
 
-void led_set(uint16_t on_time, uint16_t off_time)
+void led_set_flash_count(led_cfg_t const * led, uint8_t flash_count)
 {
-    led_data.on_time = on_time;
-    led_data.off_time = off_time;
-    
-    /* Set state to off and counter expired, so that led is switched on in next
-     * cycle. */
-    led_data.state = LED_STATE_OFF;
-    led_data.cnt = 0;
-}
-
-void led_main(void)
-{
-    if(led_data.cnt > 0)
+    if(flash_count != led->data->flash_count)
     {
-        --led_data.cnt;
+        led->data->flash_count = flash_count;
+    
+        /* Set state to off and counter expired, so that led is switched on in
+         * next cycle. */
+        led->data->state = 0;
+        led->data->cnt = 0;
+    }
+}
+
+
+void led_main(led_cfg_t const * led)
+{
+    if(led->data->cnt > 0)
+    {
+        --led->data->cnt;
     }
     else
     {
-        if(led_data.state == LED_STATE_OFF)
+        if(led->data->state >= (2 * led->data->flash_count))
         {
-            // switch on led
-            digitalWrite(LED_PIN, LOW);
+            /* wait for flash interval */
+            led->data->cnt = led->flash_wait_time;
+
+            /* after waiting, start with flashing again. */
+            led->data->state = 0u;
             
-            led_data.cnt = led_data.on_time;
-            led_data.state = LED_STATE_ON;
+            /* switch off led */
+            digitalWrite(led->pin, HIGH);
+        }
+        else if(led->data->state % 2 == 0u)
+        {
+            /* wait for flash interval */
+            led->data->cnt = led->flash_on_time;
+            led->data->state += 1;
+
+            digitalWrite(led->pin, LOW);
+
         }
         else
         {
-            digitalWrite(LED_PIN, HIGH);
-            led_data.cnt = led_data.off_time;
-            led_data.state = LED_STATE_OFF;
+            led->data->cnt = led->flash_off_time;
+            led->data->state += 1;
+            
+            digitalWrite(led->pin, HIGH);
         }
-        
     }
 }

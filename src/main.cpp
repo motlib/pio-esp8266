@@ -46,7 +46,7 @@ void setup()
     httpsrv_init();
     wifi_init();
 
-    led_init();
+    led_init(&led_stat);
 
     term_put_line(&serterm_desc, "i:booted");
 }
@@ -64,7 +64,7 @@ static void main_tasks(void)
     httpsrv_main();
     telnet_main();
     sensor_main();
-    led_main();
+    led_main(&led_stat);
 
     sensorstat_main();
 }

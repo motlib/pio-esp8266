@@ -19,6 +19,10 @@
 #include <ESP8266WiFi.h>
 
 
+#define WIFI_LED_OFFLINE_BLINK_COUNT   0
+#define WIFI_LED_GO_ONLINE_BLINK_COUNT 2
+#define WIFI_LED_ONLINE_BLINK_COUNT    1
+
 
 typedef struct
 {
@@ -48,13 +52,20 @@ static wifi_data_t wifi_data =
 
 
 /**
+ * Handle when entering the offline state. 
+ */
+static void wifi_entry_offline(void)
+{
+    /* no flash to indicate offline mode. */
+    led_set_flash_count(&led_stat, WIFI_LED_OFFLINE_BLINK_COUNT);
+}
+
+
+/**
  * Statemachine handler for WIFI_OFFLINE state.
  */    
 static sm_state_t wifi_do_offline(void)
 {
-    /* very slow flashing to indicate offline mode. */
-    led_set(1, 1000);
-    
     /* Check if we shall go online and if the wifi name and password are set. */
     if((wifi_data.request == WIFI_ONLINE)
        && (cfg_wifi.wifi_name[0] != '\0')
@@ -74,14 +85,13 @@ static sm_state_t wifi_do_offline(void)
  */
 static void wifi_entry_go_online(void)
 {
-    /* faster flashing to indicate connection process */
-    led_set(1, 100);
+    /* two flashes to indicate connecting */
+    led_set_flash_count(&led_stat, WIFI_LED_GO_ONLINE_BLINK_COUNT);
     
     /* Rewind the timeout counter. */
     wifi_data.timeout = WIFI_CONNECT_TIMEOUT;
 
     WiFi.begin(cfg_wifi.wifi_name, cfg_wifi.wifi_password);
-    Serial.println(F("i:wifi=connecting"));
 
     if(wifi_data.connect_counter < 0xffffffffu)
     {
@@ -120,10 +130,8 @@ static sm_state_t wifi_do_go_online(void)
  */
 static void wifi_entry_online(void)
 {
-    //Serial.println(F("i:wifi=connected"));
-
-    /* default led flashing. */
-    led_set(LED_ON_TIME, LED_OFF_TIME);
+    /* one flash to indicate connection */
+    led_set_flash_count(&led_stat, WIFI_LED_ONLINE_BLINK_COUNT);
 }
 
 
@@ -171,7 +179,7 @@ static sm_state_t wifi_do_online(void)
 /* Statemachine table for wifi handling */
 static sm_tbl_entry_t wifi_sm_tbl[] = 
 {
-    SM_TBL_ENTRY(wifi_do_offline, NULL, NULL),
+    SM_TBL_ENTRY(wifi_do_offline, wifi_entry_offline, NULL),
     SM_TBL_ENTRY(wifi_do_go_online, wifi_entry_go_online, NULL),
     SM_TBL_ENTRY(wifi_do_online, wifi_entry_online, NULL),
 };
