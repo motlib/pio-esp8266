@@ -15,3 +15,16 @@ Comments fulfill two main goals:
   to be able to understand the internal functionality, e.g. when extending the
   components. 
    
+To deal with these points, these are the rules:
+
+* Modules, function prototypes and datatypes are documented in the header files
+  with doxygen style comments. Explains how to use and what to expect.
+
+* Internal implementation details are documented with normal C style comments
+  in the *.c / *.cpp files. Explains how and why it works.
+  
+## Code standard
+
+As the Arduino framework uses C++, all source files in this project have the cpp
+extension. Still, the source code is written in plain C, so it can be re-used in
+other projects, too.

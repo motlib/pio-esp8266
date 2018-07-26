@@ -1,15 +1,7 @@
 /**
  * @file
  *
- * Handler for storing and loading the system configuration. The configuration
- * is stored in EEPROM (emulation).
- *
- * Access to the configuration is provided by the global cfg structure defined
- * in cfg_data.cpp.
- *
- * The configuration data is protected by a 16 bit CRC checksum. When loading
- * the configuration, the checksum is checked. If it is invalid, default data
- * from ROM is used instead.
+ * Config data handler component.
  */
 
 #include <EEPROM.h>
@@ -20,14 +12,17 @@
 #include "utils/crc.h"
 #include "utils/det.h"
 
-/* TODO: Add support for multiple blocks (e.g. wifi and other configuration)*/
+/* TODO: Pass config by pointer to apo, so that internal buffer of EEPROM can be used. */
 
-
+/* Initialize the underlying EEPROM from Arsyino framework. */
 void cfg_init(void)
 {
     EEPROM.begin(CFG_EEP_SIZE);
 }
 
+/**
+ * Check if the data read from nvram is valid by checking its CRC16.
+ */
 static uint8_t cfg_validate_block(cfg_block_t const * blk)
 {
     uint16_t crc = crc16((uint8_t*)blk->shadow, blk->size - 2);
@@ -39,7 +34,7 @@ static uint8_t cfg_validate_block(cfg_block_t const * blk)
     /* If the crc does not match, we copy the defaults. */
     if(crc != shwcrc)
     {
-        /* Attention: normal memcpy will fail of the data is not aligned for 32
+        /* Attention: normal memcpy will fail if the data is not aligned for 32
          * bit access. */
         memcpy_P(blk->shadow, blk->defaults, blk->size);
 
@@ -50,6 +45,10 @@ static uint8_t cfg_validate_block(cfg_block_t const * blk)
 }
 
 
+/* 
+ * Load data from EEPROM and check if valid. If not, then use default data from
+ * ROM. 
+ */
 uint8_t cfg_load(void)
 {
     uint16_t addr = 0;
@@ -74,6 +73,8 @@ uint8_t cfg_load(void)
 }
 
 
+/* Calculate CRC of current config data and then store all config data in
+ * nvram. */
 void cfg_save(void)
 {
     uint16_t addr = 0;

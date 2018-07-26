@@ -31,19 +31,12 @@ static uptime_data_t uptime_data = {
     .last_cnt = 0,
 };
 
-
-/**
- * Main function for the uptime counter component.
- *
- * Needs to be called regularly (e.g. every 10ms or 100ms) to update the uptime
- * counter. Does not need to be called with exact timing, as the timebase is
- * used from the Aruino millis() timer value.
- */
+/* Update the time counter. */
 void uptime_main(void)
 {
     uint32 cnt = millis();
     
-    /* this even works, when the counter overflows. */
+    /* this even works, when the millis() counter overflows. */
     uptime_data.msecs += (cnt - uptime_data.last_cnt);
 
     /* Store current counter value for next cycle. */
@@ -56,13 +49,7 @@ void uptime_main(void)
     uptime_data.msecs %= 1000;
 }
 
-
-/**
- * Get the current uptime (time since power-on) in seconds.
- * 
- * @returns Seconds since power-on. 32 bits is good for up to 49710 days or 136
- *   years.
- */
+/* Returm full seconds since power-on. */
 uint32 uptime_get_seconds(void)
 {
     return uptime_data.secs;

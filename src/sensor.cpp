@@ -10,10 +10,8 @@
 
 #define BME280_MY_ADDRESS (0x76)
 
-/*
-- use my own BME280 lib
-- better naming of variables
-*/
+/* TODO: use my own BME280 lib */
+/* TODO: convert sensor struct to OOP style */
 
 #define SENS_ERR_NO_ACK 0x01
 #define SENS_ERR_INIT_FAILED 0x02
@@ -23,18 +21,19 @@ typedef struct
     float temperature;
     float pressure;
     float humidity;
-    uint8_t errors;
+    uint8_t error_flags;
     uint16_t sample_timer;
 } sensor_data_t;
 
 
 /* Sensor runtime data. */
-static sensor_data_t sensor_data = {
+static sensor_data_t sensor_data =
+{
     .temperature = 0.0f,
     .pressure = 0.0f,
     .humidity = 0.0f,
   
-    .errors = 0x0u,
+    .error_flags = 0x0u,
 
     .sample_timer = 0,
 };
@@ -43,26 +42,29 @@ static sensor_data_t sensor_data = {
 /* Sensor instance, by default uses I2C interface. */
 static Adafruit_BME280 bme; 
 
-
+/* Initialize data by checking sensor connectivity and read out calibration
+ * data. Then configure sensor oversampling filter. */
 void sensor_init(void)
 {
+    /* check if sensor is connected and responds with ACK */
     Wire.begin();
-
     Wire.beginTransmission(BME280_MY_ADDRESS);
     uint8_t error = Wire.endTransmission();
     if(error != 0)
     {
-        sensor_data.errors |= SENS_ERR_NO_ACK;
+        sensor_data.error_flags |= SENS_ERR_NO_ACK;
     }
-    
+
+    /* read calibration data */
     bme.begin(BME280_MY_ADDRESS);
     
     if(bme.init() == false)
     {
-        sensor_data.errors |= SENS_ERR_INIT_FAILED;
+        sensor_data.error_flags |= SENS_ERR_INIT_FAILED;
     }
 
-    if(sensor_data.errors == 0)
+    /* configure oversampling filter */
+    if(sensor_data.error_flags == 0)
     {
         bme.setSampling(
             Adafruit_BME280::MODE_NORMAL, // cyclic sampling
@@ -74,6 +76,7 @@ void sensor_init(void)
 }
 
 
+/* read sensor data */
 static void sensor_sample()
 {
     sensor_data.temperature = bme.readTemperature();
@@ -82,12 +85,13 @@ static void sensor_sample()
 }
 
 
+/* call every 10ms to sample sensor data according to sensor config. */
 void sensor_main(void)
 {
     if(sensor_data.sample_timer == 0)
     {
         sensor_data.sample_timer = cfg.sens_cycle_time;
-        if(sensor_data.errors == 0)
+        if(sensor_data.error_flags == 0)
         {
             sensor_sample();
         }
@@ -115,7 +119,7 @@ diag_err_t diag_sensor_info(char const * key, char * const val, diag_mode_t mode
         snprintf(val, DIAG_VAL_BUF_LEN, "humidity=%.2f", sensor_data.humidity);
         diag_print_data(val);
 
-        snprintf(val, DIAG_VAL_BUF_LEN, "errors=0x%x", sensor_data.errors);
+        snprintf(val, DIAG_VAL_BUF_LEN, "error_flags=0x%x", sensor_data.error_flags);
         diag_print_data(val);
         
         return diag_err_ok;

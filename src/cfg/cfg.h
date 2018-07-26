@@ -1,7 +1,15 @@
 /**
  * @file
  *
- * Header file for config data handler component.
+ * Handler for storing and loading the system configuration. The configuration
+ * is stored in EEPROM (emulation).
+ *
+ * Access to the configuration is provided by the global cfg structure defined
+ * in cfg_data.cpp.
+ *
+ * The configuration data is protected by a 16 bit CRC checksum. When loading
+ * the configuration, the checksum is checked. If it is invalid, default data
+ * from ROM is used instead.
  */
 
 #ifndef CFG_H
