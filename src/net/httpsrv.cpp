@@ -55,10 +55,13 @@ static void handleData(void)
  */
 static void handleRoot(void)
 {
+    /* TODO: send better response on root path */
+    
     server.send(200, "text/plain", "Hello world");
 }
 
 
+/* Register request handlers and start the server */
 void httpsrv_init(void)
 {
     server.on("/", handleRoot);
@@ -68,6 +71,7 @@ void httpsrv_init(void)
 }
 
 
+/* Handle a connected client */
 void httpsrv_main(void)
 {
     server.handleClient();

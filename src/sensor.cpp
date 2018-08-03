@@ -11,7 +11,6 @@
 #define BME280_MY_ADDRESS (0x76)
 
 /* TODO: use my own BME280 lib */
-/* TODO: convert sensor struct to OOP style */
 
 #define SENS_ERR_NO_ACK 0x01
 #define SENS_ERR_INIT_FAILED 0x02
@@ -108,18 +107,23 @@ void sensor_main(void)
  */
 diag_err_t diag_sensor_info(char const * key, char * const val, diag_mode_t mode)
 {
+    static const char * f_temp PROGMEM = "temperature=%.2f";
+    static const char * f_pres PROGMEM = "pressure=%.2f";
+    static const char * f_hum PROGMEM = "humidity=%.2f";
+    static const char * f_err PROGMEM = "error_flags=%.2f";
+
     if(mode == diag_mode_read)
     {
-        snprintf(val, DIAG_VAL_BUF_LEN, "temperature=%.2f", sensor_data.temperature);
+        snprintf_P(val, DIAG_VAL_BUF_LEN, f_temp, sensor_data.temperature);
         diag_print_data(val);
 
-        snprintf(val, DIAG_VAL_BUF_LEN, "pressure=%.2f", sensor_data.pressure);
+        snprintf_P(val, DIAG_VAL_BUF_LEN, f_pres, sensor_data.pressure);
         diag_print_data(val);
 
-        snprintf(val, DIAG_VAL_BUF_LEN, "humidity=%.2f", sensor_data.humidity);
+        snprintf_P(val, DIAG_VAL_BUF_LEN, f_hum, sensor_data.humidity);
         diag_print_data(val);
 
-        snprintf(val, DIAG_VAL_BUF_LEN, "error_flags=0x%x", sensor_data.error_flags);
+        snprintf_P(val, DIAG_VAL_BUF_LEN, f_err, sensor_data.error_flags);
         diag_print_data(val);
         
         return diag_err_ok;
