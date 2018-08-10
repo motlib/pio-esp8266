@@ -2,3 +2,4 @@
 .piolibdeps
 .travis.yml
 doc/html/*
+output.map
