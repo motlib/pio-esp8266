@@ -409,15 +409,85 @@ diag_err_t diag_sensorstat_info(char const * key, char * const val, diag_mode_t 
     }
 }
 
+
+
+/**
+ * Read or set the OTA URL path.
+ */
+static diag_err_t diag_mqtt_broker(char const * key, char * const val, diag_mode_t mode)
+{
+    return diag_handle_string(key, val, mode, cfg_mqtt.broker, CFG_MQTT_BROKER_LEN);
+}
+
+/**
+ * Read or set the OTA URL path.
+ */
+static diag_err_t diag_mqtt_port(char const * key, char * const val, diag_mode_t mode)
+{
+    if(mode == diag_mode_write)
+    {
+        int port = atoi(val);
+
+        cfg_mqtt.port = port;
+        
+        return diag_err_ok;
+    }
+    else if(mode == diag_mode_read)
+    {
+        snprintf(val, DIAG_VAL_BUF_LEN, "%u", cfg_mqtt.port);
+        diag_print_data(val);
+
+        return diag_err_ok;
+    }
+    else
+    {
+        return diag_err_mode_unsupported;
+    }
+}
+
+/**
+ * Read or set the OTA URL path.
+ */
+static diag_err_t diag_mqtt_user(char const * key, char * const val, diag_mode_t mode)
+{
+    return diag_handle_string(key, val, mode, cfg_mqtt.user, CFG_MQTT_USER_LEN);
+}
+/**
+ * Read or set the OTA URL path.
+ */
+static diag_err_t diag_mqtt_password(char const * key, char * const val, diag_mode_t mode)
+{
+    return diag_handle_string(key, val, mode, cfg_mqtt.password, CFG_MQTT_PASSWORD_LEN);
+}
+/**
+ * Read or set the OTA URL path.
+ */
+static diag_err_t diag_mqtt_ts_channel(char const * key, char * const val, diag_mode_t mode)
+{
+    return diag_handle_string(key, val, mode, cfg_mqtt.ts_channel, CFG_MQTT_TS_CHANNEL_LEN);
+}
+/**
+ * Read or set the OTA URL path.
+ */
+static diag_err_t diag_mqtt_ts_channel_key(char const * key, char * const val, diag_mode_t mode)
+{
+    return diag_handle_string(key, val, mode, cfg_mqtt.ts_channel_key, CFG_MQTT_TS_CHANNEL_KEY_LEN);
+}
+
+
 static diag_err_t diag_keys(char const * key, char * const val, diag_mode_t mode);
 
 
 /* Table mapping service keys to service implementations. */
 diag_tbl_t const diag_service_tbl[] =
 {
-    { "cfgload", diag_load_cfg },
-    { "cfgsave", diag_save_cfg },
+    { "cfg-load", diag_load_cfg },
+    { "cfg-save", diag_save_cfg },
     { "help", diag_keys },
+    { "mqtt-broker", diag_mqtt_broker },
+    { "mqtt-pass", diag_mqtt_password },
+    { "mqtt-port", diag_mqtt_port },
+    { "mqtt-user", diag_mqtt_user },
     { "nodename", diag_node_name },
     { "ota", diag_ota },
     { "ota-host", diag_ota_host },
@@ -428,13 +498,16 @@ diag_tbl_t const diag_service_tbl[] =
     { "senstrnd", diag_sensorstat_info },
     { "sprint", diag_sensor_print },
     { "stime", diag_sensor_timer },
+    { "ts-channel", diag_mqtt_ts_channel },
+    { "ts-chkey", diag_mqtt_ts_channel_key },
     { "uptime", diag_uptime },
     { "vers", diag_fw_version },
     { "wifi", diag_wifi_state },
-    { "wifiname", diag_wifi_name },
-    { "wifipon", diag_wifi_pon_connect },
-    { "wifipwd", diag_wifi_password },
-    { "wifistat", diag_wifi_status },
+    { "wifi-name", diag_wifi_name },
+    { "wifi-pass", diag_wifi_password },
+    { "wifi-pon", diag_wifi_pon_connect },
+    { "wifi-stat", diag_wifi_status },
+    
     { {'\0'}, NULL },
 };
 

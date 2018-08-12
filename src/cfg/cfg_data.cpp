@@ -9,11 +9,14 @@
 #include <pgmspace.h>
 
 
-/* Ram shadow variable for loading configuration data from EEPROM. */
+/* Ram shadow variable for general configuration data. */
 cfg_data_t cfg;
 
-/* Ram shadow variable for loading wifi configuration data from EEPROM. */
+/* Ram shadow variable for wifi configuration data. */
 cfg_wifi_t cfg_wifi;
+
+/* Ram shadow variable for MQTT configuration data. */
+cfg_mqtt_t cfg_mqtt;
 
 
 /* Default data for configuration. */
@@ -52,16 +55,45 @@ cfg_wifi_t const cfg_wifi_defaults PROGMEM =
 };    
 
 
+
+cfg_mqtt_t const cfg_mqtt_defaults PROGMEM =
+{
+    /* MQTT broker config */
+    .broker = {0},
+    .port = 1883,
+    .user = {0},
+    .password = {0},
+
+    /* Thingspeak data */
+    .ts_channel = {0},
+    .ts_channel_key = {0},
+
+    .crc16 = 0x0u,
+};
+
+
+
+/* Table of config blocks */
 cfg_block_t const cfg_block_tbl[CFG_BLOCK_COUNT] =
 {
+    /* wifi settings */
     {
         .shadow = &cfg_wifi,
         .defaults = &cfg_wifi_defaults,
         .size = sizeof(cfg_wifi),
     },
+    
+    /* general settings */
     {
         .shadow = &cfg,
         .defaults = &cfg_defaults,
         .size = sizeof(cfg),
+    },
+    
+    /* MQTT settings */
+    {
+        .shadow = &cfg_mqtt,
+        .defaults = &cfg_mqtt_defaults,
+        .size = sizeof(cfg_mqtt),
     }
 };

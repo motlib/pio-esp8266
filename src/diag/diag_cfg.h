@@ -11,7 +11,7 @@
 #define DIAG_REQ_BUF_LEN (64u)
 
 /** Maximum length of the key part of the diag request. */
-#define DIAG_KEY_BUF_LEN (10u)
+#define DIAG_KEY_BUF_LEN (16u)
 
 /** Charater for value assignment (separator between key and value). */
 #define DIAG_WRITE_CHAR '='

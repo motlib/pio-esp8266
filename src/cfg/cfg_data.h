@@ -18,7 +18,7 @@
 #include <stdint.h>
 
 
-#define CFG_BLOCK_COUNT 2
+#define CFG_BLOCK_COUNT 3
 
 
 /** Maximum length of the node name. */
@@ -37,7 +37,8 @@
 #define CFG_OTA_PATH_LEN 32
 
 
-typedef struct {
+typedef struct
+{
     void * shadow;
     void const * defaults;
     uint8_t size;
@@ -62,6 +63,39 @@ typedef struct
     /** CRC16 checksum protection of the eeprom data. */
     uint16_t crc16;
 } cfg_wifi_t;
+
+
+#define CFG_MQTT_BROKER_LEN 64
+#define CFG_MQTT_USER_LEN 32
+#define CFG_MQTT_PASSWORD_LEN 16
+#define CFG_MQTT_TS_CHANNEL_LEN 10
+#define CFG_MQTT_TS_CHANNEL_KEY_LEN 17
+
+
+typedef struct
+{
+    /** Host name of the MQTT broker. */
+    char broker[CFG_MQTT_BROKER_LEN];
+
+    /** Port of the MQTT broker (usually 1883) */
+    uint16_t port;
+
+    /** User name to use to connect to the MQTT broker. */
+    char user[CFG_MQTT_USER_LEN];
+
+    /** Password to use to connect to the MQTT broker. */
+    char password[CFG_MQTT_PASSWORD_LEN];
+
+    /** Thingspeak channel id */
+    char ts_channel[CFG_MQTT_TS_CHANNEL_LEN];
+
+    /** Thingspeak channel API key */
+    char ts_channel_key[CFG_MQTT_TS_CHANNEL_KEY_LEN];
+
+    /** CRC16 checksum protection of the eeprom data. */
+    uint16_t crc16;
+} cfg_mqtt_t;
+    
 
 
 /**
@@ -100,6 +134,12 @@ extern cfg_wifi_t cfg_wifi;
  * Configuration data available for access in all modules.
  */
 extern cfg_data_t cfg;
+
+
+/**
+ * Configuration data for MQTT.
+ */
+extern cfg_mqtt_t cfg_mqtt;
 
 
 /**
