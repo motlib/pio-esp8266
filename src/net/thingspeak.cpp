@@ -9,7 +9,7 @@
 
 
 #define TS_TOPIC_BUF_LEN 128
-#define TS_MSG_BUF_LEN 32
+#define TS_MSG_BUF_LEN 128
 
 
 typedef struct
@@ -39,21 +39,28 @@ static const ts_field_t ts_fields[] =
 static const uint8_t ts_field_count = sizeof(ts_fields) / sizeof(ts_fields[0]);
 
 
-static void ts_publish_field(ts_field_t const * const ts_field)
+static void ts_publish_fields(void)
 {
-    static const char * topic_tmpl PROGMEM = "channels/%s/publish/fields/field%u/%s";
+    static const char * topic_tmpl PROGMEM = "channels/%s/publish/%s";
     
     char topic[TS_TOPIC_BUF_LEN];
-    char msg[TS_MSG_BUF_LEN];
+    char msg[TS_MSG_BUF_LEN] = {0};
+    char * msg2 = msg;
 
     snprintf_P(topic, TS_TOPIC_BUF_LEN, topic_tmpl,
                cfg_mqtt.ts_channel,
-               ts_field->field_index,
                cfg_mqtt.ts_channel_key);
 
-    /* At the moment, only float values supported. */
-    snprintf(msg, TS_MSG_BUF_LEN, "%f", ts_field->get_fct());
+    for(uint8_t i = 0; i < ts_field_count; ++i)
+    {
+        /* At the moment, only float values supported. */
+        int len = snprintf(msg2, 32, "field%u=%.2f&", ts_fields[i].field_index, ts_fields[i].get_fct());
+        msg2 += len;
+    }
 
+    /* remove trailing & character by overwriting with \0. */
+    *(msg2 - 1) = '\0';
+    
     mqtt_publish(topic, msg);
 }
 
@@ -70,19 +77,6 @@ void ts_main(void)
     {
         --t;
     }
-
-    if(t == 200)
-    {
-        ts_publish_field(ts_fields + 0);
-    }
-    if(t == 400)
-    {
-        ts_publish_field(ts_fields + 1);
-    }
-    if(t == 600)
-    {
-        ts_publish_field(ts_fields + 2);
-    }
     
     //for(uint8_t i = 0; i < ts_field_count; ++i)
     //{
@@ -95,6 +89,7 @@ void ts_main(void)
         
     if(t == 0)
     {
+        ts_publish_fields();
         t = TS_CYCLE_TIME;
     }
 }
