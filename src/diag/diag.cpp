@@ -2,11 +2,11 @@
  * @file
  *
  * This module implements the diagnosis component. It receives text commands
- * from the terminal and processes them. 
+ * from the terminal and processes them.
  *
  * request:
  *   <key>? | <key>=<value>
- * if the service needs to reply with data: 
+ * if the service needs to reply with data:
  *   dd:<service_data>
  * response:
  *   dr:<response code>
@@ -51,7 +51,7 @@ static diag_tbl_t const * diag_find_service(char const * const key)
 {
     diag_tbl_t const * entry = NULL;
     int i = 0;
-    
+
     for(entry = &(diag_service_tbl[i]);
         entry->svc_fct != NULL;
         i++, entry = &(diag_service_tbl[i]))
@@ -63,7 +63,7 @@ static diag_tbl_t const * diag_find_service(char const * const key)
     }
 
     return NULL;
-}    
+}
 
 
 static diag_err_t diag_handle_request(char * line_buf)
@@ -71,25 +71,22 @@ static diag_err_t diag_handle_request(char * line_buf)
     /* find separator character in request */
     char * sep = NULL;
     diag_mode_t mode;
-    
+    char * val;
+    char const * const key = line_buf;
+
     if((sep = index(line_buf, DIAG_WRITE_CHAR)) != NULL)
     {
         mode = diag_mode_write;
-    }
-    else if((sep = index(line_buf, DIAG_READ_CHAR)) != NULL)
-    {
-        mode = diag_mode_read;
+        /* replace separator by 0 charater to terminate key string. */
+        *sep = '\0';
+
+        val = (sep + 1);
     }
     else
     {
-        return diag_err_input;
+        mode = diag_mode_read;
+        val = line_buf + strlen(line_buf);
     }
- 
-    /* replace separator by 0 charater to terminate key string. */
-    *sep = '\0';
-
-    char const * const key = line_buf;
-    char * const val = (sep + 1);
 
     /* find the diag service table entry for the given key */
     diag_tbl_t const *entry = diag_find_service(key);
@@ -106,7 +103,7 @@ static diag_err_t diag_handle_request(char * line_buf)
 
 
 /**
- * Handler to process a received diagnosis command. 
+ * Handler to process a received diagnosis command.
  */
 void diag_handle_input(term_desc_t const * const desc)
 {
@@ -122,12 +119,12 @@ void diag_handle_input(term_desc_t const * const desc)
             diag_term = desc;
         }
     }
-    
+
     diag_err_t err = diag_handle_request(desc->buf);
 
     char buf[DIAG_RESPONSE_TAG_LEN];
     snprintf(buf, DIAG_RESPONSE_TAG_LEN, DIAG_RESPONSE_TAG "0x%x", err);
-    
+
     term_put_line(desc, buf);
 }
 
