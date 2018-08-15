@@ -32,15 +32,20 @@ static char buf[HTTPSRV_BUF_LEN];
 static void handleData(void)
 {
     int n;
+    float t, h, p;
+
+    (void)sensor_get_temp(&t);
+    (void)sensor_get_hum(&h);
+    (void)sensor_get_pres(&p);
     
     n = snprintf(
         buf,
         HTTPSRV_BUF_LEN,
         "node=%s\ntemp=%.2f\nhum=%.2f\npressure=%.2f\nuptime=%i\n",
         cfg_wifi.node_name,
-        sensor_get_temp(),
-        sensor_get_hum(),
-        sensor_get_pres(),
+        t,
+        h,
+        p,
         uptime_get_seconds());
 
     /* Ensure that the scratch pad is big enough. */

@@ -17,7 +17,6 @@
 #include "term/serterm.h"
 #include "term/term.h"
 #include "uptime.h"
-#include "sensorstat.h"
 #include "net/mqtt.h"
 #include "net/thingspeak.h"
 
@@ -71,8 +70,6 @@ static void main_tasks(void)
     sensor_main();
     led_main(&led_stat);
 
-    sensorstat_main();
-    
     mqtt_main();
     ts_main();
 }

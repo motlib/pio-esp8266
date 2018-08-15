@@ -4,36 +4,55 @@
 #include <stdio.h>
 
 
-vfct_status_t vfct_to_string(vfct_t const * const vfct, char * buf, size_t len)
+int vfct_fmt_err(char * const buf, int const buflen, uint8_t const stat)
 {
-    vfct_status_t stat;
+    return snprintf(buf, buflen, "E:%i", stat);
+}
+
+
+static char const * const vfct_fmt_f = "%.2f";
+static char const * const vfct_fmt_u32 = "%u";
+
+
+int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct)
+{
+    int len = 0;
+    uint8_t stat;
+    
     switch(vfct->type)
     {
-    case vfct_type_get_float:
+    case vfct_type_get_f:
         float val_f;
+
         stat = vfct->fct.get_f(&val_f);
-        if(stat == vfct_stat_ok)
+        if(stat == VFCT_STAT_OK)
         {
-            snprintf(buf, len, "%f", val_f);
+            len = snprintf(buf, buflen, vfct_fmt_f, val_f);
         }
+        
         break;
 
     case vfct_type_get_u32:
         uint32_t val_u32;
+
         stat = vfct->fct.get_u32(&val_u32);
-        if(stat == vfct_stat_ok)
+        if(stat == VFCT_STAT_OK)
         {
-            snprintf(buf, len, "%u", val_u32);
+            len = snprintf(buf, buflen, vfct_fmt_u32, val_u32);
         }
+        
         break;
 
     default:
-        buf[0] = 0;
-        return vfct_stat_err;
+        stat = VFCT_STAT_ERR;
         break;
     }
 
-    return vfct_stat_ok;
-    
+    if(stat != VFCT_STAT_OK)
+    {
+        len = vfct_fmt_err(buf, buflen, stat);
+    }    
+
+    return len;
 }
 

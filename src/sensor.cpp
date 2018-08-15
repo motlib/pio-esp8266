@@ -3,6 +3,7 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 
+#include "sensor.h"
 #include "uptime.h"
 #include "diag/diag.h"
 #include "diag/diag_services.h"
@@ -134,17 +135,27 @@ diag_err_t diag_sensor_info(char const * key, char * const val, diag_mode_t mode
     }
 }
 
-float sensor_get_temp(void)
+uint8_t sensor_get_temp(float * const t)
 {
-    return sensor_data.temperature;
+    *t = sensor_data.temperature;
+
+    return VFCT_STAT_OK;
 }
 
-float sensor_get_pres(void)
+uint8_t sensor_get_pres(float * const p)
 {
-    return sensor_data.pressure;
+    *p = sensor_data.pressure;
+    
+    return VFCT_STAT_OK;
 }
 
-float sensor_get_hum(void)
+uint8_t sensor_get_hum(float * const h)
 {
-    return sensor_data.humidity;
+    *h = sensor_data.humidity;
+
+    return VFCT_STAT_OK;
 }
+
+vfct_t const sensor_vfct_temp = { .type = vfct_type_get_f,  .fct = { .get_f = sensor_get_temp } };
+vfct_t const sensor_vfct_pres = { .type = vfct_type_get_f,  .fct = { .get_f = sensor_get_pres} };
+vfct_t const sensor_vfct_hum = { .type = vfct_type_get_f,  .fct = { .get_f = sensor_get_hum } };

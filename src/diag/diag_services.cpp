@@ -7,7 +7,6 @@
 #include "net/wifi.h"
 #include "version.h"
 #include "sensor.h"
-#include "sensorstat.h"
 #include "version.h"
 
 /* for atoi */
@@ -394,23 +393,6 @@ static diag_err_t diag_ota(char const * key, char * const val, diag_mode_t mode)
 }
 
 
-diag_err_t diag_sensorstat_info(char const * key, char * const val, diag_mode_t mode)
-{
-    if(mode == diag_mode_read)
-    {
-        snprintf(val, DIAG_VAL_BUF_LEN, "temperature=%f", sensorstat_get_trend());
-        diag_print_data(val);
-
-        return diag_err_ok;
-    }
-    else
-    {
-        return diag_err_mode_unsupported;
-    }
-}
-
-
-
 /**
  * Read or set the OTA URL path.
  */
@@ -495,7 +477,6 @@ diag_tbl_t const diag_service_tbl[] =
     { "ota-port", diag_ota_port },    
     { "reset", diag_do_reset },
     { "sens", diag_sensor_info },
-    { "senstrnd", diag_sensorstat_info },
     { "sprint", diag_sensor_print },
     { "stime", diag_sensor_timer },
     { "ts-channel", diag_mqtt_ts_channel },

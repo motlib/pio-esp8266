@@ -5,23 +5,20 @@
 #include <stddef.h>
 
 
-typedef enum
-{
-    vfct_stat_ok,
-    vfct_stat_err,
-} vfct_status_t;
+#define VFCT_STAT_OK 0
+#define VFCT_STAT_ERR 1
 
 
 typedef union
 {
-    vfct_status_t (*get_f)(float * f);
-    vfct_status_t (*get_u32)(uint32_t * f);
+    uint8_t (*get_f)(float * f);
+    uint8_t (*get_u32)(uint32_t * f);
 } vfct_fct_t;
 
 
 typedef enum
 {
-    vfct_type_get_float,
+    vfct_type_get_f,
     vfct_type_get_u32,
 } vfct_type_t;
 
@@ -32,7 +29,8 @@ typedef struct
     vfct_fct_t fct;
 } vfct_t;
 
-vfct_status_t vfct_to_string(vfct_t const * const vfct, char * buf, size_t len);
+int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct);
+int vfct_fmt_err(char * const buf, int const buflen, uint8_t const stat);
 
 
 
