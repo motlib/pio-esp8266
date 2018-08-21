@@ -1,12 +1,12 @@
-#include "../unity/src/unity.h"
+#include "unity.h"
 
 #include <stdio.h>
 #include <string.h>
 
-#include "../../src/utils/vfct.h"
+#include "utils/vfct.h"
 
 /* Yes, we include the test objects from cpp file here. */
-#include "../../src/utils/vfct.cpp"
+#include "utils/vfct.cpp"
 
 
 static uint32_t testval;
