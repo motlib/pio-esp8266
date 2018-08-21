@@ -38,6 +38,11 @@ typedef struct
     vfct_fct_t fct;
 } vfct_t;
 
+
+/* Helper macro to generate a vfct_t definition. */
+#define VFCT_DEF(TYPE,FUNC) \
+    { .type = vfct_type_##TYPE,  .fct = { .TYPE = FUNC } }
+
 int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct);
 int vfct_fmt_err(char * const buf, int const buflen, uint8_t const stat);
 vfct_result_t vfct_parse(vfct_t const * const vfct, char * const buf);
