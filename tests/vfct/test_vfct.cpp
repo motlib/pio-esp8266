@@ -1,11 +1,11 @@
 #include "../unity/src/unity.h"
 
 #include <stdio.h>
-
 #include <string.h>
 
 #include "../../src/utils/vfct.h"
 
+/* Yes, we include the test objects from cpp file here. */
 #include "../../src/utils/vfct.cpp"
 
 
@@ -38,13 +38,11 @@ static uint8_t set_val(uint32_t *val)
 }
 
 
-static vfct_t const get_vfct = { .type = vfct_type_get_u32,  .fct = { .get_u32 = get_val } };
-static vfct_t const set_vfct = { .type = vfct_type_set_u32,  .fct = { .set_u32 = set_val } };
+static vfct_t const get_vfct = VFCT_DEF(get_u32, get_val);
+static vfct_t const set_vfct = VFCT_DEF(set_u32, set_val);
 
 
-#define ASSERT_STRING_EQ(A, B) if(strcmp((A), (B)) != 0) { printf("Error!\n"); } else { printf("Pass!\n"); }
-
-static void test_u32_get(void)
+static void test_vfct_fmt_u32(void)
 {
     char buf[100];
 
@@ -59,7 +57,7 @@ static void test_u32_get(void)
 
 
 
-static void test_u32_get_no_init(void)
+static void test_vfct_fmt_u32_no_init(void)
 {
     char buf[100];
 
@@ -69,7 +67,7 @@ static void test_u32_get_no_init(void)
     int len = vfct_fmt(buf, 100, &get_vfct);
 
     TEST_ASSERT_EQUAL_STRING("E:3", buf);
-    TEST_ASSERT_EQUAL(2, len);
+    TEST_ASSERT_EQUAL(3, len);
 }
 
 
@@ -77,8 +75,8 @@ int main(int argc, char **argv)
 {
     UNITY_BEGIN();
     
-    RUN_TEST(test_u32_get);
-    RUN_TEST(test_u32_get_no_init);
+    RUN_TEST(test_vfct_fmt_u32);
+    RUN_TEST(test_vfct_fmt_u32_no_init);
 
     UNITY_END();
 
