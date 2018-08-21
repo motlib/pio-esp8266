@@ -67,7 +67,7 @@ static void test_vfct_fmt_u32_no_init(void)
     int len = vfct_fmt(buf, 100, &get_vfct);
 
     TEST_ASSERT_EQUAL_STRING("E:3", buf);
-    TEST_ASSERT_EQUAL(3, len);
+    TEST_ASSERT_EQUAL(2, len);
 }
 
 
