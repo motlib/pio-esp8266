@@ -13,7 +13,7 @@ int vfct_fmt_err(char * const buf, int const buflen, uint8_t const stat)
 }
 
 /* Parse value from string */
-vfct_result_t vfct_parse(vfct_t const * const vfct, char * const buf)
+vfct_err_t vfct_parse(vfct_t const * const vfct, char const * const buf)
 {
     uint8_t stat;
 
@@ -38,7 +38,7 @@ vfct_result_t vfct_parse(vfct_t const * const vfct, char * const buf)
         break;
 
     default:
-        stat = VFCT_STAT_ERR;
+        stat = VFCT_ERR_ERR;
         break;
     }        
 
@@ -58,7 +58,7 @@ int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct)
         float val_f;
 
         stat = vfct->fct.get_f(&val_f);
-        if(stat == VFCT_STAT_OK)
+        if(stat == VFCT_ERR_OK)
         {
             len = snprintf(buf, buflen, vfct_fmt_f, val_f);
         }
@@ -69,7 +69,7 @@ int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct)
         uint32_t val_u32;
 
         stat = vfct->fct.get_u32(&val_u32);
-        if(stat == VFCT_STAT_OK)
+        if(stat == VFCT_ERR_OK)
         {
             len = snprintf(buf, buflen, vfct_fmt_u32, val_u32);
         }
@@ -77,11 +77,11 @@ int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct)
         break;
 
     default:
-        stat = VFCT_STAT_ERR;
+        stat = VFCT_ERR_ERR;
         break;
     }
 
-    if(stat != VFCT_STAT_OK)
+    if(stat != VFCT_ERR_OK)
     {
         len = vfct_fmt_err(buf, buflen, stat);
     }    
