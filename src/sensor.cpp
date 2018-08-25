@@ -162,6 +162,34 @@ uint8_t sensor_get_hum(float * const h)
 }
 
 
+uint8_t sensor_set_timer(uint32_t *t)
+{
+    /* TODO: range check! */
+    if((*t >= 50) && (*t <= (5 * 60 * 100)))
+    {
+        cfg.sens_cycle_time = *t;
+
+        return VFCT_ERR_OK;
+    }
+    else
+    {
+        return VFCT_ERR_RANGE;
+    }
+}
+
+
+uint8_t sensor_get_timer(uint32_t *t)
+{
+    *t = cfg.sens_cycle_time;
+
+    return VFCT_ERR_OK;
+}
+
+vfct_t const sensor_vfct_get_timer = VFCT_DEF(get_u32,sensor_get_timer);
+
+vfct_t const sensor_vfct_set_timer = VFCT_DEF(set_u32,sensor_set_timer);
+
+
 /* vfct descriptor to get sensor temperature value. */
 vfct_t const sensor_vfct_temp = VFCT_DEF(get_f, sensor_get_temp);
 

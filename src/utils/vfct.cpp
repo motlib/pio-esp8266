@@ -5,12 +5,15 @@
 
 static char const * const vfct_fmt_f = "%.2f";
 static char const * const vfct_fmt_u32 = "%u";
+static char const * const vfct_fmt_s = "%s";
+
 
 /* Format error codes */
 int vfct_fmt_err(char * const buf, int const buflen, uint8_t const stat)
 {
     return snprintf(buf, buflen, "E:%i", stat);
 }
+
 
 /* Parse value from string */
 vfct_err_t vfct_parse(vfct_t const * const vfct, char const * const buf)
@@ -37,6 +40,10 @@ vfct_err_t vfct_parse(vfct_t const * const vfct, char const * const buf)
         
         break;
 
+    case vfct_type_set_s:
+        stat = vfct->fct.set_s(buf);
+        break;
+        
     default:
         stat = VFCT_ERR_ERR;
         break;
@@ -76,6 +83,18 @@ int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct)
         
         break;
 
+    case vfct_type_get_s:
+        char const * val_s;
+        
+        stat = vfct->fct.get_s(&val_s);
+        if(stat == VFCT_ERR_OK)
+        {
+            len = snprintf(buf, buflen, vfct_fmt_s, val_s);
+        }
+
+        break;
+        
+        
     default:
         stat = VFCT_ERR_ERR;
         break;

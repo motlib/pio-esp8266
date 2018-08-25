@@ -18,6 +18,8 @@ uint8_t sensor_get_hum(float * const t);
 diag_err_t diag_sensor_info(char const * key, char * const val, diag_mode_t mode);
 
 
+extern vfct_t const sensor_vfct_get_timer;
+extern vfct_t const sensor_vfct_set_timer;
 extern vfct_t const sensor_vfct_temp;
 extern vfct_t const sensor_vfct_pres;
 extern vfct_t const sensor_vfct_hum;

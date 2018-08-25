@@ -19,10 +19,12 @@ typedef uint8_t vfct_err_t;
 
 typedef union
 {
-    vfct_err_t (*get_f)(float * f);
-    vfct_err_t (*set_f)(float * f);
-    vfct_err_t (*get_u32)(uint32_t * f);
-    vfct_err_t (*set_u32)(uint32_t * f);
+    vfct_err_t (*get_f)(float * const f);
+    vfct_err_t (*set_f)(float * const f);
+    vfct_err_t (*get_u32)(uint32_t * const u);
+    vfct_err_t (*set_u32)(uint32_t * const u);
+    vfct_err_t (*get_s)(char const ** const s);
+    vfct_err_t (*set_s)(char const * const s);
 } vfct_fct_t;
 
 
@@ -32,6 +34,8 @@ typedef enum
     vfct_type_get_u32,
     vfct_type_set_f,
     vfct_type_set_u32,
+    vfct_type_get_s,
+    vfct_type_set_s,
 } vfct_type_t;
 
 
