@@ -26,11 +26,11 @@ static uint8_t sensor_set_timer(uint32_t *t)
     {
         cfg.sens_cycle_time = *t;
 
-        return VFCT_STAT_OK;
+        return VFCT_ERR_OK;
     }
     else
     {
-        return VFCT_STAT_RANGE;
+        return VFCT_ERR_RANGE;
     }
 }
 
@@ -38,7 +38,7 @@ static uint8_t sensor_get_timer(uint32_t *t)
 {
     *t = cfg.sens_cycle_time;
 
-    return VFCT_STAT_OK;
+    return VFCT_ERR_OK;
 }
 
 static vfct_t const diag_get_sensor_timer = { .type = vfct_type_get_u32,  .fct = { .get_u32 = sensor_get_timer } };
@@ -54,10 +54,10 @@ static diag_err_t diag_sensor_timer(char const * key, char * const val, diag_mod
 {
     if(mode == diag_mode_write)
     {
-        vfct_result_t res;
+        vfct_err_t res;
         res = vfct_parse(&diag_set_sensor_timer, val);
 
-        if(res == VFCT_STAT_OK)
+        if(res == VFCT_ERR_OK)
         {
             return diag_err_ok;
         }

@@ -42,6 +42,7 @@ static sensor_data_t sensor_data =
 /* Sensor instance, by default uses I2C interface. */
 static Adafruit_BME280 bme; 
 
+
 /* Initialize data by checking sensor connectivity and read out calibration
  * data. Then configure sensor oversampling filter. */
 void sensor_init(void)
@@ -76,7 +77,7 @@ void sensor_init(void)
 }
 
 
-/* read sensor data */
+/* Sample sensor data. */
 static void sensor_sample()
 {
     sensor_data.temperature = bme.readTemperature();
@@ -104,7 +105,7 @@ void sensor_main(void)
 
 
 /**
- * Diagnostic service to print current connection data for wifi.
+ * Diagnostic service to print current sensor values.
  */
 diag_err_t diag_sensor_info(char const * key, char * const val, diag_mode_t mode)
 {
@@ -135,27 +136,37 @@ diag_err_t diag_sensor_info(char const * key, char * const val, diag_mode_t mode
     }
 }
 
+
+/* Get temperature value from sensor. */
 uint8_t sensor_get_temp(float * const t)
 {
     *t = sensor_data.temperature;
 
-    return VFCT_STAT_OK;
+    return VFCT_ERR_OK;
 }
 
+/* Get pressure value from sensor. */
 uint8_t sensor_get_pres(float * const p)
 {
     *p = sensor_data.pressure;
     
-    return VFCT_STAT_OK;
+    return VFCT_ERR_OK;
 }
 
+/* Get humidity value from sensor. */
 uint8_t sensor_get_hum(float * const h)
 {
     *h = sensor_data.humidity;
 
-    return VFCT_STAT_OK;
+    return VFCT_ERR_OK;
 }
 
-vfct_t const sensor_vfct_temp = { .type = vfct_type_get_f,  .fct = { .get_f = sensor_get_temp } };
-vfct_t const sensor_vfct_pres = { .type = vfct_type_get_f,  .fct = { .get_f = sensor_get_pres} };
-vfct_t const sensor_vfct_hum = { .type = vfct_type_get_f,  .fct = { .get_f = sensor_get_hum } };
+
+/* vfct descriptor to get sensor temperature value. */
+vfct_t const sensor_vfct_temp = VFCT_DEF(get_f, sensor_get_temp);
+
+/* vfct descriptor to get sensor pressure value. */
+vfct_t const sensor_vfct_pres = VFCT_DEF(get_f, sensor_get_pres);
+
+/* vfct descriptor to get sensor humidity value. */
+vfct_t const sensor_vfct_hum = VFCT_DEF(get_f, sensor_get_hum);
