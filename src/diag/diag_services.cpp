@@ -63,7 +63,7 @@ static diag_err_t diag_uptime(char const * const key, char * const val, diag_mod
 {
     if(mode == diag_mode_read)
     {
-        snprintf(val, DIAG_VAL_BUF_LEN, "%i", uptime_get_seconds());
+        (void)vfct_fmt(val, DIAG_VAL_BUF_LEN, &uptime_vfct);
         diag_print_data(val);
 
         return diag_err_ok;

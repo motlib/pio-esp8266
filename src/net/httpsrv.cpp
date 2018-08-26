@@ -33,10 +33,12 @@ static void handleData(void)
 {
     int n;
     float t, h, p;
+    uint32_t uptime;
 
     (void)sensor_get_temp(&t);
     (void)sensor_get_hum(&h);
     (void)sensor_get_pres(&p);
+    (void)uptime_get_seconds(&uptime);
     
     n = snprintf(
         buf,
@@ -46,7 +48,7 @@ static void handleData(void)
         t,
         h,
         p,
-        uptime_get_seconds());
+        uptime);
 
     /* Ensure that the scratch pad is big enough. */
     DET_ASSERT(n < HTTPSRV_BUF_LEN - 1);

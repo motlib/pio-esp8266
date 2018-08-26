@@ -11,6 +11,7 @@
 
 
 #include <stdint.h>
+#include "utils/vfct.h"
 
 /**
  * Main function for the uptime counter component.
@@ -28,7 +29,9 @@ void uptime_main(void);
  * @returns Seconds since power-on. 32 bits is good for up to 49710 days or 136
  * years.
  */
-uint32_t uptime_get_seconds(void);
+uint8_t uptime_get_seconds(uint32_t * const uptime);
 
+
+extern const vfct_t uptime_vfct;
 
 #endif /* UPTIME_H */

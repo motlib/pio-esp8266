@@ -6,6 +6,7 @@
 
 #include <Arduino.h>
 #include <stdint.h>
+#include "uptime.h"
 
 /**
  * Runtime data of the uptime counter.
@@ -50,7 +51,12 @@ void uptime_main(void)
 }
 
 /* Returm full seconds since power-on. */
-uint32 uptime_get_seconds(void)
+uint8 uptime_get_seconds(uint32_t * const val)
 {
-    return uptime_data.secs;
+    *val = uptime_data.secs;
+
+    return VFCT_ERR_OK;
 }
+
+
+const vfct_t uptime_vfct = VFCT_DEF(u32, uptime_get_seconds, NULL);
