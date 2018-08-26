@@ -12,6 +12,7 @@
 #define VFCT_ERR_ERR    1
 #define VFCT_ERR_RANGE  2
 #define VFCT_ERR_NO_INIT 3
+#define VFCT_ERR_NO_OP   4
 
 
 typedef uint8_t vfct_err_t;
@@ -19,30 +20,28 @@ typedef uint8_t vfct_err_t;
 
 typedef union
 {
-    vfct_err_t (*get_f)(float * const f);
-    vfct_err_t (*set_f)(float * const f);
+    vfct_err_t (*get_float)(float * const f);
+    vfct_err_t (*set_float)(float * const f);
     vfct_err_t (*get_u32)(uint32_t * const u);
     vfct_err_t (*set_u32)(uint32_t * const u);
-    vfct_err_t (*get_s)(char const ** const s);
-    vfct_err_t (*set_s)(char const * const s);
+    vfct_err_t (*get_string)(char const ** const s);
+    vfct_err_t (*set_string)(char const * const s);
 } vfct_fct_t;
 
 
 typedef enum
 {
-    vfct_type_get_f,
-    vfct_type_get_u32,
-    vfct_type_set_f,
-    vfct_type_set_u32,
-    vfct_type_get_s,
-    vfct_type_set_s,
+    vfct_type_float,
+    vfct_type_u32,
+    vfct_type_string,
 } vfct_type_t;
 
 
 typedef struct
 {
     vfct_type_t type;
-    vfct_fct_t fct;
+    vfct_fct_t get_fct;    
+    vfct_fct_t set_fct;
 } vfct_t;
 
 
@@ -52,8 +51,12 @@ typedef struct
  * @param TYPE The function type, one of get_f, get_u32, set_f, set_u32.
  * @param FUNC The function pointer to the get / set function.
  */
-#define VFCT_DEF(TYPE,FUNC) \
-    { .type = vfct_type_##TYPE,  .fct = { .TYPE = FUNC } }
+#define VFCT_DEF(TYPE,GET_FCT,SET_FCT)          \
+    {                                           \
+        .type = vfct_type_##TYPE,               \
+        .get_fct = { .get_##TYPE = GET_FCT },         \
+        .set_fct = { .set_##TYPE = SET_FCT },         \
+    }
 
 /**
  * Format a value, i.e. convert to a string.

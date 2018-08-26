@@ -185,16 +185,14 @@ uint8_t sensor_get_timer(uint32_t *t)
     return VFCT_ERR_OK;
 }
 
-vfct_t const sensor_vfct_get_timer = VFCT_DEF(get_u32,sensor_get_timer);
 
-vfct_t const sensor_vfct_set_timer = VFCT_DEF(set_u32,sensor_set_timer);
-
+vfct_t const sensor_vfct_timer = VFCT_DEF(u32, sensor_get_timer, sensor_set_timer);
 
 /* vfct descriptor to get sensor temperature value. */
-vfct_t const sensor_vfct_temp = VFCT_DEF(get_f, sensor_get_temp);
+vfct_t const sensor_vfct_temp = VFCT_DEF(float, sensor_get_temp, NULL);
 
 /* vfct descriptor to get sensor pressure value. */
-vfct_t const sensor_vfct_pres = VFCT_DEF(get_f, sensor_get_pres);
+vfct_t const sensor_vfct_pres = VFCT_DEF(float, sensor_get_pres, NULL);
 
 /* vfct descriptor to get sensor humidity value. */
-vfct_t const sensor_vfct_hum = VFCT_DEF(get_f, sensor_get_hum);
+vfct_t const sensor_vfct_hum = VFCT_DEF(float, sensor_get_hum, NULL);

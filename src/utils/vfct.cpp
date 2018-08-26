@@ -20,28 +20,35 @@ vfct_err_t vfct_parse(vfct_t const * const vfct, char const * const buf)
 {
     uint8_t stat;
 
+    /* Can check any member for NULL, as this is a pointer union. Return error
+     * if no set-function is given. */
+    if(vfct->set_fct.set_float == NULL)
+    {
+        return VFCT_ERR_NO_OP;
+    }
+    
     switch(vfct->type)
     {
-    case vfct_type_set_f:
+    case vfct_type_float:
         float val_f;
 
         val_f = atof(buf);
-        stat = vfct->fct.set_f(&val_f);
+        stat = vfct->set_fct.set_float(&val_f);
         
         break;
 
-    case vfct_type_set_u32:
+    case vfct_type_u32:
         uint32_t val_u32;
 
         /* TODO: This is not exactly correct... */
         val_u32 = (uint32_t)atoi(buf);
         
-        stat = vfct->fct.set_u32(&val_u32);
+        stat = vfct->set_fct.set_u32(&val_u32);
         
         break;
 
-    case vfct_type_set_s:
-        stat = vfct->fct.set_s(buf);
+    case vfct_type_string:
+        stat = vfct->set_fct.set_string(buf);
         break;
         
     default:
@@ -61,10 +68,10 @@ int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct)
     
     switch(vfct->type)
     {
-    case vfct_type_get_f:
+    case vfct_type_float:
         float val_f;
 
-        stat = vfct->fct.get_f(&val_f);
+        stat = vfct->get_fct.get_float(&val_f);
         if(stat == VFCT_ERR_OK)
         {
             len = snprintf(buf, buflen, vfct_fmt_f, val_f);
@@ -72,10 +79,10 @@ int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct)
         
         break;
 
-    case vfct_type_get_u32:
+    case vfct_type_u32:
         uint32_t val_u32;
 
-        stat = vfct->fct.get_u32(&val_u32);
+        stat = vfct->get_fct.get_u32(&val_u32);
         if(stat == VFCT_ERR_OK)
         {
             len = snprintf(buf, buflen, vfct_fmt_u32, val_u32);
@@ -83,10 +90,10 @@ int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct)
         
         break;
 
-    case vfct_type_get_s:
+    case vfct_type_string:
         char const * val_s;
         
-        stat = vfct->fct.get_s(&val_s);
+        stat = vfct->get_fct.get_string(&val_s);
         if(stat == VFCT_ERR_OK)
         {
             len = snprintf(buf, buflen, vfct_fmt_s, val_s);

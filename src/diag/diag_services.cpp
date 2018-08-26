@@ -31,7 +31,7 @@ static diag_err_t diag_sensor_timer(char const * key, char * const val, diag_mod
     if(mode == diag_mode_write)
     {
         vfct_err_t res;
-        res = vfct_parse(&sensor_vfct_set_timer, val);
+        res = vfct_parse(&sensor_vfct_timer, val);
 
         if(res == VFCT_ERR_OK)
         {
@@ -44,7 +44,7 @@ static diag_err_t diag_sensor_timer(char const * key, char * const val, diag_mod
     }
     else if(mode == diag_mode_read)
     {
-        (void)vfct_fmt(val, DIAG_VAL_BUF_LEN, &sensor_vfct_get_timer);
+        (void)vfct_fmt(val, DIAG_VAL_BUF_LEN, &sensor_vfct_timer);
         diag_print_data(val);
 
         return diag_err_ok;
