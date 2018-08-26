@@ -19,3 +19,7 @@ doc:
 .PHONY: check
 check:
 	cppcheck --enable=all src
+
+.PHONY: tests
+tests:
+	(cd tests && ${MAKE})
