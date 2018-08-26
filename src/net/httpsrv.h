@@ -7,8 +7,14 @@
 #ifndef HTTPSRV_H
 #define HTTPSRV_H
 
-/** TCP port where the http server listens. */
-#define HTTPSRV_PORT 80
+#include <ESP8266WebServer.h>
+
+
+/**
+ * Global HTTP server instance. Shall be only accessed from inside the httpsrv
+ * modules.
+ */
+extern ESP8266WebServer httpsrv;
 
 
 /**
@@ -16,9 +22,11 @@
  */
 void httpsrv_init(void);
 
+
 /**
  * Main function to operate the HTTP server.
  */
 void httpsrv_main(void);
+
 
 #endif /* HTTPSRV_H */
