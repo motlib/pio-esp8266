@@ -26,12 +26,18 @@ typedef union
     vfct_err_t (*set_u32)(uint32_t * const u);
     vfct_err_t (*get_string)(char const ** const s);
     vfct_err_t (*set_string)(char const * const s);
+    float *get_float_var;
+    float *set_float_var;
+    uint32_t *get_u32_var;
+    uint32_t *set_u32_var;
+    char * get_string_var;
+    char * set_string_var;
 } vfct_fct_t;
-
 
 typedef enum
 {
     vfct_type_float,
+    vfct_type_float_var,
     vfct_type_u32,
     vfct_type_string,
 } vfct_type_t;
@@ -53,10 +59,11 @@ typedef struct
  */
 #define VFCT_DEF(TYPE,GET_FCT,SET_FCT)          \
     {                                           \
-        .type = vfct_type_##TYPE,               \
+        .type = vfct_type_##TYPE,                     \
         .get_fct = { .get_##TYPE = GET_FCT },         \
         .set_fct = { .set_##TYPE = SET_FCT },         \
     }
+
 
 /**
  * Format a value, i.e. convert to a string.
