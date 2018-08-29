@@ -4,9 +4,19 @@
  * Module to measure the uptime since power-on.
  */
 
-#include <Arduino.h>
 #include <stdint.h>
-#include "uptime.h"
+#include "uptime.h"    
+
+#ifndef UPTIME_COUNTER
+#include <Arduino.h>
+
+#define UPTIME_COUNTER millis
+#endif
+
+#ifndef UPTIME_COUNTER_SEC_SCALE
+#define UPTIME_COUNTER_SEC_SCALE 1000
+#endif
+
 
 /**
  * Runtime data of the uptime counter.
@@ -35,7 +45,7 @@ static uptime_data_t uptime_data = {
 /* Update the time counter. */
 void uptime_main(void)
 {
-    uint32 cnt = millis();
+    uint32_t cnt = UPTIME_COUNTER();
     
     /* this even works, when the millis() counter overflows. */
     uptime_data.msecs += (cnt - uptime_data.last_cnt);
@@ -44,14 +54,15 @@ void uptime_main(void)
     uptime_data.last_cnt = cnt;
     
     /* Add full seconds to second counter. */
-    uptime_data.secs += uptime_data.msecs / 1000;
+    uptime_data.secs += uptime_data.msecs / UPTIME_COUNTER_SEC_SCALE;
     
     /* Subtract full seconds and keep remainder */
-    uptime_data.msecs %= 1000;
+    uptime_data.msecs %= UPTIME_COUNTER_SEC_SCALE;
 }
 
-/* Returm full seconds since power-on. */
-uint8 uptime_get_seconds(uint32_t * const val)
+
+/* Return full seconds since power-on. */
+uint8_t uptime_get_seconds(uint32_t * const val)
 {
     *val = uptime_data.secs;
 
