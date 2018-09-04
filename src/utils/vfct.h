@@ -39,7 +39,9 @@ typedef enum
     vfct_type_float,
     vfct_type_float_var,
     vfct_type_u32,
+    vfct_type_u32_var,
     vfct_type_string,
+    vfct_type_string_var,
 } vfct_type_t;
 
 
@@ -74,7 +76,7 @@ typedef struct
  *
  * @return The number of bytes written to the buffer.
  */
-int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct);
+int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct, char const * fmt);
 
 
 /**

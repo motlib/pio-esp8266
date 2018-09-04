@@ -96,7 +96,7 @@ static diag_err_t diag_handle_request(char * line_buf)
     }
 
     /* execute the service. */
-    diag_err_t err = entry->svc_fct(key, val, mode);
+    diag_err_t err = entry->svc_fct(key, val, mode, entry->extra_data);
 
     return err;
 }

@@ -21,17 +21,27 @@
 
 
 
-
-
 /**
- * Diagnostic service implementation to handle the sensor cycle timer.
+ * Generic service implementation to handle vfct values. 
  */
-static diag_err_t diag_sensor_timer(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_vfct_handler(char const * const key, char * const val, diag_mode_t mode, void * const extra_data)
 {
-    if(mode == diag_mode_write)
+    vfct_t * const vfct_ptr = (vfct_t * const)extra_data;
+
+    /* We only check get_float member. As all pointers are stored as union, it
+     * doesn't matter, which pointer to check for NULL. Same below for write
+     * mode. */
+    if((mode == diag_mode_read) && (vfct_ptr->get_fct.get_float != NULL))
+    {
+        (void)vfct_fmt(val, DIAG_VAL_BUF_LEN, vfct_ptr, NULL);
+        diag_print_data(val);
+
+        return diag_err_ok;
+    }
+    else if((mode == diag_mode_write) && (vfct_ptr->set_fct.set_float != NULL))
     {
         vfct_err_t res;
-        res = vfct_parse(&sensor_vfct_timer, val);
+        res = vfct_parse(vfct_ptr, val);
 
         if(res == VFCT_ERR_OK)
         {
@@ -41,32 +51,6 @@ static diag_err_t diag_sensor_timer(char const * key, char * const val, diag_mod
         {
             return diag_err_value;
         }
-    }
-    else if(mode == diag_mode_read)
-    {
-        (void)vfct_fmt(val, DIAG_VAL_BUF_LEN, &sensor_vfct_timer);
-        diag_print_data(val);
-
-        return diag_err_ok;
-    }
-    else
-    {
-        return diag_err_mode_unsupported;
-    }
-}
-
-
-/**
- * Diagnostic service implementation to read the uptime counter.
- */
-static diag_err_t diag_uptime(char const * const key, char * const val, diag_mode_t mode)
-{
-    if(mode == diag_mode_read)
-    {
-        (void)vfct_fmt(val, DIAG_VAL_BUF_LEN, &uptime_vfct);
-        diag_print_data(val);
-
-        return diag_err_ok;
     }
     else
     {
@@ -80,7 +64,7 @@ static diag_err_t diag_uptime(char const * const key, char * const val, diag_mod
  *
  * Reset is not triggered in this function, but later by system component.
  */
-static diag_err_t diag_do_reset(char const * const key, char * const val, diag_mode_t mode)
+static diag_err_t diag_do_reset(char const * const key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     if(mode == diag_mode_write)
     {
@@ -98,7 +82,7 @@ static diag_err_t diag_do_reset(char const * const key, char * const val, diag_m
  * Diagnostic service implementation to load the system configuration from
  * eeprom.
  */
-static diag_err_t diag_load_cfg(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_load_cfg(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     if(mode == diag_mode_write)
     {
@@ -117,7 +101,7 @@ static diag_err_t diag_load_cfg(char const * key, char * const val, diag_mode_t 
 /**
  * Diagnostic service implementation to save the system configuration to eeprom.
  */
-static diag_err_t diag_save_cfg(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_save_cfg(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     if(mode == diag_mode_write)
     {
@@ -155,14 +139,14 @@ static diag_err_t diag_handle_string(char const * key, char * const val, diag_mo
     else
     {
         return diag_err_mode_unsupported;
-    }    
+    }
 }
 
 
 /**
- * Diagnostic service implementation to read and write wifi name. 
+ * Diagnostic service implementation to read and write wifi name.
  */
-static diag_err_t diag_wifi_name(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_wifi_name(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     return diag_handle_string(key, val, mode, cfg_wifi.wifi_name, CFG_WIFI_NAME_LEN);
 }
@@ -171,7 +155,7 @@ static diag_err_t diag_wifi_name(char const * key, char * const val, diag_mode_t
 /**
  * Diagnostic service implementation to write the wifi password.
  */
-static diag_err_t diag_wifi_password(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_wifi_password(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     if(mode == diag_mode_write)
     {
@@ -181,22 +165,22 @@ static diag_err_t diag_wifi_password(char const * key, char * const val, diag_mo
     {
         return diag_err_mode_unsupported;
     }
-} 
+}
 
 
 /**
  * Diagnostic service implementation to read and write the node name.
  */
-static diag_err_t diag_node_name(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_node_name(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     return diag_handle_string(key, val, mode, cfg_wifi.node_name, CFG_NODE_NAME_LEN);
-} 
+}
 
 
 /**
  * Diagnostic service implementation to handle the sensor cycle timer.
  */
-static diag_err_t diag_wifi_state(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_wifi_state(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     if(mode == diag_mode_write)
     {
@@ -230,7 +214,7 @@ static diag_err_t diag_wifi_state(char const * key, char * const val, diag_mode_
 /**
  * Diagnostic service implementation to handle the sensor cycle timer.
  */
-static diag_err_t diag_sensor_print(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_sensor_print(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     if(mode == diag_mode_write)
     {
@@ -264,7 +248,7 @@ static diag_err_t diag_sensor_print(char const * key, char * const val, diag_mod
 /**
  * Diagnostic service implementation to access the wifi power-on state setting.
  */
-static diag_err_t diag_wifi_pon_connect(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_wifi_pon_connect(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     if(mode == diag_mode_write)
     {
@@ -297,7 +281,7 @@ static diag_err_t diag_wifi_pon_connect(char const * key, char * const val, diag
 /**
  * Read or set the OTA URL host.
  */
-static diag_err_t diag_ota_host(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_ota_host(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     return diag_handle_string(key, val, mode, cfg.ota_host, CFG_NODE_NAME_LEN);
 }
@@ -306,14 +290,14 @@ static diag_err_t diag_ota_host(char const * key, char * const val, diag_mode_t 
 /**
  * Read or set the OTA URL path.
  */
-static diag_err_t diag_ota_port(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_ota_port(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     if(mode == diag_mode_write)
     {
         int port = atoi(val);
 
         cfg.ota_port = port;
-        
+
         return diag_err_ok;
     }
     else if(mode == diag_mode_read)
@@ -333,7 +317,7 @@ static diag_err_t diag_ota_port(char const * key, char * const val, diag_mode_t 
 /**
  * Read or set the OTA URL path.
  */
-static diag_err_t diag_ota_path(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_ota_path(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     return diag_handle_string(key, val, mode, cfg.ota_path, CFG_NODE_NAME_LEN);
 }
@@ -342,7 +326,7 @@ static diag_err_t diag_ota_path(char const * key, char * const val, diag_mode_t 
 /**
  * Read the firmware version.
  */
-static diag_err_t diag_fw_version(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_fw_version(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     if(mode == diag_mode_read)
     {
@@ -354,7 +338,7 @@ static diag_err_t diag_fw_version(char const * key, char * const val, diag_mode_
 
         snprintf(val, DIAG_VAL_BUF_LEN, "git_hash=%s", version_data.git_hash);
         diag_print_data(val);
-        
+
         return diag_err_ok;
     }
     else
@@ -366,7 +350,7 @@ static diag_err_t diag_fw_version(char const * key, char * const val, diag_mode_
 /**
  * Trigger the OTA update process.
  */
-static diag_err_t diag_ota(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_ota(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     if(mode == diag_mode_write)
     {
@@ -376,7 +360,7 @@ static diag_err_t diag_ota(char const * key, char * const val, diag_mode_t mode)
 
         /* updater only returns, if nothing to do or error. On success, the MCU
          * does a reset. */
-        
+
         snprintf(val, DIAG_VAL_BUF_LEN, "res=%i", res);
         diag_print_data(val);
 
@@ -384,36 +368,37 @@ static diag_err_t diag_ota(char const * key, char * const val, diag_mode_t mode)
         diag_print_data(val);
 
         snprintf(val, DIAG_VAL_BUF_LEN, "str=%s", ESPhttpUpdate.getLastErrorString().c_str());
-        
+
         return diag_err_ok;
     }
     else
     {
         return diag_err_mode_unsupported;
     }
-    
+
 }
 
 
 /**
  * Read or set the OTA URL path.
  */
-static diag_err_t diag_mqtt_broker(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_mqtt_broker(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     return diag_handle_string(key, val, mode, cfg_mqtt.broker, CFG_MQTT_BROKER_LEN);
 }
 
+
 /**
  * Read or set the OTA URL path.
  */
-static diag_err_t diag_mqtt_port(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_mqtt_port(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     if(mode == diag_mode_write)
     {
         int port = atoi(val);
 
         cfg_mqtt.port = port;
-        
+
         return diag_err_ok;
     }
     else if(mode == diag_mode_read)
@@ -432,69 +417,69 @@ static diag_err_t diag_mqtt_port(char const * key, char * const val, diag_mode_t
 /**
  * Read or set the OTA URL path.
  */
-static diag_err_t diag_mqtt_user(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_mqtt_user(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     return diag_handle_string(key, val, mode, cfg_mqtt.user, CFG_MQTT_USER_LEN);
 }
 /**
  * Read or set the OTA URL path.
  */
-static diag_err_t diag_mqtt_password(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_mqtt_password(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     return diag_handle_string(key, val, mode, cfg_mqtt.password, CFG_MQTT_PASSWORD_LEN);
 }
 /**
  * Read or set the OTA URL path.
  */
-static diag_err_t diag_mqtt_ts_channel(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_mqtt_ts_channel(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     return diag_handle_string(key, val, mode, cfg_mqtt.ts_channel, CFG_MQTT_TS_CHANNEL_LEN);
 }
 /**
  * Read or set the OTA URL path.
  */
-static diag_err_t diag_mqtt_ts_channel_key(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_mqtt_ts_channel_key(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     return diag_handle_string(key, val, mode, cfg_mqtt.ts_channel_key, CFG_MQTT_TS_CHANNEL_KEY_LEN);
 }
 
 
-static diag_err_t diag_keys(char const * key, char * const val, diag_mode_t mode);
+static diag_err_t diag_keys(char const * key, char * const val, diag_mode_t mode, void * const extra_data);
 
 
 /* Table mapping service keys to service implementations. */
 diag_tbl_t const diag_service_tbl[] =
 {
-    { "cfg-load", diag_load_cfg },
-    { "cfg-save", diag_save_cfg },
-    { "help", diag_keys },
-    { "mqtt-broker", diag_mqtt_broker },
-    { "mqtt-pass", diag_mqtt_password },
-    { "mqtt-port", diag_mqtt_port },
-    { "mqtt-user", diag_mqtt_user },
-    { "nodename", diag_node_name },
-    { "ota", diag_ota },
-    { "ota-host", diag_ota_host },
-    { "ota-path", diag_ota_path },
-    { "ota-port", diag_ota_port },    
-    { "reset", diag_do_reset },
-    { "sens", diag_sensor_info },
-    { "sprint", diag_sensor_print },
-    { "stime", diag_sensor_timer },
-    { "ts-channel", diag_mqtt_ts_channel },
-    { "ts-chkey", diag_mqtt_ts_channel_key },
-    { "uptime", diag_uptime },
-    { "vers", diag_fw_version },
-    { "wifi", diag_wifi_state },
-    { "wifi-name", diag_wifi_name },
-    { "wifi-pass", diag_wifi_password },
-    { "wifi-pon", diag_wifi_pon_connect },
-    { "wifi-stat", diag_wifi_status },
-    
-    { {'\0'}, NULL },
+    { "cfg-load", diag_load_cfg, NULL },
+    { "cfg-save", diag_save_cfg, NULL },
+    { "help", diag_keys, NULL },
+    { "mqtt-broker", diag_mqtt_broker, NULL },
+    { "mqtt-pass", diag_mqtt_password, NULL },
+    { "mqtt-port", diag_mqtt_port, NULL },
+    { "mqtt-user", diag_mqtt_user, NULL },
+    { "nodename", diag_node_name, NULL },
+    { "ota", diag_ota, NULL },
+    { "ota-host", diag_ota_host, NULL },
+    { "ota-path", diag_ota_path, NULL },
+    { "ota-port", diag_ota_port, NULL },
+    { "reset", diag_do_reset, NULL },
+    { "sens", sensor_diag_info, NULL },
+    { "sens-print", diag_sensor_print, NULL },
+    { "sens-time", diag_vfct_handler, (void * const)&sensor_vfct_timer },
+    { "ts-channel", diag_mqtt_ts_channel, NULL },
+    { "ts-chkey", diag_mqtt_ts_channel_key, NULL },
+    { "uptime", diag_vfct_handler, (void * const)&uptime_seconds_vfct },
+    { "vers", diag_fw_version, NULL },
+    { "wifi", diag_wifi_state, NULL },
+    { "wifi-name", diag_wifi_name, NULL },
+    { "wifi-pass", diag_wifi_password, NULL },
+    { "wifi-pon", diag_wifi_pon_connect, NULL },
+    { "wifi-stat", wifi_diag_status, NULL },
+
+    { {'\0'}, NULL, NULL },
 };
 
-static diag_err_t diag_keys(char const * key, char * const val, diag_mode_t mode)
+static diag_err_t diag_keys(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     if(mode == diag_mode_read)
     {

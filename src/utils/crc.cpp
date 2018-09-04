@@ -1,12 +1,13 @@
 #include "crc.h"
 
-#define CRC_MSB_MASK 0x8000
+#define CRC16_MSB_MASK 0x8000
 
 /* XModem polynomial */
-#define CRC_POLY 0x1021
+#define CRC16_POLY 0x1021
 
 
-#define CRC_INIT 0xffffu
+/** CRC start value. */
+#define CRC16_INIT 0xffffu
 
 
 static void crc16_update(uint16_t * const crc, uint8_t const data)
@@ -15,18 +16,18 @@ static void crc16_update(uint16_t * const crc, uint8_t const data)
 
     while (j > 0)
     {
-        uint16_t bit = (uint16_t)(*crc & CRC_MSB_MASK);
+        uint16_t bit = (uint16_t)(*crc & CRC16_MSB_MASK);
 		
         *crc <<= 1;
 
         if((data & j) != 0)
         {
-            bit = (uint16_t)(bit ^ CRC_MSB_MASK);
+            bit = (uint16_t)(bit ^ CRC16_MSB_MASK);
         }
         
         if (bit != 0)
         {
-            *crc ^= CRC_POLY;
+            *crc ^= CRC16_POLY;
         }
         
         j >>= 1;
@@ -46,7 +47,7 @@ static void crc16_update(uint16_t * const crc, uint8_t const data)
  */
 uint16_t crc16(uint8_t const * data, size_t size)
 {
-    uint16_t crc = CRC_INIT;
+    uint16_t crc = CRC16_INIT;
 
     while(size > 0)
     {

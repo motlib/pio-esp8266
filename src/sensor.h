@@ -15,7 +15,7 @@ uint8_t sensor_get_temp(float * const t);
 uint8_t sensor_get_pres(float * const t);
 uint8_t sensor_get_hum(float * const t);
 
-diag_err_t diag_sensor_info(char const * key, char * const val, diag_mode_t mode);
+diag_err_t sensor_diag_info(char const * key, char * const val, diag_mode_t mode, void * const extra_data);
 
 
 extern vfct_t const sensor_vfct_timer;

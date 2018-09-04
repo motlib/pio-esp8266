@@ -15,8 +15,7 @@ void wifi_init(void);
 void wifi_main(void);
 void wifi_request_state(uint8_t state);
 uint8_t wifi_get_state(void);
-
-diag_err_t diag_wifi_status(char const * key, char * const val, diag_mode_t mode);
+diag_err_t wifi_diag_status(char const * key, char * const val, diag_mode_t mode, void * const extra_data);
 
 
 #endif /* WIFI_H */

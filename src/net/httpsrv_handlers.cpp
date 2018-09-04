@@ -24,11 +24,18 @@ static void httpsrv_handle_data(void)
     int n;
     float t, h, p;
     uint32_t uptime;
+    char * buf2 = buf;
+    int len = 0;
 
     (void)sensor_get_temp(&t);
     (void)sensor_get_hum(&h);
     (void)sensor_get_pres(&p);
     (void)uptime_get_seconds(&uptime);
+
+    len = snprintf(buf, HTTPSRV_BUF_LEN - len, "%s", "node=");
+    buf2 += len;
+
+    
     
     n = snprintf(
         buf,

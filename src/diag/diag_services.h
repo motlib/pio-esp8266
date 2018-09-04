@@ -60,7 +60,14 @@ typedef struct
     diag_err_t (*svc_fct)(
         char const * const key,
         char * const value,
-        diag_mode_t const mode);
+        diag_mode_t const mode,
+        void * const extra_data);
+
+    /**
+     * Extra data to pass to the service implementation. Usage and expected data
+     * type is depending on service implementation.
+     */
+    void * const extra_data;
 } diag_tbl_t;
 
 

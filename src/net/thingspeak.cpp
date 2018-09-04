@@ -64,7 +64,7 @@ static void ts_publish_fields(void)
         len = snprintf(msg2, TS_MSG_BUF_LEN - len, "field%u=", ts_fields[i].field_index);
         msg2 += len;
 
-        len = vfct_fmt(msg2, TS_MSG_BUF_LEN - len, ts_fields[i].vfct);
+        len = vfct_fmt(msg2, TS_MSG_BUF_LEN - len, ts_fields[i].vfct, NULL);
         msg2 += len;
 
         len = snprintf(msg2, TS_MSG_BUF_LEN - len, "&");
@@ -90,15 +90,6 @@ void ts_main(void)
     {
         --t;
     }
-
-    //for(uint8_t i = 0; i < ts_field_count; ++i)
-    //{
-    //    /* TODO: bad hack to publish one field every 50ms */
-    //    if(t == (i * 5))
-    //    {
-    //        ts_publish_field(&(ts_fields[i]));
-    //    }
-    //}
 
     if(t == 0)
     {

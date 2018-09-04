@@ -80,7 +80,7 @@ vfct_err_t vfct_parse(vfct_t const * const vfct, char const * const buf)
 
 
 /* Convert value to string. */
-int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct)
+int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct, char const * fmt)
 {
     int len = 0;
     uint8_t stat;
@@ -93,13 +93,21 @@ int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct)
         stat = vfct->get_fct.get_float(&val_f);
         if(stat == VFCT_ERR_OK)
         {
-            len = snprintf(buf, buflen, vfct_fmt_f, val_f);
+            if(fmt == NULL)
+            {
+                fmt = vfct_fmt_f;
+            }
+            len = snprintf(buf, buflen, fmt, val_f);
         }
         
         break;
 
     case vfct_type_float_var:
-        len = snprintf(buf, buflen, vfct_fmt_f, *(vfct->get_fct.get_float_var));
+        if(fmt == NULL)
+        {
+            fmt = vfct_fmt_f;
+        }
+        len = snprintf(buf, buflen, fmt, *(vfct->get_fct.get_float_var));
         stat = VFCT_ERR_OK;
         
         break;
@@ -107,10 +115,15 @@ int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct)
     case vfct_type_u32:
         uint32_t val_u32;
 
+        if(fmt == NULL)
+        {
+            fmt = vfct_fmt_u32;
+        }
+        
         stat = vfct->get_fct.get_u32(&val_u32);
         if(stat == VFCT_ERR_OK)
         {
-            len = snprintf(buf, buflen, vfct_fmt_u32, val_u32);
+            len = snprintf(buf, buflen, fmt, val_u32);
         }
         
         break;
@@ -121,7 +134,11 @@ int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct)
         stat = vfct->get_fct.get_string(&val_s);
         if(stat == VFCT_ERR_OK)
         {
-            len = snprintf(buf, buflen, vfct_fmt_s, val_s);
+            if(fmt == NULL)
+            {
+                fmt = vfct_fmt_s;
+            }
+            len = snprintf(buf, buflen, fmt, val_s);
         }
 
         break;

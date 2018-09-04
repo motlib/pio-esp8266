@@ -42,6 +42,7 @@ static uptime_data_t uptime_data = {
     .last_cnt = 0,
 };
 
+
 /* Update the time counter. */
 void uptime_main(void)
 {
@@ -70,4 +71,4 @@ uint8_t uptime_get_seconds(uint32_t * const val)
 }
 
 
-const vfct_t uptime_vfct = VFCT_DEF(u32, uptime_get_seconds, NULL);
+const vfct_t uptime_seconds_vfct = VFCT_DEF(u32, uptime_get_seconds, NULL);

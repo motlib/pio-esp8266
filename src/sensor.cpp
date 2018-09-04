@@ -107,7 +107,7 @@ void sensor_main(void)
 /**
  * Diagnostic service to print current sensor values.
  */
-diag_err_t diag_sensor_info(char const * key, char * const val, diag_mode_t mode)
+diag_err_t sensor_diag_info(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     static const char * f_temp PROGMEM = "temperature=%.2f";
     static const char * f_pres PROGMEM = "pressure=%.2f";
@@ -164,7 +164,7 @@ uint8_t sensor_get_hum(float * const h)
 
 uint8_t sensor_set_timer(uint32_t *t)
 {
-    /* TODO: range check! */
+    /* more than 500ms and less than 5 minutes */
     if((*t >= 50) && (*t <= (5 * 60 * 100)))
     {
         cfg.sens_cycle_time = *t;

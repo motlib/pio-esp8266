@@ -32,6 +32,6 @@ void uptime_main(void);
 uint8_t uptime_get_seconds(uint32_t * const uptime);
 
 
-extern const vfct_t uptime_vfct;
+extern const vfct_t uptime_seconds_vfct;
 
 #endif /* UPTIME_H */
