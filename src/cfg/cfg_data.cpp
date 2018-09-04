@@ -7,6 +7,9 @@
 
 #include "cfg_data.h"
 #include <pgmspace.h>
+#include "utils/strutils.h"
+#include "utils/vfct.h"
+
 
 
 /* Ram shadow variable for general configuration data. */
@@ -39,6 +42,75 @@ cfg_data_t const cfg_defaults PROGMEM =
      * writing to EEPROM. */
     .crc16 = 0x0u,
 };
+
+
+/* ota host */
+
+static uint8_t cfg_get_ota_host(char const ** val)
+{
+    *val = (char const *)&(cfg.ota_host);
+    
+    return VFCT_ERR_OK;
+}
+
+static uint8_t cfg_set_ota_host(char const * const val)
+{
+    strcopy(cfg.ota_host, val, CFG_OTA_HOST_LEN);
+    
+    return VFCT_ERR_OK;
+}
+
+const vfct_t cfg_vfct_ota_host =
+    VFCT_DEF(string, cfg_get_ota_host, cfg_set_ota_host);
+
+
+/* ota path */
+
+static uint8_t cfg_get_ota_path(char const ** val)
+{
+    *val = (char const *)&(cfg.ota_path);
+    
+    return VFCT_ERR_OK;
+}
+
+static uint8_t cfg_set_ota_path(char const * const val)
+{
+    strcopy(cfg.ota_path, val, CFG_OTA_PATH_LEN);
+    
+    return VFCT_ERR_OK;
+}
+
+const vfct_t cfg_vfct_ota_path =
+    VFCT_DEF(string, cfg_get_ota_path, cfg_set_ota_path);
+
+
+/* ota port */
+
+static uint8_t cfg_get_ota_port(uint32_t *port)
+{
+    *port = cfg.ota_port;
+
+    return VFCT_ERR_OK;
+}
+
+    
+static uint8_t cfg_set_ota_port(uint32_t *port)
+{
+    if(*port <= 0xFFFFu)
+    {
+        cfg.ota_port = (uint16_t)(*port);
+
+        return VFCT_ERR_OK;
+    }
+
+    return VFCT_ERR_RANGE;
+}
+
+const vfct_t cfg_vfct_ota_port =
+    VFCT_DEF(u32, cfg_get_ota_port, cfg_set_ota_port);
+
+
+
 
 
 cfg_wifi_t const cfg_wifi_defaults PROGMEM =

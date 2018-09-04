@@ -17,6 +17,8 @@
 /* Standard integer datatypes */
 #include <stdint.h>
 
+#include "utils/vfct.h"
+
 
 #define CFG_BLOCK_COUNT 3
 
@@ -153,5 +155,11 @@ extern cfg_wifi_t const cfg_wifi_defaults PROGMEM;
 
 
 extern cfg_block_t const cfg_block_tbl[CFG_BLOCK_COUNT];
+
+
+extern const vfct_t cfg_vfct_ota_host;
+extern const vfct_t cfg_vfct_ota_path;
+extern const vfct_t cfg_vfct_ota_port;
+
 
 #endif /* CFG_DATA_H */

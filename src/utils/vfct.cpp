@@ -40,18 +40,6 @@ vfct_err_t vfct_parse(vfct_t const * const vfct, char const * const buf)
         break;
     }
     
-    case vfct_type_float_var:
-    {
-        float val_f;
-
-        val_f = atof(buf);
-        *(vfct->set_fct.set_float_var) = val_f;
-
-        stat = VFCT_ERR_OK;
-
-        break;
-    }
-    
     case vfct_type_u32:
     {
         uint32_t val_u32;
@@ -102,16 +90,6 @@ int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct, c
         
         break;
 
-    case vfct_type_float_var:
-        if(fmt == NULL)
-        {
-            fmt = vfct_fmt_f;
-        }
-        len = snprintf(buf, buflen, fmt, *(vfct->get_fct.get_float_var));
-        stat = VFCT_ERR_OK;
-        
-        break;
-        
     case vfct_type_u32:
         uint32_t val_u32;
 

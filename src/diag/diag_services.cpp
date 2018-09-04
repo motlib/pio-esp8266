@@ -279,51 +279,6 @@ static diag_err_t diag_wifi_pon_connect(char const * key, char * const val, diag
 
 
 /**
- * Read or set the OTA URL host.
- */
-static diag_err_t diag_ota_host(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
-{
-    return diag_handle_string(key, val, mode, cfg.ota_host, CFG_NODE_NAME_LEN);
-}
-
-
-/**
- * Read or set the OTA URL path.
- */
-static diag_err_t diag_ota_port(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
-{
-    if(mode == diag_mode_write)
-    {
-        int port = atoi(val);
-
-        cfg.ota_port = port;
-
-        return diag_err_ok;
-    }
-    else if(mode == diag_mode_read)
-    {
-        snprintf(val, DIAG_VAL_BUF_LEN, "%u", cfg.ota_port);
-        diag_print_data(val);
-
-        return diag_err_ok;
-    }
-    else
-    {
-        return diag_err_mode_unsupported;
-    }
-}
-
-
-/**
- * Read or set the OTA URL path.
- */
-static diag_err_t diag_ota_path(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
-{
-    return diag_handle_string(key, val, mode, cfg.ota_path, CFG_NODE_NAME_LEN);
-}
-
-
-/**
  * Read the firmware version.
  */
 static diag_err_t diag_fw_version(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
@@ -459,9 +414,9 @@ diag_tbl_t const diag_service_tbl[] =
     { "mqtt-user", diag_mqtt_user, NULL },
     { "nodename", diag_node_name, NULL },
     { "ota", diag_ota, NULL },
-    { "ota-host", diag_ota_host, NULL },
-    { "ota-path", diag_ota_path, NULL },
-    { "ota-port", diag_ota_port, NULL },
+    { "ota-host", diag_vfct_handler, (void * const)&cfg_vfct_ota_host },
+    { "ota-path", diag_vfct_handler, (void * const)&cfg_vfct_ota_path },
+    { "ota-port", diag_vfct_handler, (void * const)&cfg_vfct_ota_port },
     { "reset", diag_do_reset, NULL },
     { "sens", sensor_diag_info, NULL },
     { "sens-print", diag_sensor_print, NULL },
