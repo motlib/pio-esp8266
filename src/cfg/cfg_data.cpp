@@ -28,9 +28,6 @@ cfg_data_t const cfg_defaults PROGMEM =
     /* Read sensor cycle time in [10ms]. */
     .sens_cycle_time = 500u,
 
-    /* Print sensor values to serial interface */
-    .sens_print = 1u,
-
     /* Over-the-air update server. */
     .ota_host = {0},
     /* Over-the-air update port. */    

@@ -178,40 +178,6 @@ static diag_err_t diag_wifi_state(char const * key, char * const val, diag_mode_
 
 
 /**
- * Diagnostic service implementation to handle the sensor cycle timer.
- */
-static diag_err_t diag_sensor_print(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
-{
-    if(mode == diag_mode_write)
-    {
-        int state = atoi(val);
-
-        if((state == 0) || (state == 1))
-        {
-            cfg.sens_print = state;
-
-            return diag_err_ok;
-        }
-        else
-        {
-            return diag_err_value;
-        }
-    }
-    else if(mode == diag_mode_read)
-    {
-        snprintf(val, DIAG_VAL_BUF_LEN, "%i", cfg.sens_print);
-        diag_print_data(val);
-
-        return diag_err_ok;
-    }
-    else
-    {
-        return diag_err_mode_unsupported;
-    }
-}
-
-
-/**
  * Diagnostic service implementation to access the wifi power-on state setting.
  */
 static diag_err_t diag_wifi_pon_connect(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
@@ -386,7 +352,6 @@ diag_tbl_t const diag_service_tbl[] =
     { "ota-port", diag_vfct_handler, (void * const)&cfg_vfct_ota_port },
     { "reset", diag_do_reset, NULL },
     { "sens", sensor_diag_info, NULL },
-    { "sens-print", diag_sensor_print, NULL },
     { "sens-time", diag_vfct_handler, (void * const)&sensor_vfct_timer },
     { "ts-channel", diag_mqtt_ts_channel, NULL },
     { "ts-chkey", diag_mqtt_ts_channel_key, NULL },

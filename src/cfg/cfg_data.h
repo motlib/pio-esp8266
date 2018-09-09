@@ -108,9 +108,6 @@ typedef struct
     /** Sensor read cycle time (in [10ms], i.e. main loop cycle time). */
     uint16_t sens_cycle_time;
     
-    /** Print sensor values to serial interface. */
-    uint8_t sens_print;
-
     /** over-the-air update host. */
     char ota_host[CFG_OTA_HOST_LEN];
 
