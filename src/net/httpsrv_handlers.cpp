@@ -1,7 +1,7 @@
 #include "cfg/cfg.h"
 #include "httpsrv.h"
 #include "httpsrv_handlers.h"
-#include "sensor.h"
+#include "io/sensor.h"
 #include "uptime.h"
 #include "utils/det.h"
 

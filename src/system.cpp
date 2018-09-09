@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #include "cfg/cfg.h"
-#include "sensor.h"
+#include "io/sensor.h"
 #include "utils/det.h"
 #include "utils/sm.h"
 

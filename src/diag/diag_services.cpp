@@ -6,7 +6,7 @@
 #include "cfg/cfg.h"
 #include "net/wifi.h"
 #include "version.h"
-#include "sensor.h"
+#include "io/sensor.h"
 #include "version.h"
 
 /* for atoi */

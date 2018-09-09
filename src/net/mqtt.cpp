@@ -5,7 +5,6 @@
 
 #include "utils/sm.h"
 #include "net/wifi.h"
-#include "sensor.h"
 #include "cfg/cfg.h"
 
 

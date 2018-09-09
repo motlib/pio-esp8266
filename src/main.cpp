@@ -8,11 +8,11 @@
 #include <Arduino.h>
 
 #include "cfg/cfg.h"
-#include "led.h"
+#include "io/led.h"
 #include "net/httpsrv.h"
 #include "net/telnet.h"
 #include "net/wifi.h"
-#include "sensor.h"
+#include "io/sensor.h"
 #include "system.h"
 #include "term/serterm.h"
 #include "term/term.h"

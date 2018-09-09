@@ -1,6 +1,6 @@
 #include "net/thingspeak.h"
 #include "net/mqtt.h"
-#include "sensor.h"
+#include "io/sensor.h"
 #include "cfg/cfg.h"
 #include "utils/vfct.h"
 

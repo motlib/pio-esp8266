@@ -9,7 +9,7 @@
 #include "cfg/cfg.h"
 #include "diag/diag.h"
 #include "diag/diag_services.h"
-#include "led.h"
+#include "io/led.h"
 #include "utils/det.h"
 #include "utils/sm.h"
 #include "wifi.h"
