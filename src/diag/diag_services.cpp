@@ -144,40 +144,6 @@ static diag_err_t diag_handle_string(char const * key, char * const val, diag_mo
 
 
 /**
- * Diagnostic service implementation to read and write wifi name.
- */
-static diag_err_t diag_wifi_name(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
-{
-    return diag_handle_string(key, val, mode, cfg_wifi.wifi_name, CFG_WIFI_NAME_LEN);
-}
-
-
-/**
- * Diagnostic service implementation to write the wifi password.
- */
-static diag_err_t diag_wifi_password(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
-{
-    if(mode == diag_mode_write)
-    {
-        return diag_handle_string(key, val, mode, cfg_wifi.wifi_password, CFG_WIFI_PWD_LEN);
-    }
-    else
-    {
-        return diag_err_mode_unsupported;
-    }
-}
-
-
-/**
- * Diagnostic service implementation to read and write the node name.
- */
-static diag_err_t diag_node_name(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
-{
-    return diag_handle_string(key, val, mode, cfg_wifi.node_name, CFG_NODE_NAME_LEN);
-}
-
-
-/**
  * Diagnostic service implementation to handle the sensor cycle timer.
  */
 static diag_err_t diag_wifi_state(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
@@ -302,6 +268,7 @@ static diag_err_t diag_fw_version(char const * key, char * const val, diag_mode_
     }
 }
 
+
 /**
  * Trigger the OTA update process.
  */
@@ -412,7 +379,7 @@ diag_tbl_t const diag_service_tbl[] =
     { "mqtt-pass", diag_mqtt_password, NULL },
     { "mqtt-port", diag_mqtt_port, NULL },
     { "mqtt-user", diag_mqtt_user, NULL },
-    { "nodename", diag_node_name, NULL },
+    { "node-name", diag_vfct_handler, (void * const)&cfg_vfct_node_name },
     { "ota", diag_ota, NULL },
     { "ota-host", diag_vfct_handler, (void * const)&cfg_vfct_ota_host },
     { "ota-path", diag_vfct_handler, (void * const)&cfg_vfct_ota_path },
@@ -426,8 +393,8 @@ diag_tbl_t const diag_service_tbl[] =
     { "uptime", diag_vfct_handler, (void * const)&uptime_seconds_vfct },
     { "vers", diag_fw_version, NULL },
     { "wifi", diag_wifi_state, NULL },
-    { "wifi-name", diag_wifi_name, NULL },
-    { "wifi-pass", diag_wifi_password, NULL },
+    { "wifi-name", diag_vfct_handler, (void * const)&cfg_vfct_wifi_name },
+    { "wifi-pass", diag_vfct_handler, (void * const)&cfg_vfct_wifi_password },
     { "wifi-pon", diag_wifi_pon_connect, NULL },
     { "wifi-stat", wifi_diag_status, NULL },
 

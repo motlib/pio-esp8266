@@ -55,7 +55,7 @@ static void test_vfct_fmt_u32(void)
     /* 17 is a normal value without special effect. */
     testval_u32 = 17;
 
-    int len = vfct_fmt(buf, 100, &vfct_u32);
+    int len = vfct_fmt(buf, 100, &vfct_u32, NULL);
 
     TEST_ASSERT_EQUAL_STRING("17", buf);
     TEST_ASSERT_EQUAL(2, len);
@@ -69,7 +69,7 @@ static void test_vfct_fmt_u32_no_init(void)
     /* 666 causes a NO_INIT return value. */
     testval_u32 = 666;
 
-    int len = vfct_fmt(buf, 100, &vfct_u32);
+    int len = vfct_fmt(buf, 100, &vfct_u32, NULL);
 
     TEST_ASSERT_EQUAL_STRING("E:3", buf);
     TEST_ASSERT_EQUAL(3, len);

@@ -127,6 +127,22 @@ cfg_wifi_t const cfg_wifi_defaults PROGMEM =
 };    
 
 
+VFCT_FCT_GET_STR(cfg_wifi.node_name,cfg_get_node_name);
+VFCT_FCT_SET_STR(cfg_wifi.node_name,cfg_set_node_name,CFG_NODE_NAME_LEN);
+const vfct_t cfg_vfct_node_name =
+    VFCT_DEF(string, cfg_get_node_name, cfg_set_node_name);
+
+VFCT_FCT_GET_STR(cfg_wifi.wifi_name,cfg_get_wifi_name);
+VFCT_FCT_SET_STR(cfg_wifi.wifi_name,cfg_set_wifi_name,CFG_WIFI_NAME_LEN);
+const vfct_t cfg_vfct_wifi_name =
+    VFCT_DEF(string, cfg_get_wifi_name, cfg_set_wifi_name);
+
+VFCT_FCT_GET_STR(cfg_wifi.wifi_password,cfg_get_wifi_password);
+VFCT_FCT_SET_STR(cfg_wifi.wifi_password,cfg_set_wifi_password,CFG_WIFI_PWD_LEN);
+const vfct_t cfg_vfct_wifi_password =
+    VFCT_DEF(string, cfg_get_wifi_password, cfg_set_wifi_password);
+
+
 
 cfg_mqtt_t const cfg_mqtt_defaults PROGMEM =
 {

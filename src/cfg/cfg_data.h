@@ -161,5 +161,8 @@ extern const vfct_t cfg_vfct_ota_host;
 extern const vfct_t cfg_vfct_ota_path;
 extern const vfct_t cfg_vfct_ota_port;
 
+extern const vfct_t cfg_vfct_node_name;
+extern const vfct_t cfg_vfct_wifi_name;
+extern const vfct_t cfg_vfct_wifi_password;
 
 #endif /* CFG_DATA_H */

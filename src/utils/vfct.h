@@ -58,6 +58,24 @@ typedef struct
     }
 
 
+#define VFCT_FCT_GET_STR(VAR,NAME)              \
+    static uint8_t NAME(char const ** val)      \
+    {                                           \
+        *val = (char const *)&(VAR);            \
+                                                \
+        return VFCT_ERR_OK;                     \
+    }
+
+#define VFCT_FCT_SET_STR(VAR,NAME,MAXLEN)       \
+    static uint8_t NAME(char const * const val) \
+    {                                           \
+        strcopy(VAR, val, MAXLEN);              \
+                                                \
+        return VFCT_ERR_OK;                     \
+    }
+
+
+
 /**
  * Format a value, i.e. convert to a string.
  *
