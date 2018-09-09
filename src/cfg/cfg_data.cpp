@@ -132,6 +132,31 @@ VFCT_FCT_SET_STR(cfg_mqtt.broker, cfg_set_mqtt_broker, CFG_MQTT_BROKER_LEN);
 const vfct_t cfg_vfct_mqtt_broker =
     VFCT_DEF(string, cfg_get_mqtt_broker, cfg_set_mqtt_broker);
 
+
+static uint8_t cfg_get_mqtt_port(uint32_t *port)
+{
+    *port = cfg_mqtt.port;
+
+    return VFCT_ERR_OK;
+}
+
+    
+static uint8_t cfg_set_mqtt_port(uint32_t *port)
+{
+    if(*port <= 0xFFFFu)
+    {
+        cfg_mqtt.port = (uint16_t)(*port);
+
+        return VFCT_ERR_OK;
+    }
+
+    return VFCT_ERR_RANGE;
+}
+
+const vfct_t cfg_vfct_mqtt_port =
+    VFCT_DEF(u32, cfg_get_mqtt_port, cfg_set_mqtt_port);
+
+
 VFCT_FCT_GET_STR(cfg_mqtt.user, cfg_get_mqtt_user);
 VFCT_FCT_SET_STR(cfg_mqtt.user, cfg_set_mqtt_user, CFG_MQTT_USER_LEN);
 const vfct_t cfg_vfct_mqtt_user =

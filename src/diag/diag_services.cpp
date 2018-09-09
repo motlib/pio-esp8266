@@ -20,7 +20,6 @@
 #include "utils/vfct.h"
 
 
-
 /**
  * Generic service implementation to handle vfct values. 
  */
@@ -236,36 +235,6 @@ static diag_err_t diag_ota(char const * key, char * const val, diag_mode_t mode,
     {
         return diag_err_mode_unsupported;
     }
-
-}
-
-
-
-
-/**
- * Read or set the OTA URL path.
- */
-static diag_err_t diag_mqtt_port(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
-{
-    if(mode == diag_mode_write)
-    {
-        int port = atoi(val);
-
-        cfg_mqtt.port = port;
-
-        return diag_err_ok;
-    }
-    else if(mode == diag_mode_read)
-    {
-        snprintf(val, DIAG_VAL_BUF_LEN, "%u", cfg_mqtt.port);
-        diag_print_data(val);
-
-        return diag_err_ok;
-    }
-    else
-    {
-        return diag_err_mode_unsupported;
-    }
 }
 
 
@@ -280,7 +249,7 @@ diag_tbl_t const diag_service_tbl[] =
     { "help", diag_help, NULL },
     { "mqtt-broker", diag_vfct_handler, (void * const)&cfg_vfct_mqtt_broker },
     { "mqtt-pass", diag_vfct_handler, (void * const)&cfg_vfct_mqtt_password },
-    { "mqtt-port", diag_mqtt_port, NULL },
+    { "mqtt-port", diag_vfct_handler, (void * const)&cfg_vfct_mqtt_port },
     { "mqtt-user", diag_vfct_handler, (void * const)&cfg_vfct_mqtt_user },
     { "node-name", diag_vfct_handler, (void * const)&cfg_vfct_node_name },
     { "ota", diag_ota, NULL },
