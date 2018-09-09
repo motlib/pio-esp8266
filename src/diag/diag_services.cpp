@@ -267,13 +267,6 @@ static diag_err_t diag_ota(char const * key, char * const val, diag_mode_t mode,
 }
 
 
-/**
- * Read or set the OTA URL path.
- */
-static diag_err_t diag_mqtt_broker(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
-{
-    return diag_handle_string(key, val, mode, cfg_mqtt.broker, CFG_MQTT_BROKER_LEN);
-}
 
 
 /**
@@ -305,24 +298,11 @@ static diag_err_t diag_mqtt_port(char const * key, char * const val, diag_mode_t
 /**
  * Read or set the OTA URL path.
  */
-static diag_err_t diag_mqtt_user(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
-{
-    return diag_handle_string(key, val, mode, cfg_mqtt.user, CFG_MQTT_USER_LEN);
-}
-/**
- * Read or set the OTA URL path.
- */
-static diag_err_t diag_mqtt_password(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
-{
-    return diag_handle_string(key, val, mode, cfg_mqtt.password, CFG_MQTT_PASSWORD_LEN);
-}
-/**
- * Read or set the OTA URL path.
- */
 static diag_err_t diag_mqtt_ts_channel(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     return diag_handle_string(key, val, mode, cfg_mqtt.ts_channel, CFG_MQTT_TS_CHANNEL_LEN);
 }
+
 /**
  * Read or set the OTA URL path.
  */
@@ -332,7 +312,7 @@ static diag_err_t diag_mqtt_ts_channel_key(char const * key, char * const val, d
 }
 
 
-static diag_err_t diag_keys(char const * key, char * const val, diag_mode_t mode, void * const extra_data);
+static diag_err_t diag_help(char const * key, char * const val, diag_mode_t mode, void * const extra_data);
 
 
 /* Table mapping service keys to service implementations. */
@@ -340,18 +320,18 @@ diag_tbl_t const diag_service_tbl[] =
 {
     { "cfg-load", diag_load_cfg, NULL },
     { "cfg-save", diag_save_cfg, NULL },
-    { "help", diag_keys, NULL },
-    { "mqtt-broker", diag_mqtt_broker, NULL },
-    { "mqtt-pass", diag_mqtt_password, NULL },
+    { "help", diag_help, NULL },
+    { "mqtt-broker", diag_vfct_handler, (void * const)&cfg_vfct_mqtt_broker },
+    { "mqtt-pass", diag_vfct_handler, (void * const)&cfg_vfct_mqtt_password },
     { "mqtt-port", diag_mqtt_port, NULL },
-    { "mqtt-user", diag_mqtt_user, NULL },
+    { "mqtt-user", diag_vfct_handler, (void * const)&cfg_vfct_mqtt_user },
     { "node-name", diag_vfct_handler, (void * const)&cfg_vfct_node_name },
     { "ota", diag_ota, NULL },
     { "ota-host", diag_vfct_handler, (void * const)&cfg_vfct_ota_host },
     { "ota-path", diag_vfct_handler, (void * const)&cfg_vfct_ota_path },
     { "ota-port", diag_vfct_handler, (void * const)&cfg_vfct_ota_port },
     { "reset", diag_do_reset, NULL },
-    { "sens", sensor_diag_info, NULL },
+    { "sens-read", sensor_diag_info, NULL },
     { "sens-time", diag_vfct_handler, (void * const)&sensor_vfct_timer },
     { "ts-channel", diag_mqtt_ts_channel, NULL },
     { "ts-chkey", diag_mqtt_ts_channel_key, NULL },
@@ -366,7 +346,7 @@ diag_tbl_t const diag_service_tbl[] =
     { {'\0'}, NULL, NULL },
 };
 
-static diag_err_t diag_keys(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
+static diag_err_t diag_help(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
 {
     if(mode == diag_mode_read)
     {

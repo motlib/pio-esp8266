@@ -162,4 +162,8 @@ extern const vfct_t cfg_vfct_node_name;
 extern const vfct_t cfg_vfct_wifi_name;
 extern const vfct_t cfg_vfct_wifi_password;
 
+extern const vfct_t cfg_vfct_mqtt_broker;
+extern const vfct_t cfg_vfct_mqtt_user;
+extern const vfct_t cfg_vfct_mqtt_password;
+
 #endif /* CFG_DATA_H */
