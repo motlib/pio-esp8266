@@ -166,4 +166,7 @@ extern const vfct_t cfg_vfct_mqtt_broker;
 extern const vfct_t cfg_vfct_mqtt_user;
 extern const vfct_t cfg_vfct_mqtt_password;
 
+extern const vfct_t cfg_vfct_ts_channel;
+extern const vfct_t cfg_vfct_ts_channel_key;
+
 #endif /* CFG_DATA_H */

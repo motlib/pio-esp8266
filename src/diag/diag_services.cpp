@@ -117,33 +117,6 @@ static diag_err_t diag_save_cfg(char const * key, char * const val, diag_mode_t 
 
 
 /**
- * Helper function for reading / wrinting of strings by diagnosis.
- */
-static diag_err_t diag_handle_string(char const * key, char * const val, diag_mode_t mode, char* strvar, size_t len)
-{
-    if(mode == diag_mode_read)
-    {
-        snprintf(val, DIAG_VAL_BUF_LEN, "%s", strvar);
-        diag_print_data(val);
-
-        return diag_err_ok;
-    }
-    else if(mode == diag_mode_write)
-    {
-        strncpy(strvar, val, len);
-        /* ensure that string is 0 terminated */
-        strvar[len - 1] = '\0';
-
-        return diag_err_ok;
-    }
-    else
-    {
-        return diag_err_mode_unsupported;
-    }
-}
-
-
-/**
  * Diagnostic service implementation to handle the sensor cycle timer.
  */
 static diag_err_t diag_wifi_state(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
@@ -295,22 +268,6 @@ static diag_err_t diag_mqtt_port(char const * key, char * const val, diag_mode_t
     }
 }
 
-/**
- * Read or set the OTA URL path.
- */
-static diag_err_t diag_mqtt_ts_channel(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
-{
-    return diag_handle_string(key, val, mode, cfg_mqtt.ts_channel, CFG_MQTT_TS_CHANNEL_LEN);
-}
-
-/**
- * Read or set the OTA URL path.
- */
-static diag_err_t diag_mqtt_ts_channel_key(char const * key, char * const val, diag_mode_t mode, void * const extra_data)
-{
-    return diag_handle_string(key, val, mode, cfg_mqtt.ts_channel_key, CFG_MQTT_TS_CHANNEL_KEY_LEN);
-}
-
 
 static diag_err_t diag_help(char const * key, char * const val, diag_mode_t mode, void * const extra_data);
 
@@ -333,8 +290,8 @@ diag_tbl_t const diag_service_tbl[] =
     { "reset", diag_do_reset, NULL },
     { "sens-read", sensor_diag_info, NULL },
     { "sens-time", diag_vfct_handler, (void * const)&sensor_vfct_timer },
-    { "ts-channel", diag_mqtt_ts_channel, NULL },
-    { "ts-chkey", diag_mqtt_ts_channel_key, NULL },
+    { "ts-channel", diag_vfct_handler, (void * const)&cfg_vfct_ts_channel },
+    { "ts-chkey", diag_vfct_handler, (void * const)&cfg_vfct_ts_channel_key },
     { "uptime", diag_vfct_handler, (void * const)&uptime_seconds_vfct },
     { "vers", diag_fw_version, NULL },
     { "wifi", diag_wifi_state, NULL },

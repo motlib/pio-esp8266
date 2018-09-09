@@ -142,6 +142,15 @@ VFCT_FCT_SET_STR(cfg_mqtt.password, cfg_set_mqtt_password, CFG_MQTT_PASSWORD_LEN
 const vfct_t cfg_vfct_mqtt_password =
     VFCT_DEF(string, cfg_get_mqtt_password, cfg_set_mqtt_password);
 
+VFCT_FCT_GET_STR(cfg_mqtt.ts_channel, cfg_get_ts_channel);
+VFCT_FCT_SET_STR(cfg_mqtt.ts_channel, cfg_set_ts_channel, CFG_MQTT_TS_CHANNEL_LEN);
+const vfct_t cfg_vfct_ts_channel =
+    VFCT_DEF(string, cfg_get_ts_channel, cfg_set_ts_channel);
+
+VFCT_FCT_GET_STR(cfg_mqtt.ts_channel_key, cfg_get_ts_channel_key);
+VFCT_FCT_SET_STR(cfg_mqtt.ts_channel_key, cfg_set_ts_channel_key, CFG_MQTT_TS_CHANNEL_KEY_LEN);
+const vfct_t cfg_vfct_ts_channel_key =
+    VFCT_DEF(string, cfg_get_ts_channel_key, cfg_set_ts_channel_key);
 
 
 
