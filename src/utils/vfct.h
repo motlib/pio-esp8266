@@ -24,6 +24,8 @@ typedef union
     vfct_err_t (*set_float)(float * const f);
     vfct_err_t (*get_u32)(uint32_t * const u);
     vfct_err_t (*set_u32)(uint32_t * const u);
+    vfct_err_t (*get_s32)(int32_t * const u);
+    vfct_err_t (*set_s32)(int32_t * const u);
     vfct_err_t (*get_string)(char const ** s);
     vfct_err_t (*set_string)(char const * const s);
 } vfct_fct_t;
@@ -32,6 +34,7 @@ typedef enum
 {
     vfct_type_float,
     vfct_type_u32,
+    vfct_type_s32,
     vfct_type_string,
 } vfct_type_t;
 

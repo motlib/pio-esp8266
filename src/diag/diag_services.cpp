@@ -259,8 +259,6 @@ diag_tbl_t const diag_service_tbl[] =
     { "reset", diag_do_reset, NULL },
     { "sens-read", sensor_diag_info, NULL },
     { "sens-time", diag_vfct_handler, (void * const)&sensor_vfct_timer },
-    { "ts-channel", diag_vfct_handler, (void * const)&cfg_vfct_ts_channel },
-    { "ts-chkey", diag_vfct_handler, (void * const)&cfg_vfct_ts_channel_key },
     { "uptime", diag_vfct_handler, (void * const)&uptime_seconds_vfct },
     { "vers", diag_fw_version, NULL },
     { "wifi", diag_wifi_state, NULL },

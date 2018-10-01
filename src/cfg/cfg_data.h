@@ -70,8 +70,6 @@ typedef struct
 #define CFG_MQTT_BROKER_LEN 64
 #define CFG_MQTT_USER_LEN 32
 #define CFG_MQTT_PASSWORD_LEN 16
-#define CFG_MQTT_TS_CHANNEL_LEN 10
-#define CFG_MQTT_TS_CHANNEL_KEY_LEN 17
 
 
 typedef struct
@@ -87,12 +85,6 @@ typedef struct
 
     /** Password to use to connect to the MQTT broker. */
     char password[CFG_MQTT_PASSWORD_LEN];
-
-    /** Thingspeak channel id */
-    char ts_channel[CFG_MQTT_TS_CHANNEL_LEN];
-
-    /** Thingspeak channel API key */
-    char ts_channel_key[CFG_MQTT_TS_CHANNEL_KEY_LEN];
 
     /** CRC16 checksum protection of the eeprom data. */
     uint16_t crc16;
@@ -166,8 +158,5 @@ extern const vfct_t cfg_vfct_mqtt_broker;
 extern const vfct_t cfg_vfct_mqtt_port;
 extern const vfct_t cfg_vfct_mqtt_user;
 extern const vfct_t cfg_vfct_mqtt_password;
-
-extern const vfct_t cfg_vfct_ts_channel;
-extern const vfct_t cfg_vfct_ts_channel_key;
 
 #endif /* CFG_DATA_H */

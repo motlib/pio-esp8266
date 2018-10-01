@@ -5,6 +5,7 @@
 
 static char const * const vfct_fmt_f = "%.2f";
 static char const * const vfct_fmt_u32 = "%u";
+static char const * const vfct_fmt_s32 = "%i";
 static char const * const vfct_fmt_s = "%s";
 
 
@@ -48,6 +49,18 @@ vfct_err_t vfct_parse(vfct_t const * const vfct, char const * const buf)
         val_u32 = (uint32_t)atoi(buf);
         
         stat = vfct->set_fct.set_u32(&val_u32);
+        
+        break;
+    }
+
+    case vfct_type_s32:
+    {
+        int32_t val_s32;
+
+        /* TODO: This is not exactly correct... */
+        val_s32 = atoi(buf);
+        
+        stat = vfct->set_fct.set_s32(&val_s32);
         
         break;
     }
@@ -106,6 +119,22 @@ int vfct_fmt(char * const buf, size_t const buflen, vfct_t const * const vfct, c
         
         break;
 
+    case vfct_type_s32:
+        int32_t val_s32;
+
+        if(fmt == NULL)
+        {
+            fmt = vfct_fmt_s32;
+        }
+        
+        stat = vfct->get_fct.get_s32(&val_s32);
+        if(stat == VFCT_ERR_OK)
+        {
+            len = snprintf(buf, buflen, fmt, val_s32);
+        }
+        
+        break;
+        
     case vfct_type_string:
         char const * val_s;
         

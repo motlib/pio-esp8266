@@ -299,3 +299,14 @@ diag_err_t wifi_diag_status(char const * key, char * const val, diag_mode_t mode
         return diag_err_mode_unsupported;
     }
 }
+
+
+uint8_t wifi_get_rssi(int32_t * const rssi)
+{
+    *rssi = WiFi.RSSI();
+
+    return VFCT_ERR_OK;
+}
+    
+
+vfct_t const wifi_vfct_rssi = VFCT_DEF(s32, wifi_get_rssi, NULL);
