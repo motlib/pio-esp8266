@@ -18,7 +18,6 @@
 #include "term/term.h"
 #include "uptime.h"
 #include "net/mqtt.h"
-#include "net/thingspeak.h"
 
 /**
  * Cycle time of the main loop [10ms].
@@ -47,10 +46,8 @@ void setup()
     httpsrv_init();
     wifi_init();
     mqtt_init();
-    ts_init();
     
     led_init(&led_stat);
-
     
     term_put_line(&serterm_desc, "i:booted");
 }
@@ -71,7 +68,6 @@ static void main_tasks(void)
     led_main(&led_stat);
 
     mqtt_main();
-    ts_main();
 }
 
 
