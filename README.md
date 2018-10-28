@@ -37,7 +37,7 @@ wires. Usually there are two additional pins on the BME280 breakout board, which
 remain unconnected. 
 
 | BME280 | Wemos D1 Mini |
-|--------+---------------|
+|--------|---------------|
 | VCC    | 3V3           |
 | GND    | GND           |
 | SCL    | D1            |
