@@ -25,12 +25,12 @@ To compile the software, you need to go to the root directory of the project
   
 ## Hardware
 
-# Serial Connection
+### Serial Connection
 
 The serial connection to access the diagnosis interface is running with 115200 
 baud. 
 
-# I2C Connection to BME280
+### I2C Connection to BME280
 
 The connection to the BME280 sensor is using I2C protocol, which uses 4
 wires. Usually there are two additional pins on the BME280 breakout board, which
