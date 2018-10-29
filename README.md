@@ -113,14 +113,22 @@ value. E.g. this is how to set the wifi name:
 > wifi-name=MyWifiName
 ```
 
-Some variables act as triggers for ome action. E.g. to save the current
+Some variables act as triggers for an action. E.g. to save the current
 configuration to NvRAM, yopu write the value `1` to the `cfg-save` variable:
 
 ```text
-cfg-save=1
+> cfg-save=1
 ```
 
 You can see the list of all available variables by entering `help`. 
+
+When you change configuration variables, the change is only stored in
+RAM. Depending on the variable, the new configuration is already used by the
+node E.g. after setting the wifi name, the node uses the new name when
+connecting the next time to wifi. 
+
+The configuration changes will be lost when the node is powered off or reset. To
+store the configuration in NvRAM, you need to use the `cfg-save` command.
 
 
 ### HTTP Interface
