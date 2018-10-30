@@ -64,7 +64,6 @@ static void main_tasks(void)
     wifi_main();
     httpsrv_main();
     telnet_main();
-    sensor_main();
     led_main(&led_stat);
 
     mqtt_main();

@@ -22,7 +22,6 @@ typedef struct
     float pressure;
     float humidity;
     uint8_t error_flags;
-    uint16_t sample_timer;
 } sensor_data_t;
 
 
@@ -34,8 +33,6 @@ static sensor_data_t sensor_data =
     .humidity = 0.0f,
   
     .error_flags = 0x0u,
-
-    .sample_timer = 0,
 };
 
 
@@ -78,29 +75,11 @@ void sensor_init(void)
 
 
 /* Sample sensor data. */
-static void sensor_sample()
+void sensor_sample()
 {
     sensor_data.temperature = bme.readTemperature();
     sensor_data.pressure = bme.readPressure() / 100.0f;
     sensor_data.humidity = bme.readHumidity();
-}
-
-
-/* call every 10ms to sample sensor data according to sensor config. */
-void sensor_main(void)
-{
-//    if(sensor_data.sample_timer == 0)
-//    {
-//        sensor_data.sample_timer = cfg.sens_cycle_time;
-//        if(sensor_data.error_flags == 0)
-//        {
-//            sensor_sample();
-//        }
-//    }
-//    else
-//    {
-//        --sensor_data.sample_timer;
-//    }
 }
 
 
