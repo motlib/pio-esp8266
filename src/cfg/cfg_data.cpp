@@ -164,7 +164,6 @@ const vfct_t cfg_vfct_mqtt_password =
     VFCT_DEF(string, cfg_get_mqtt_password, cfg_set_mqtt_password);
 
 
-
 /* Table of config blocks */
 cfg_block_t const cfg_block_tbl[CFG_BLOCK_COUNT] =
 {

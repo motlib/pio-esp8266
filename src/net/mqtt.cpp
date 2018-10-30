@@ -3,22 +3,17 @@
 #include <PubSubClient.h>
 #include <ESP8266WiFi.h>
 
+#include "mqtt_cfg.h"
 #include "utils/sm.h"
 #include "net/wifi.h"
 #include "cfg/cfg.h"
 
-
-#include "utils/debug_log.h"
 
 #define MQTT_STATE_OFFLINE 0
 #define MQTT_STATE_GO_ONLINE 1
 #define MQTT_STATE_ONLINE 2
 
 
-#define MQTT_PUB_CYCLE 100*60*5
-
-
-#define MQTT_CONNECT_TIMEOUT 1000
 
 static WiFiClient clt;
 static PubSubClient mqtt(clt);
@@ -28,11 +23,6 @@ static sm_state_t mqtt_rq_state = MQTT_STATE_ONLINE;
 static uint16_t mqtt_connect_timeout = 0;
 
 
-/* Entry of OFFLINE state  */
-static void mqtt_entry_offline(void)
-{
-    debug_log("mqtt offline");
-}
 
 
 /* OFFLINE state handler  */
@@ -118,7 +108,7 @@ void mqtt_init(void)
 /* Statemachine table for wifi handling */
 static sm_tbl_entry_t mqtt_sm_tbl[] =
 {
-    SM_TBL_ENTRY(mqtt_do_offline, mqtt_entry_offline, NULL),
+    SM_TBL_ENTRY(mqtt_do_offline, NULL, NULL),
     SM_TBL_ENTRY(mqtt_do_go_online, mqtt_entry_go_online, NULL),
     SM_TBL_ENTRY(mqtt_do_online, NULL, NULL),
 };
@@ -127,26 +117,30 @@ static sm_tbl_entry_t mqtt_sm_tbl[] =
 /* Statemachine configuration */
 static sm_cfg_t mqtt_sm_cfg = SM_DEF_CFG(MQTT_STATE_OFFLINE, mqtt_sm_tbl);
 
-
 /* Statemachine run-time data */
 static sm_data_t mqtt_sm_data = SM_DEF_DATA();
 
 
 void mqtt_main(void)
 {
+    /* Run our own statemachine to handle mqtt connection. */
     sm_step(&mqtt_sm_cfg, &mqtt_sm_data);
 
+    /* Process pending work of mqtt client. */
     mqtt.loop();
 }
 
 
-/* Publish a message. Publish is done if we are online. If not, nothing is
- * done. */
+/* Publish a message. Publish is only done if we are online. */
 void mqtt_publish(char const * const topic, char const * const msg)
 {
+    char topic_buf[128];
+    
     if(mqtt.connected())
     {
-        mqtt.publish(topic, msg);
+        snprintf(topic_buf, 128, "%s/%s", cfg_wifi.node_name, topic);
+        
+        mqtt.publish(topic_buf, msg);
     }
 }
 
