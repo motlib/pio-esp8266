@@ -89,18 +89,18 @@ static void sensor_sample()
 /* call every 10ms to sample sensor data according to sensor config. */
 void sensor_main(void)
 {
-    if(sensor_data.sample_timer == 0)
-    {
-        sensor_data.sample_timer = cfg.sens_cycle_time;
-        if(sensor_data.error_flags == 0)
-        {
-            sensor_sample();
-        }
-    }
-    else
-    {
-        --sensor_data.sample_timer;
-    }
+//    if(sensor_data.sample_timer == 0)
+//    {
+//        sensor_data.sample_timer = cfg.sens_cycle_time;
+//        if(sensor_data.error_flags == 0)
+//        {
+//            sensor_sample();
+//        }
+//    }
+//    else
+//    {
+//        --sensor_data.sample_timer;
+//    }
 }
 
 

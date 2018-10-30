@@ -12,8 +12,9 @@
 
 #define SYS_STATE_INIT 0
 #define SYS_STATE_IDLE 1
-#define SYS_STATE_PUBLISH 2
-#define SYS_STATE_RESET 3
+#define SYS_STATE_SAMPLE 2
+#define SYS_STATE_PUBLISH 3
+#define SYS_STATE_RESET 4
 
 #define SYS_PUB_INTERVAL 300
 
@@ -31,7 +32,7 @@ typedef struct
 static sys_data_t sys_data =
 {
     .reset_request = false,
-    .pub_timer = SYS_PUB_INTERVAL,
+    .pub_timer = 0,
 };
 
 
@@ -42,6 +43,8 @@ static sys_data_t sys_data =
  */
 static sm_state_t sys_do_init(void)
 {    
+    sys_data.pub_timer = cfg.sens_cycle_time;
+
     return SYS_STATE_IDLE;
 }
 
@@ -63,12 +66,20 @@ static sm_state_t sys_do_idle(void)
     }
     else
     {
-        sys_data.pub_timer = SYS_PUB_INTERVAL;
+        sys_data.pub_timer = cfg.sens_cycle_time;
 
-        return SYS_STATE_PUBLISH;
+        return SYS_STATE_SAMPLE;
     }
 
     return SYS_STATE_IDLE;
+}
+
+
+static sm_state_t sys_do_sample(void)
+{
+    sensor_sample();
+    
+    return SYS_STATE_PUBLISH;
 }
 
 
@@ -109,6 +120,7 @@ static sm_tbl_entry_t sys_sm_tbl[] =
 {
     SM_TBL_ENTRY(sys_do_init, NULL, NULL),
     SM_TBL_ENTRY(sys_do_idle, NULL, NULL),
+    SM_TBL_ENTRY(sys_do_sample, NULL, NULL),    
     SM_TBL_ENTRY(sys_do_publish, NULL, NULL),
     SM_TBL_ENTRY(sys_do_reset, NULL, NULL),
 };
