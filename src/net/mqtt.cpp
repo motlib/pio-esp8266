@@ -8,6 +8,8 @@
 #include "cfg/cfg.h"
 
 
+#include "utils/debug_log.h"
+
 #define MQTT_STATE_OFFLINE 0
 #define MQTT_STATE_GO_ONLINE 1
 #define MQTT_STATE_ONLINE 2
@@ -29,7 +31,7 @@ static uint16_t mqtt_connect_timeout = 0;
 /* Entry of OFFLINE state  */
 static void mqtt_entry_offline(void)
 {
-
+    debug_log("mqtt offline");
 }
 
 
@@ -89,6 +91,7 @@ static sm_state_t mqtt_do_go_online(void)
         }
     }
 }
+
 
 
 /* ONLINE state handler */

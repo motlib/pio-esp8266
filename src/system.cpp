@@ -15,7 +15,7 @@
 #define SYS_STATE_PUBLISH 2
 #define SYS_STATE_RESET 3
 
-#define SYS_PUB_INTERVAL 1000
+#define SYS_PUB_INTERVAL 300
 
 
 typedef struct
@@ -56,10 +56,6 @@ static sm_state_t sys_do_idle(void)
     {
         return SYS_STATE_RESET;
     }
-    else
-    {
-        return SYS_STATE_IDLE;
-    }
 
     if(sys_data.pub_timer > 0)
     {
@@ -71,7 +67,8 @@ static sm_state_t sys_do_idle(void)
 
         return SYS_STATE_PUBLISH;
     }
-    
+
+    return SYS_STATE_IDLE;
 }
 
 
@@ -83,6 +80,14 @@ static sm_state_t sys_do_publish(void)
     vfct_fmt(buf, 32, &wifi_vfct_rssi, NULL);
     mqtt_publish("rssi", buf);
 
+    vfct_fmt(buf, 32, &sensor_vfct_temp, NULL);
+    mqtt_publish("temp", buf);
+
+    vfct_fmt(buf, 32, &sensor_vfct_pres, NULL);
+    mqtt_publish("pres", buf);
+    
+    vfct_fmt(buf, 32, &sensor_vfct_hum, NULL);
+    mqtt_publish("hum", buf);
     
     return SYS_STATE_IDLE;
 }
