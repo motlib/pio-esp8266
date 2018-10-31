@@ -91,9 +91,17 @@ static void wifi_entry_go_online(void)
     /* Rewind the timeout counter. */
     wifi_data.timeout = WIFI_CONNECT_TIMEOUT;
 
+    /* If there is a node name configured, use it as hostname. If it is not
+     * configured, use the default naming (ESP_abcdef) based on MAX address. */
+    if(cfg_wifi.node_name[0] != '\0')
+    {
+        WiFi.hostname(cfg_wifi.node_name);
+    }
+
+    /* Start wifi connection process. */
     WiFi.begin(cfg_wifi.wifi_name, cfg_wifi.wifi_password);
 
-    if(wifi_data.connect_counter < 0xffffffffu)
+    if(wifi_data.connect_counter < UINT32_MAX)
     {
         ++wifi_data.connect_counter;
     }
@@ -140,7 +148,6 @@ static void wifi_entry_online(void)
  */
 static sm_state_t wifi_do_online(void)
 {
-    
     /* If we are asked to go offline, we disconnect and transition to the
      * WIFI_OFFLINE state. */
     if(wifi_data.request == WIFI_OFFLINE)
@@ -203,6 +210,14 @@ void wifi_init(void)
     /* Reconnection will be handled by this statemachine. */
     WiFi.setAutoReconnect(false);
 
+    /* Specify only station mode, not the (default) AP plus STA mode. */
+    WiFi.mode(WIFI_STA);
+
+    /* The wifi modem shall shut down between DTIM (Delivery Traffic Indication
+     * Message). */
+    WiFi.setSleepMode(WIFI_MODEM_SLEEP);
+
+    
     /* If we shall enable the wifi and name and password are set, we go
      * online. */
     if(cfg_wifi.wifi_power_on_state != 0)
