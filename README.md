@@ -82,9 +82,7 @@ remain unconnected.
 [BME280 Datasheet]: https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME280_DS002.pdf
 
 
-## Usage
-
-### Diagnostic Interface
+## Diagnostic Interface
 
 The diagnostic interface is a command-line interface to set and read parameters
 of the node. You can connecto to the diagnostic interface by telnet (on port 23)
@@ -131,7 +129,54 @@ The configuration changes will be lost when the node is powered off or reset. To
 store the configuration in NvRAM, you need to use the `cfg-save` command.
 
 
-### HTTP Interface
+## Over the Air Programming
+
+Currently the OTA (Over the Air) programming implementation is very basic. In
+the diagnostic interface, you specify the server, port and path for a HTTP
+connection to download new firmware. 
+
+Currently all security related mechanisms are missing, e.g. no check if
+software is valid, no encrypted HTTPS connection, etc. 
+
+To use OTA, update these settings related to OTA:
+
+* `ota-host`: This is the hostname of the HTTP server providing the new
+  firmware. This can be IP address or host name.
+* `ota-port`: The connection port. Default for HTTP is 80, but depending on your
+  environment, you might want to use another port.
+* `ota-path`: URL path on the server, where the firmware file can be located,
+  including the filename. 
+  
+Here's an example:
+
+```text
+ota-host=myfwhost
+ota-port=8000
+ota-path=/firmware.bin
+```
+
+These settings will set up OTA, so that the firmware is requested from
+`http://myfwhost:8000/firmware.bin`. 
+
+For a test or temporary server setup, you can e.g. use the `http.server` module
+from python (version 3) like this in the root directory of the project:
+
+```bash
+(cd .pioenvs/d1_min; python3 -m http.server)
+```
+
+This will start a HTTP server on your computer, listening on port 8000 and
+serving all the build output from the project. 
+
+Note: When rebuilding the project firmware, PlatformIO will delete the current
+build output directory and create a new one. This means you must restart the
+python server after every build.
+
+Now that you have all settings in place and the server serving the firmware
+file, you can trigger the OTA process with the `ota=1` command.
+
+
+## HTTP Interface
 
 After the node has connected to the wifi network, you can access the sensor
 readings by accessing `http://IPADDRESS/data` in text format.
